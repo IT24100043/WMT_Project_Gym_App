@@ -1,2 +1,3 @@
 backend/node_modules/
-backend/.envfrontend/GymApp/node_modules/
+backend/.env
+frontend/GymApp/node_modules/
