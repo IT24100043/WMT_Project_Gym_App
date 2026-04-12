@@ -52,12 +52,11 @@ function RootLayoutNav() {
   console.log('Rendering navigation stack');
   return (
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <Stack screenOptions={{ animationEnabled: true }}>
+      <Stack>
         <Stack.Screen 
           name="login" 
           options={{ 
             headerShown: false,
-            animationEnabled: false,
           }} 
         />
         <Stack.Screen 
@@ -72,14 +71,12 @@ function RootLayoutNav() {
           name="user-home" 
           options={{ 
             headerShown: false,
-            animationEnabled: false,
           }} 
         />
         <Stack.Screen 
           name="gym-home" 
           options={{ 
             headerShown: false,
-            animationEnabled: false,
           }} 
         />
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />

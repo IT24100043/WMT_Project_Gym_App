@@ -1,8 +1,9 @@
 import React, { createContext, useState, useEffect, ReactNode } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { API_ENDPOINTS } from '@/constants/api';
 
 export interface User {
-  id?: string;
+  id: string;
   _id?: string;
   name?: string;
   userEmail?: string;
@@ -49,6 +50,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       console.log('StoredUser retrieved:', storedUser ? 'Found' : 'Not found');
       if (storedUser) {
         const parsedUser = JSON.parse(storedUser);
+        // Normalize _id to id if id doesn't exist
+        if (!parsedUser.id && parsedUser._id) {
+          parsedUser.id = parsedUser._id;
+        }
         console.log('Parsed user role:', parsedUser.role);
         setUser(parsedUser);
       }
@@ -66,8 +71,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       setIsLoading(true);
       console.log('Login attempt with role:', role);
       const endpoint = role === 'user' 
-        ? 'http://localhost:5000/api/users/user-login' 
-        : 'http://localhost:5000/api/gyms/gym-login';
+        ? API_ENDPOINTS.USER_LOGIN 
+        : API_ENDPOINTS.GYM_LOGIN;
 
       console.log('Calling endpoint:', endpoint);
       const response = await fetch(endpoint, {
@@ -89,9 +94,11 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         throw new Error(data.message || 'Login failed');
       }
 
-      const userData = role === 'user' 
-        ? { ...data.user, role: 'user' }
-        : { ...data.gym, role: 'gym' };
+      const userData = { 
+        id: role === 'user' ? data.user._id : data.gym._id,
+        ...( role === 'user' ? data.user : data.gym ),
+        role: role as 'user' | 'gym'
+      };
 
       console.log('Setting user with role:', userData.role);
       // Update state first (important for immediate navigation)
@@ -110,7 +117,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       setIsLoading(false);
       console.log('Login successful, isLoading set to false');
     } catch (error) {
-      console.error('Login error:', error);
       setIsLoading(false);
       throw error;
     }

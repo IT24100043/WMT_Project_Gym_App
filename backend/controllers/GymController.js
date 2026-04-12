@@ -73,7 +73,7 @@ exports.loginGym = async (req, res) => {
 
         res.status(200).json({
             message: 'Login successful', 
-            gym: { id: gym._id, GymName: gym.GymName, email: gym.email }
+            gym: gym
         });
 
     } catch (error) {
@@ -212,6 +212,49 @@ exports.getGymDetails = async (req, res) => {
 
         res.status(200).json({ gym });
         
+    } catch (error) {
+        res.status(500).json({ message: 'Server Error', error: error.message });
+    }
+};
+
+
+// --- Update Gym Profile --- //
+
+exports.updateGymProfile = async (req, res) => {
+    try {
+        const { gymId } = req.params;
+        const { GymName, OwnerName, Address, gymType, logoUrl } = req.body;
+
+        // Check if gym exists
+        const gym = await Gym.findById(gymId);
+        if (!gym) {
+            return res.status(404).json({ message: 'Gym not found' });
+        }
+
+        // Check if new GymName is already taken by another gym
+        if (GymName && GymName !== gym.GymName) {
+            const existingGym = await Gym.findOne({ GymName });
+            if (existingGym) {
+                return res.status(400).json({ message: 'Gym Name already registered' });
+            }
+        }
+
+        // Update only provided fields
+        const updateData = {};
+        if (GymName) updateData.GymName = GymName;
+        if (OwnerName) updateData.OwnerName = OwnerName;
+        if (Address) updateData.Address = Address;
+        if (gymType) updateData.gymType = gymType;
+        if (logoUrl) updateData.logoUrl = logoUrl;
+
+        const updatedGym = await Gym.findByIdAndUpdate(
+            gymId,
+            { $set: updateData },
+            { new: true }
+        ).select('-password');
+
+        res.status(200).json({ message: 'Gym profile updated successfully', gym: updatedGym });
+
     } catch (error) {
         res.status(500).json({ message: 'Server Error', error: error.message });
     }
