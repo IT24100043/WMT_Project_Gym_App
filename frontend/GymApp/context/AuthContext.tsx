@@ -66,8 +66,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       setIsLoading(true);
       console.log('Login attempt with role:', role);
       const endpoint = role === 'user' 
-        ? 'http://192.168.1.5:5000/api/users/user-login' 
-        : 'http://192.168.1.5:5000/api/gyms/gym-login';
+        ? 'http://localhost:5000/api/users/user-login' 
+        : 'http://localhost:5000/api/gyms/gym-login';
 
       console.log('Calling endpoint:', endpoint);
       const response = await fetch(endpoint, {

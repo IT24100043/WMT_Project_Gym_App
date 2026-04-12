@@ -1,0 +1,118 @@
+[
+  {
+    "scenario": "Test 1 — Happy path: image + all fields",
+    "status": 200,
+    "ok": true,
+    "response": {
+      "message": "A rule-based workout recommendation system with image upload support, designed to be improved later into a more advanced AI-based feature.",
+      "imageUrl": "/uploads/ai-image-1775870446047-799686653.jpg",
+      "userProfileConfigured": {
+        "age": "22",
+        "gender": "male",
+        "height": "175",
+        "weight": "70",
+        "targetArea": "full body"
+      },
+      "recommendation": {
+        "title": "Beginner Gym Muscle Gain Plan",
+        "daysPerWeek": "4",
+        "exercises": [
+          "Machine Chest Press",
+          "Lat Pulldown",
+          "Leg Press",
+          "Dumbbell Shoulder Press"
+        ],
+        "setsAndReps": "3 sets of 10-12 reps",
+        "notes": "Focus on slow, controlled movements. Rest 90 seconds between sets."
+      }
+    }
+  },
+  {
+    "scenario": "Test 2 — Another valid rule",
+    "status": 200,
+    "ok": true,
+    "response": {
+      "message": "A rule-based workout recommendation system with image upload support, designed to be improved later into a more advanced AI-based feature.",
+      "imageUrl": "/uploads/ai-image-1775870446055-140448237.jpg",
+      "userProfileConfigured": {
+        "age": "22",
+        "gender": "male",
+        "height": "175",
+        "weight": "70",
+        "targetArea": "full body"
+      },
+      "recommendation": {
+        "title": "Beginner Home Fat Loss Plan",
+        "daysPerWeek": "4",
+        "exercises": [
+          "Jumping Jacks",
+          "Bodyweight Squats",
+          "Forward Lunges",
+          "Planks"
+        ],
+        "setsAndReps": "3 sets of 15 reps (or 30 seconds for planks)",
+        "notes": "Focus on keeping your heart rate up and taking short 45-second rests between sets."
+      }
+    }
+  },
+  {
+    "scenario": "Test 3 — Missing field validation",
+    "status": 400,
+    "ok": false,
+    "response": {
+      "message": "Please fill all required profile fields to generate a plan."
+    }
+  },
+  {
+    "scenario": "Test 4 — Invalid file type",
+    "status": 400,
+    "ok": false,
+    "response": {
+      "message": "Only images (jpeg, jpg, png) are allowed!"
+    }
+  },
+  {
+    "scenario": "Test 5 — No file sent",
+    "status": 400,
+    "ok": false,
+    "response": {
+      "message": "A full-body image is required for this feature."
+    }
+  },
+  {
+    "scenario": "Test 6 — Weird/unsupported combination",
+    "status": 200,
+    "ok": true,
+    "response": {
+      "message": "A rule-based workout recommendation system with image upload support, designed to be improved later into a more advanced AI-based feature.",
+      "imageUrl": "/uploads/ai-image-1775870446067-489765492.jpg",
+      "userProfileConfigured": {
+        "age": "22",
+        "gender": "male",
+        "height": "175",
+        "weight": "70",
+        "targetArea": "full body"
+      },
+      "recommendation": {
+        "title": "Custom advanced park random Plan",
+        "daysPerWeek": "4",
+        "exercises": [
+          "Full Body Stretching",
+          "Light Jogging",
+          "Push-ups",
+          "Squats"
+        ],
+        "setsAndReps": "3 sets of 10",
+        "notes": "This is a generalized plan because your specific combination didn't match a strict preset."
+      }
+    }
+  },
+  {
+    "scenario": "Test 7 — Numeric input edge check",
+    "status": 400,
+    "ok": false,
+    "response": {
+      "message": "Please fill all required profile fields to generate a plan."
+    }
+  }
+]

@@ -1,0 +1,47 @@
+{
+  "wrongRoute": {
+    "path": "/api/unknown",
+    "status": 404,
+    "data": {
+      "message": "Route not found: /api/unknown"
+    }
+  },
+  "invalidId": {
+    "path": "/api/workouts/123?userId=testUser123",
+    "status": 400,
+    "data": {
+      "message": "Invalid database ID format provided."
+    }
+  },
+  "missingRecord": {
+    "path": "/api/workouts/60bd9a941ea50a41d01b5a51?userId=testUser123",
+    "status": 404,
+    "data": {
+      "message": "Workout not found"
+    }
+  },
+  "wrongFileType": {
+    "endpoint": "/api/ai/generate-plan",
+    "file": "dummy.pdf",
+    "status": 400,
+    "data": {
+      "message": "Only images (jpeg, jpg, png) are allowed!"
+    }
+  },
+  "missingImage": {
+    "endpoint": "/api/ai/generate-plan",
+    "file": "NO_FILE",
+    "status": 400,
+    "data": {
+      "message": "A full-body image is required for this feature."
+    }
+  },
+  "missingField": {
+    "endpoint": "/api/ai/generate-plan",
+    "file": "dummy.jpg",
+    "status": 400,
+    "data": {
+      "message": "Please fill all required profile fields to generate a plan."
+    }
+  }
+}

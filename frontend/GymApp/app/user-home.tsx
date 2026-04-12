@@ -63,6 +63,18 @@ export default function UserHomeScreen() {
           <Text style={styles.featureTitle}>Browse Gyms</Text>
         </TouchableOpacity>
 
+        {/* Workout Management Integration */}
+        <TouchableOpacity style={styles.featureButton} onPress={() => router.push('/workouts')}>
+          <Text style={styles.featureIcon}>📝</Text>
+          <Text style={styles.featureTitle}>Manage Workouts</Text>
+        </TouchableOpacity>
+
+        {/* AI Recommendation Integration */}
+        <TouchableOpacity style={styles.featureButton} onPress={() => router.push('/ai')}>
+          <Text style={styles.featureIcon}>🤖</Text>
+          <Text style={styles.featureTitle}>Get Recommended Plan</Text>
+        </TouchableOpacity>
+
         <TouchableOpacity style={styles.featureButton}>
           <Text style={styles.featureIcon}>📅</Text>
           <Text style={styles.featureTitle}>My Memberships</Text>
