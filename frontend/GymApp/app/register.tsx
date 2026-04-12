@@ -3,6 +3,7 @@ import { StyleSheet, TextInput, ScrollView, View, Text, TouchableOpacity, Alert,
 import * as ImagePicker from 'expo-image-picker';
 import axios from 'axios';
 import { useRouter, useLocalSearchParams } from 'expo-router';
+import { API_ENDPOINTS } from '@/constants/api';
 
 export default function RegisterScreen() {
   const router = useRouter();
@@ -158,7 +159,7 @@ export default function RegisterScreen() {
 
     try {
       console.log("Sending gym registration data:", dataToSend);
-      const response = await axios.post('http://192.168.1.5:5000/api/gyms/gym-register', dataToSend);
+      const response = await axios.post(API_ENDPOINTS.GYM_REGISTER, dataToSend);
       if (response.status === 201) {
         Alert.alert("Success", "Gym Registered Successfully!");
         router.replace('/login');
@@ -197,7 +198,7 @@ export default function RegisterScreen() {
 
     try {
       console.log("Sending user registration data:", dataToSend);
-      const response = await axios.post('http://192.168.1.5:5000/api/users/user-register', dataToSend);
+      const response = await axios.post(API_ENDPOINTS.USER_REGISTER, dataToSend);
       if (response.status === 201) {
         Alert.alert("Success", "User Registered Successfully!");
         router.replace('/login');

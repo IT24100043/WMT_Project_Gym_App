@@ -14,6 +14,7 @@ import {
 import { useRouter } from 'expo-router';
 import { AuthContext } from '@/context/AuthContext';
 import LoadingScreen from '@/components/LoadingScreen';
+import { API_ENDPOINTS } from '@/constants/api';
 
 export default function LoginScreen() {
   const router = useRouter();
@@ -25,7 +26,7 @@ export default function LoginScreen() {
   const detectUserRole = async (userEmail: string): Promise<'user' | 'gym' | null> => {
     try {
       // Try to get gym role first
-      const gymRoleResponse = await fetch('http://192.168.1.5:5000/api/gyms/gym-role', {
+      const gymRoleResponse = await fetch(API_ENDPOINTS.GYM_ROLE, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -39,7 +40,7 @@ export default function LoginScreen() {
       }
 
       // If gym not found, try user role
-      const userRoleResponse = await fetch('http://192.168.1.5:5000/api/users/user-role', {
+      const userRoleResponse = await fetch(API_ENDPOINTS.USER_ROLE, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -84,7 +85,7 @@ export default function LoginScreen() {
       // Navigation handled by _layout based on auth state
     } catch (error: any) {
       setIsCheckingRole(false);
-      Alert.alert('Login Failed', error.message || 'Invalid credentials');
+      // Error handled silently
     }
   };
 
