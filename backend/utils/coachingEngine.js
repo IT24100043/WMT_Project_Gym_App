@@ -32,7 +32,7 @@ function evaluateExercise(exerciseName, planned, logs) {
                       field: 'defaultWeight',
                       oldValue: planned.weight,
                       newValue: planned.weight - 2.5,
-                      reason: "Falling shy of targets recently. Shedding some weight to lock down form and rebuild."
+                      reason: "📉 Needs Recalibration. You're falling shy of targets recently. Shedding weight to lock down form and rebuild."
                   };
               }
               if (planned.reps > 4) {
@@ -41,7 +41,7 @@ function evaluateExercise(exerciseName, planned, logs) {
                       field: 'reps',
                       oldValue: planned.reps,
                       newValue: planned.reps - 2,
-                      reason: "Missing endurance thresholds. Tapering reps downwards dynamically allowing recovery."
+                      reason: "📉 Endurance Limit Reached. Tapering reps downwards dynamically to allow muscular recovery."
                   };
               }
          } else if (planned.type === 'time') {
@@ -50,7 +50,7 @@ function evaluateExercise(exerciseName, planned, logs) {
                   field: 'duration',
                   oldValue: planned.duration,
                   newValue: Math.max(10, planned.duration - 5),
-                  reason: "Let's shave off a few seconds structurally to ensure you hold perfect core stability."
+                  reason: "📉 Form Priority. Let's shave off a few seconds structurally to ensure you hold perfect core stability."
               };
          }
     }
@@ -64,7 +64,7 @@ function evaluateExercise(exerciseName, planned, logs) {
                       field: 'duration',
                       oldValue: planned.duration,
                       newValue: planned.duration + 5,
-                      reason: "Consistently cracking the time boundary! Let's escalate your timer dynamically."
+                      reason: "📈 Strong Progress Detected! Consistently cracking the time boundary. Let's escalate your timer dynamically."
                   };
              }
              return null;
@@ -80,7 +80,7 @@ function evaluateExercise(exerciseName, planned, logs) {
                      field: 'defaultWeight',
                      oldValue: planned.weight,
                      newValue: (planned.weight || newest.actualWeight) + 2.5,
-                     reason: "Target volume successfully mastered 2 sessions in a row. It is time to increase resistance."
+                     reason: `📈 Peak Strength Reached! You successfully mastered the targets 2 sessions in a row. It is time to increase resistance.`
                  };
              } else {
                  // Bodyweight fallback
@@ -89,7 +89,7 @@ function evaluateExercise(exerciseName, planned, logs) {
                      field: 'reps',
                      oldValue: planned.reps,
                      newValue: planned.reps + 1,
-                     reason: "Volume matching seamlessly. Pushing target repetitions linearly to force hypertrophy."
+                     reason: "📈 Volume Matched! Pushing target repetitions linearly to force hypertrophy."
                  };
              }
         }
@@ -101,7 +101,7 @@ function evaluateExercise(exerciseName, planned, logs) {
                  field: 'reps',
                  oldValue: planned.reps,
                  newValue: planned.reps + 1,
-                 reason: "Punching above planned rep targets globally! Normalizing threshold up natively."
+                 reason: "📈 High Endurance Detected! Punching above planned rep targets globally. Normalizing threshold up natively."
              };
         }
     }
@@ -115,7 +115,7 @@ function evaluateExercise(exerciseName, planned, logs) {
                       field: 'sets',
                       oldValue: planned.sets,
                       newValue: planned.sets + 1,
-                      reason: "Supercharged endurance reserves detected explicitly. Tactical extra set injection!"
+                      reason: "🔥 Elite Status. Supercharged endurance reserves detected explicitly. Tactical extra set injection!"
                   };
              }
          }

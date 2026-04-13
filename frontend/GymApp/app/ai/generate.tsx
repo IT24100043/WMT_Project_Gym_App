@@ -17,6 +17,7 @@ export default function GenerateRoutineScreen() {
 
     const [loading, setLoading] = useState(false);
     const [routine, setRoutine] = useState(null);
+    const [aiMode, setAiMode] = useState(null);
 
     const handleGenerate = async () => {
          setLoading(true);
@@ -41,6 +42,7 @@ export default function GenerateRoutineScreen() {
              const data = await res.json();
              if (res.ok && data.routine) {
                  setRoutine(data.routine);
+                 setAiMode(data.mode);
              } else {
                  Alert.alert("Generation Failed", data.message || "Failed structurally mapping payload.");
              }
@@ -53,23 +55,32 @@ export default function GenerateRoutineScreen() {
 
     const handleAccept = async () => {
          // Saves explicit layout natively
-         try {
-             const res = await fetch(WORKOUT_API, {
-                 method: 'POST',
-                 headers: { 'Content-Type': 'application/json' },
-                 body: JSON.stringify({
-                     userId: user?.id || user?._id || 'testUser123',
-                     ...routine
-                 })
-             });
-             if (res.ok) {
-                 Alert.alert("Success", "Target saved beautifully. The Engine mapped it to Active.");
-                 router.replace('/workouts');
-             } else {
-                 const d = await res.json();
-                 Alert.alert("Error", d.message || "Failed natively.");
+         Alert.alert('Apply AI Blueprint?', '⚠️ Always adjust weights based on your comfort level. Do you wish to override your Active Routine globally?', [
+             { text: 'Cancel', style: 'cancel' },
+             {
+                 text: 'Accept Routine',
+                 style: 'default',
+                 onPress: async () => {
+                     try {
+                         const res = await fetch(WORKOUT_API, {
+                             method: 'POST',
+                             headers: { 'Content-Type': 'application/json' },
+                             body: JSON.stringify({
+                                 userId: user?.id || user?._id || 'testUser123',
+                                 ...routine
+                             })
+                         });
+                         if (res.ok) {
+                             Alert.alert("Success", "Target saved beautifully. The Engine mapped it to Active.");
+                             router.replace('/workouts');
+                         } else {
+                             const d = await res.json();
+                             Alert.alert("Error", d.message || "Failed natively.");
+                         }
+                     } catch(e) { console.error(e); }
+                 }
              }
-         } catch(e) { console.error(e); }
+         ]);
     };
 
     return (
@@ -116,8 +127,19 @@ export default function GenerateRoutineScreen() {
                          </TouchableOpacity>
                      </View>
 
+                     <View style={[styles.aiModeBadge, { backgroundColor: aiMode === 'online' ? '#ecfdf5' : '#f3f4f6', borderColor: aiMode === 'online' ? '#10b981' : '#9ca3af' }]}>
+                         <Text style={[styles.aiModeText, { color: aiMode === 'online' ? '#065f46' : '#4b5563' }]}>
+                             {aiMode === 'online' ? '🤖 AI Mode: Online (Smart Generation)' : '⚙️ AI Mode: Offline (Demo Mode)'}
+                         </Text>
+                     </View>
+
                      <Text style={styles.routineTitle}>{routine.title}</Text>
-                     <Text style={styles.routineGoal}>"Targeted at explicit {routine.goal} workflows natively."</Text>
+                     <Text style={styles.routineGoal}>Target Area: {routine.goal}</Text>
+
+                     <View style={styles.aiNoteBlock}>
+                          <Text style={styles.aiNoteHeader}>🧠 Engine Note</Text>
+                          <Text style={styles.aiNoteBody}>{routine.notes || "This plan is deterministically mapped based on your explicit layout targets. Focus cleanly on form."}</Text>
+                     </View>
 
                      {routine.days.map((d, i) => (
                          <View key={i} style={styles.dayCard}>
@@ -176,7 +198,14 @@ const styles = StyleSheet.create({
     rejectBtnText: { color: '#4b5563', fontWeight: '800', fontSize: 15 },
 
     routineTitle: { fontSize: 22, fontWeight: '900', color: '#1f2937', marginBottom: 6 },
-    routineGoal: { fontSize: 14, color: '#6b7280', fontStyle: 'italic', marginBottom: 20 },
+    routineGoal: { fontSize: 14, color: '#6b7280', fontStyle: 'italic', marginBottom: 15 },
+    
+    aiModeBadge: { paddingVertical: 8, paddingHorizontal: 12, borderRadius: 8, borderWidth: 1, marginBottom: 15, alignSelf: 'flex-start' },
+    aiModeText: { fontSize: 13, fontWeight: '700' },
+
+    aiNoteBlock: { backgroundColor: '#eef2ff', padding: 15, borderRadius: 10, borderLeftWidth: 4, borderLeftColor: '#6366f1', marginBottom: 20 },
+    aiNoteHeader: { fontSize: 13, fontWeight: '800', color: '#4338ca', marginBottom: 4 },
+    aiNoteBody: { fontSize: 14, color: '#4f46e5', lineHeight: 20 },
 
     dayCard: { backgroundColor: '#fff', padding: 18, borderRadius: 14, marginBottom: 15, borderWidth: 1, borderColor: '#f3f4f6', shadowColor: '#000', shadowOpacity: 0.03, shadowRadius: 4, elevation: 1 },
     dayName: { fontSize: 17, fontWeight: '800', color: '#374151', marginBottom: 12 },

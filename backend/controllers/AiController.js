@@ -172,7 +172,7 @@ const generateRoutine = asyncHandler(async (req, res) => {
         // Mock AI Fallback 
         await new Promise(resolve => setTimeout(resolve, 2500));
         const mockRoutine = mockRoutineFallback(payload);
-        return res.status(200).json({ routine: mockRoutine });
+        return res.status(200).json({ routine: mockRoutine, mode: 'offline' });
     }
 
     try {
@@ -206,12 +206,12 @@ const generateRoutine = asyncHandler(async (req, res) => {
              throw new Error("Validation Failed internally. Generating fallback structurally.");
         }
 
-        return res.status(200).json({ routine: generatedRoutine });
+        return res.status(200).json({ routine: generatedRoutine, mode: 'online' });
 
     } catch (error) {
         console.error("GPT Engine failed dynamically. Engaging local mock override.", error);
         await new Promise(resolve => setTimeout(resolve, 1500));
-        return res.status(200).json({ routine: mockRoutineFallback(payload) });
+        return res.status(200).json({ routine: mockRoutineFallback(payload), mode: 'offline' });
     }
 });
 
