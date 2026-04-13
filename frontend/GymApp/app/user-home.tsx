@@ -312,7 +312,7 @@ export default function UserHomeScreen() {
             style={[styles.actionButton, styles.secondaryAction, { borderColor: '#8b5cf6', borderWidth: 2, backgroundColor: '#f5f3ff' }]}
             onPress={() => router.push('/ai/generate')}
         >
-            <Text style={[styles.secondaryActionText, { color: '#6d28d9', fontWeight: '900' }]}>🎯 Try AI Routine Generator</Text>
+            <Text style={[styles.secondaryActionText, { color: '#6d28d9', fontWeight: '900' }]}>🤖 Gemini AI Engine</Text>
         </TouchableOpacity>
 
         <TouchableOpacity

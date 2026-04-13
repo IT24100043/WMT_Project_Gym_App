@@ -104,7 +104,7 @@ export default function GenerateRoutineScreen() {
                  <TouchableOpacity style={styles.backBtn} onPress={() => router.back()}>
                      <Text style={styles.backBtnText}>{"← Back"}</Text>
                  </TouchableOpacity>
-                 <View style={styles.badgeWrap}><Text style={styles.badgeStr}>GPT-5.1 ENGINES</Text></View>
+                 <View style={styles.badgeWrap}><Text style={styles.badgeStr}>GEMINI AI ENGINE</Text></View>
             </View>
 
             <Text style={styles.title}>AI Architect</Text>

@@ -1,5 +1,5 @@
 const asyncHandler = require('../middleware/asyncHandler');
-const OpenAI = require('openai');
+const { GoogleGenerativeAI } = require('@google/generative-ai');
 
 // Helper to reliably get the requesting User ID whether from future JWT or current body
 const getRequestUserId = (req) => {
@@ -168,9 +168,9 @@ const generateRoutine = asyncHandler(async (req, res) => {
 
     const payload = { age, gender, height, weight, fitnessGoal, experienceLevel, workoutLocation, availableDays, targetArea };
 
-    console.log("🔍 AI MODE:", process.env.OPENAI_API_KEY ? "ONLINE (Connected)" : "OFFLINE (No Key)");
+    console.log("🔍 AI MODE:", process.env.GEMINI_API_KEY ? "ONLINE (Connected to Gemini)" : "OFFLINE (No Key)");
 
-    if (!process.env.OPENAI_API_KEY) {
+    if (!process.env.GEMINI_API_KEY) {
         // Mock AI Fallback 
         await new Promise(resolve => setTimeout(resolve, 2500));
         const mockRoutine = mockRoutineFallback(payload);
@@ -178,30 +178,26 @@ const generateRoutine = asyncHandler(async (req, res) => {
     }
 
     try {
-        const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+        const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+        const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
         
-        const systemPrompt = `You are an elite fitness architect returning EXACTLY one valid JSON object. No explanation. No formatting markdown around it. 
-        You must construct a realistically mapped 7-day fitness routine for a user.
+        const prompt = `You are a professional fitness architect. Generate EXACTLY one raw JSON object containing a 7-day fitness routine natively. No formatting markdown around it. Do not include \`\`\`json or \`\`\`. Just raw JSON data.
+        
+        Goals: ${fitnessGoal}, Focus: ${targetArea}, Age: ${age}, Gender: ${gender}, Weight: ${weight}kg.
         Constraints:
-        - Output strictly exactly 7 days (Monday through Sunday).
+        - Output strictly exactly 7 days (Monday through Sunday) inside a "days" array.
         - Use exactly ${availableDays} "workout" days. The remaining must be "rest" days.
         - Location: ${workoutLocation}. If home, NO machines or weights (defaultWeight=0). If gym, keep defaultWeights realistic for ${experienceLevel} (10-40kg).
-        - Exercise type MUST be strictly "reps" or "time". If "reps", include sets and reps. If "time", include duration in seconds.
-        - Schema exactly:
+        - Exercise type MUST be strictly "reps" or "time". If "reps", include "sets" and "reps". If "time", include "duration" in seconds.
+        - Schema exactly mimicking this structure globally:
           { "title": "string", "goal": "string", "locationType": "${workoutLocation}", "notes": "string", "days": [ { "dayName": "string", "dayType": "workout" | "rest", "focus": "string", "notes": "string", "exercises": [ { "exerciseName": "string", "type": "reps" | "time", "sets": number, "reps": number, "duration": number, "defaultWeight": number } ] } ] }`;
 
-        const response = await openai.chat.completions.create({
-            model: "gpt-4o",
-            messages: [
-                { role: "system", content: systemPrompt },
-                { role: "user", content: `Generate routine. Goal: ${fitnessGoal}, Area: ${targetArea}, Age: ${age}, Gender: ${gender}, Weight: ${weight}. Make it varied slightly.` }
-            ],
-            response_format: { type: "json_object" },
-            temperature: 0.7
-        });
-
-        const rawJsonStr = response.choices[0].message.content;
-        const generatedRoutine = JSON.parse(rawJsonStr);
+        const result = await model.generateContent(prompt);
+        const text = result.response.text();
+        
+        // Strip markdown backticks if Gemini hallucinated them
+        const cleanText = text.replace(/```json|```/g, "").trim();
+        const generatedRoutine = JSON.parse(cleanText);
 
         // Run Local Security checks
         if (!validateRoutineSchema(generatedRoutine, workoutLocation)) {
@@ -211,7 +207,7 @@ const generateRoutine = asyncHandler(async (req, res) => {
         return res.status(200).json({ routine: generatedRoutine, mode: 'online' });
 
     } catch (error) {
-        console.error("❌ AI ERROR:", error.message);
+        console.error("❌ GEMINI ERROR:", error.message);
         await new Promise(resolve => setTimeout(resolve, 1500));
         return res.status(200).json({ 
              routine: mockRoutineFallback(payload), 
