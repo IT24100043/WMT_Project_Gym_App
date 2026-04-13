@@ -138,6 +138,36 @@ const mockRoutineFallback = (payload) => {
     };
 };
 
+const smartPromptBuilder = (payload) => {
+    const { age, gender, weight, fitnessGoal, experienceLevel, workoutLocation, availableDays, targetArea } = payload;
+    
+    // Add extra intelligence natively
+    let strategicIntelligence = "";
+    const goalLower = fitnessGoal.toLowerCase();
+    
+    if (goalLower.includes("fat loss") || goalLower.includes("weight loss")) strategicIntelligence += "\n- Since goal is fat loss, tightly weave cardio elements or higher rep ranges into the matrix.";
+    if (goalLower.includes("muscle") || goalLower.includes("hypertrophy")) strategicIntelligence += "\n- Since goal is muscle gain, enforce progressive overload patterns securely.";
+    if (experienceLevel.toLowerCase() === "beginner") strategicIntelligence += "\n- Since user is a beginner, strictly avoid complex or mechanically awkward compound movements.";
+    if (workoutLocation.toLowerCase() === "home") strategicIntelligence += "\n- Since user is at home, strictly avoid gym machinery and heavy weight racks. Cap defaultWeight at 0 unless dumbbells are explicitly specified natively.";
+
+    return `You are an elite fitness architect. Generate EXACTLY one raw JSON object containing a 7-day fitness routine natively. No formatting markdown around it. Do not include \`\`\`json or \`\`\`. Just raw JSON data.
+        
+Goals: ${fitnessGoal}, Focus: ${targetArea}, Age: ${age}, Gender: ${gender}, Weight: ${weight}kg.
+Constraints:
+- Output strictly exactly 7 days (Monday through Sunday) inside a "days" array.
+- Use exactly ${availableDays} "workout" days. The remaining must be "rest" days.
+- Location: ${workoutLocation}.
+${strategicIntelligence}
+- Exercise type MUST be strictly "reps" or "time". If "reps", include "sets" and "reps". If "time", include "duration" in seconds.
+- Schema exactly mimicking this structure globally:
+  { "title": "string", "goal": "string", "locationType": "${workoutLocation}", "notes": "string", "days": [ { "dayName": "string", "dayType": "workout" | "rest", "focus": "string", "notes": "string", "exercises": [ { "exerciseName": "string", "type": "reps" | "time", "sets": number, "reps": number, "duration": number, "defaultWeight": number } ] } ] }`;
+};
+
+// Optional future integration for physical image decoding
+const analyzePhysique = (imagePayload) => {
+    return null;
+};
+
 const validateRoutineSchema = (routine, locOpts) => {
     if (!routine || !routine.days || routine.days.length !== 7) return false;
     
@@ -181,22 +211,19 @@ const generateRoutine = asyncHandler(async (req, res) => {
         const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
         const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
         
-        const prompt = `You are a professional fitness architect. Generate EXACTLY one raw JSON object containing a 7-day fitness routine natively. No formatting markdown around it. Do not include \`\`\`json or \`\`\`. Just raw JSON data.
-        
-        Goals: ${fitnessGoal}, Focus: ${targetArea}, Age: ${age}, Gender: ${gender}, Weight: ${weight}kg.
-        Constraints:
-        - Output strictly exactly 7 days (Monday through Sunday) inside a "days" array.
-        - Use exactly ${availableDays} "workout" days. The remaining must be "rest" days.
-        - Location: ${workoutLocation}. If home, NO machines or weights (defaultWeight=0). If gym, keep defaultWeights realistic for ${experienceLevel} (10-40kg).
-        - Exercise type MUST be strictly "reps" or "time". If "reps", include "sets" and "reps". If "time", include "duration" in seconds.
-        - Schema exactly mimicking this structure globally:
-          { "title": "string", "goal": "string", "locationType": "${workoutLocation}", "notes": "string", "days": [ { "dayName": "string", "dayType": "workout" | "rest", "focus": "string", "notes": "string", "exercises": [ { "exerciseName": "string", "type": "reps" | "time", "sets": number, "reps": number, "duration": number, "defaultWeight": number } ] } ] }`;
+        const prompt = smartPromptBuilder(payload);
 
-        const result = await model.generateContent(prompt);
-        const text = result.response.text();
-        
-        // Strip markdown backticks if Gemini hallucinated them
-        const cleanText = text.replace(/```json|```/g, "").trim();
+        let cleanText = "";
+        try {
+            const result = await model.generateContent(prompt);
+            const text = result.response.text();
+            
+            // Strip markdown backticks if Gemini hallucinated them
+            cleanText = text.replace(/```json|```/g, "").trim();
+        } catch (genError) {
+             throw new Error(`Google API Fault: ${genError.message}`);
+        }
+
         const generatedRoutine = JSON.parse(cleanText);
 
         // Run Local Security checks
