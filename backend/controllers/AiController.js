@@ -168,6 +168,8 @@ const generateRoutine = asyncHandler(async (req, res) => {
 
     const payload = { age, gender, height, weight, fitnessGoal, experienceLevel, workoutLocation, availableDays, targetArea };
 
+    console.log("🔍 AI MODE:", process.env.OPENAI_API_KEY ? "ONLINE (Connected)" : "OFFLINE (No Key)");
+
     if (!process.env.OPENAI_API_KEY) {
         // Mock AI Fallback 
         await new Promise(resolve => setTimeout(resolve, 2500));
@@ -209,9 +211,13 @@ const generateRoutine = asyncHandler(async (req, res) => {
         return res.status(200).json({ routine: generatedRoutine, mode: 'online' });
 
     } catch (error) {
-        console.error("GPT Engine failed dynamically. Engaging local mock override.", error);
+        console.error("❌ AI ERROR:", error.message);
         await new Promise(resolve => setTimeout(resolve, 1500));
-        return res.status(200).json({ routine: mockRoutineFallback(payload), mode: 'offline' });
+        return res.status(200).json({ 
+             routine: mockRoutineFallback(payload), 
+             mode: 'offline',
+             error: error.message 
+        });
     }
 });
 

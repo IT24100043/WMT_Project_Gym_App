@@ -1,7 +1,8 @@
 import React, { useState, useContext } from 'react';
-import { View, Text, StyleSheet, ScrollView, TextInput, TouchableOpacity, ActivityIndicator, Alert } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TextInput, TouchableOpacity, ActivityIndicator, Alert, Image } from 'react-native';
 import { useRouter } from 'expo-router';
 import { AuthContext } from '@/context/AuthContext';
+import * as ImagePicker from 'expo-image-picker';
 
 const AI_API = 'http://192.168.1.25:5000/api/ai/generate-routine';
 const WORKOUT_API = 'http://192.168.1.25:5000/api/workouts';
@@ -18,6 +19,18 @@ export default function GenerateRoutineScreen() {
     const [loading, setLoading] = useState(false);
     const [routine, setRoutine] = useState(null);
     const [aiMode, setAiMode] = useState(null);
+    const [image, setImage] = useState(null);
+    const [aiError, setAiError] = useState(null);
+
+    const pickImage = async () => {
+        const result = await ImagePicker.launchImageLibraryAsync({
+            mediaTypes: ImagePicker.MediaTypeOptions.Images,
+            quality: 0.7,
+        });
+        if (!result.canceled && result.assets && result.assets.length > 0) {
+            setImage(result.assets[0].uri);
+        }
+    };
 
     const handleGenerate = async () => {
          setLoading(true);
@@ -43,6 +56,8 @@ export default function GenerateRoutineScreen() {
              if (res.ok && data.routine) {
                  setRoutine(data.routine);
                  setAiMode(data.mode);
+                 if (data.error) setAiError(data.error);
+                 // Note: we'd also upload the image naturally in the future!
              } else {
                  Alert.alert("Generation Failed", data.message || "Failed structurally mapping payload.");
              }
@@ -97,6 +112,15 @@ export default function GenerateRoutineScreen() {
             
             {!routine && !loading && (
                 <View style={styles.configBox}>
+                     <Text style={styles.label}>📸 Upload Your Body Photo (Optional)</Text>
+                     <TouchableOpacity style={styles.uploadBox} onPress={pickImage}>
+                          {image ? (
+                              <Image source={{ uri: image }} style={styles.preview} />
+                          ) : (
+                              <Text style={{ color: '#9ca3af', fontWeight: '600' }}>Tap to upload full body photo</Text>
+                          )}
+                     </TouchableOpacity>
+
                      <Text style={styles.label}>Target Focus Area</Text>
                      <TextInput style={styles.input} value={form.targetArea} onChangeText={t => setForm({...form, targetArea: t})} placeholder="e.g. Chest & Triceps, Full Body" />
 
@@ -127,11 +151,17 @@ export default function GenerateRoutineScreen() {
                          </TouchableOpacity>
                      </View>
 
-                     <View style={[styles.aiModeBadge, { backgroundColor: aiMode === 'online' ? '#ecfdf5' : '#f3f4f6', borderColor: aiMode === 'online' ? '#10b981' : '#9ca3af' }]}>
-                         <Text style={[styles.aiModeText, { color: aiMode === 'online' ? '#065f46' : '#4b5563' }]}>
-                             {aiMode === 'online' ? '🤖 AI Mode: Online (Smart Generation)' : '⚙️ AI Mode: Offline (Demo Mode)'}
+                     <View style={[styles.aiModeBadge, { backgroundColor: aiMode === 'online' ? '#ecfdf5' : '#fffbeb', borderColor: aiMode === 'online' ? '#10b981' : '#f59e0b' }]}>
+                         <Text style={[styles.aiModeText, { color: aiMode === 'online' ? '#065f46' : '#b45309' }]}>
+                             {aiMode === 'online' ? '🤖 AI Generated Plan (Real-time)' : '⚙️ Demo Mode: Using pre-built plan (No internet AI)'}
                          </Text>
                      </View>
+
+                     {aiMode === 'offline' && aiError && (
+                          <View style={styles.errorBox}>
+                               <Text style={styles.errorText}>⚠️ AI Error: {aiError}</Text>
+                          </View>
+                     )}
 
                      <Text style={styles.routineTitle}>{routine.title}</Text>
                      <Text style={styles.routineGoal}>Target Area: {routine.goal}</Text>
@@ -184,6 +214,9 @@ const styles = StyleSheet.create({
     label: { fontSize: 13, fontWeight: '800', color: '#4b5563', marginBottom: 8, textTransform: 'uppercase' },
     input: { backgroundColor: '#f9fafb', borderWidth: 1, borderColor: '#e5e7eb', padding: 14, borderRadius: 10, fontSize: 16, marginBottom: 20 },
     
+    uploadBox: { backgroundColor: '#f9fafb', borderWidth: 1, borderColor: '#e5e7eb', borderRadius: 10, height: 120, justifyContent: 'center', alignItems: 'center', marginBottom: 20, overflow: 'hidden' },
+    preview: { width: '100%', height: '100%', resizeMode: 'cover' },
+
     genBtn: { backgroundColor: '#6366f1', padding: 16, borderRadius: 12, alignItems: 'center', marginTop: 5 },
     genBtnText: { color: '#fff', fontWeight: '800', fontSize: 16 },
 
@@ -202,6 +235,9 @@ const styles = StyleSheet.create({
     
     aiModeBadge: { paddingVertical: 8, paddingHorizontal: 12, borderRadius: 8, borderWidth: 1, marginBottom: 15, alignSelf: 'flex-start' },
     aiModeText: { fontSize: 13, fontWeight: '700' },
+
+    errorBox: { backgroundColor: '#fef2f2', padding: 12, borderRadius: 8, borderLeftWidth: 4, borderLeftColor: '#ef4444', marginBottom: 15 },
+    errorText: { color: '#b91c1c', fontSize: 13, fontWeight: '700' },
 
     aiNoteBlock: { backgroundColor: '#eef2ff', padding: 15, borderRadius: 10, borderLeftWidth: 4, borderLeftColor: '#6366f1', marginBottom: 20 },
     aiNoteHeader: { fontSize: 13, fontWeight: '800', color: '#4338ca', marginBottom: 4 },
