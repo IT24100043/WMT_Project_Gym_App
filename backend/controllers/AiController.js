@@ -1,5 +1,5 @@
 const asyncHandler = require('../middleware/asyncHandler');
-const { GoogleGenerativeAI } = require('@google/generative-ai');
+const { GoogleGenAI } = require('@google/genai');
 
 // Helper to reliably get the requesting User ID whether from future JWT or current body
 const getRequestUserId = (req) => {
@@ -130,7 +130,7 @@ const mockRoutineFallback = (payload) => {
     }
 
     return {
-        title: `GPT-5.1 Engine Fallback Plan (${targetArea})`,
+        title: `Gemini AI Fallback Plan (${targetArea})`,
         goal: fitnessGoal,
         locationType: workoutLocation,
         notes: "Generated deterministically via Mock AI fallback.",
@@ -208,15 +208,18 @@ const generateRoutine = asyncHandler(async (req, res) => {
     }
 
     try {
-        const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-        const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
-        
+        const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
+        console.log("🔍 MODEL: gemini-2.0-flash | MODE: ONLINE");
+
         const prompt = smartPromptBuilder(payload);
 
         let cleanText = "";
         try {
-            const result = await model.generateContent(prompt);
-            const text = result.response.text();
+            const result = await ai.models.generateContent({
+                model: 'gemini-2.0-flash',
+                contents: prompt,
+            });
+            const text = result.text;
             
             // Strip markdown backticks if Gemini hallucinated them
             cleanText = text.replace(/```json|```/g, "").trim();
