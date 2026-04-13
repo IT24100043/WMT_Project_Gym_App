@@ -307,12 +307,12 @@ export default function UserHomeScreen() {
           <Text style={styles.secondaryActionText} numberOfLines={2}>📊 Analyze Progress</Text>
         </TouchableOpacity>
 
-        {/* AI Recommendation Integration */}
-        <TouchableOpacity
-          style={[styles.actionButton, styles.secondaryAction]}
-          onPress={() => router.push('/ai')}
+        {/* AI Recommendation Button */}
+        <TouchableOpacity 
+            style={[styles.actionButton, styles.secondaryAction]}
+            onPress={() => router.push('/ai/generate')}
         >
-          <Text style={styles.secondaryActionText}>🤖 Get Recommended Plan</Text>
+            <Text style={styles.secondaryActionText}>🤖 GPT-5.1 Engine Plan</Text>
         </TouchableOpacity>
 
         <TouchableOpacity

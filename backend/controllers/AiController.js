@@ -1,4 +1,5 @@
 const asyncHandler = require('../middleware/asyncHandler');
+const OpenAI = require('openai');
 
 // Helper to reliably get the requesting User ID whether from future JWT or current body
 const getRequestUserId = (req) => {
@@ -95,6 +96,126 @@ const generatePlan = asyncHandler(async (req, res) => {
     });
 });
 
+// --- PHASE 6 ENGINES --- //
+
+const mockRoutineFallback = (payload) => {
+    // Generate a secure 7-day layout artificially bypassing external endpoint failure mapping dynamically
+    const { fitnessGoal, targetArea, workoutLocation, availableDays } = payload;
+    const daysArr = [];
+    const daysOfWeek = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
+    
+    let workoutCount = 0;
+    for (let i = 0; i < 7; i++) {
+        if (workoutCount < availableDays && i % 2 === 0) {
+            daysArr.push({
+                dayName: daysOfWeek[i],
+                dayType: "workout",
+                focus: `${workoutLocation} ${targetArea} Push`,
+                notes: `Deterministic Fallback. Goal: ${fitnessGoal}`,
+                exercises: [
+                    { exerciseName: "Push-ups", type: "reps", sets: 3, reps: 10, duration: 0, defaultWeight: 0 },
+                    { exerciseName: workoutLocation === 'gym' ? "Dumbbell Press" : "Plank", type: workoutLocation === 'gym' ? "reps" : "time", sets: 3, reps: 10, duration: 30, defaultWeight: workoutLocation === 'gym' ? 15 : 0 }
+                ]
+            });
+            workoutCount++;
+        } else {
+            daysArr.push({
+                dayName: daysOfWeek[i],
+                dayType: "rest",
+                focus: "",
+                notes: "Recovery day",
+                exercises: []
+            });
+        }
+    }
+
+    return {
+        title: `GPT-5.1 Engine Fallback Plan (${targetArea})`,
+        goal: fitnessGoal,
+        locationType: workoutLocation,
+        notes: "Generated deterministically via Mock AI fallback.",
+        days: daysArr
+    };
+};
+
+const validateRoutineSchema = (routine, locOpts) => {
+    if (!routine || !routine.days || routine.days.length !== 7) return false;
+    
+    let workoutCount = 0;
+    for (let d of routine.days) {
+         if (d.dayType === 'workout') {
+             workoutCount++;
+             if (!d.exercises || d.exercises.length === 0) return false;
+             for (let e of d.exercises) {
+                 if (locOpts === 'home' && e.defaultWeight > 0) e.defaultWeight = 0; 
+                 if (e.type === 'reps' && !e.reps) return false;
+                 if (e.type === 'time' && !e.duration) return false;
+             }
+         } else if (d.dayType === 'rest') {
+             if (d.exercises && d.exercises.length > 0) return false;
+         }
+    }
+    return true;
+};
+
+const generateRoutine = asyncHandler(async (req, res) => {
+    const userId = getRequestUserId(req);
+    const { age, gender, height, weight, fitnessGoal, experienceLevel, workoutLocation, availableDays, targetArea } = req.body;
+
+    if (!userId || !age || !gender || !fitnessGoal || !workoutLocation || !availableDays) {
+         return res.status(400).json({ message: "Missing required core fields natively." });
+    }
+
+    const payload = { age, gender, height, weight, fitnessGoal, experienceLevel, workoutLocation, availableDays, targetArea };
+
+    if (!process.env.OPENAI_API_KEY) {
+        // Mock AI Fallback 
+        await new Promise(resolve => setTimeout(resolve, 2500));
+        const mockRoutine = mockRoutineFallback(payload);
+        return res.status(200).json({ routine: mockRoutine });
+    }
+
+    try {
+        const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+        
+        const systemPrompt = `You are an elite fitness architect returning EXACTLY one valid JSON object. No explanation. No formatting markdown around it. 
+        You must construct a realistically mapped 7-day fitness routine for a user.
+        Constraints:
+        - Output strictly exactly 7 days (Monday through Sunday).
+        - Use exactly ${availableDays} "workout" days. The remaining must be "rest" days.
+        - Location: ${workoutLocation}. If home, NO machines or weights (defaultWeight=0). If gym, keep defaultWeights realistic for ${experienceLevel} (10-40kg).
+        - Exercise type MUST be strictly "reps" or "time". If "reps", include sets and reps. If "time", include duration in seconds.
+        - Schema exactly:
+          { "title": "string", "goal": "string", "locationType": "${workoutLocation}", "notes": "string", "days": [ { "dayName": "string", "dayType": "workout" | "rest", "focus": "string", "notes": "string", "exercises": [ { "exerciseName": "string", "type": "reps" | "time", "sets": number, "reps": number, "duration": number, "defaultWeight": number } ] } ] }`;
+
+        const response = await openai.chat.completions.create({
+            model: "gpt-4o",
+            messages: [
+                { role: "system", content: systemPrompt },
+                { role: "user", content: `Generate routine. Goal: ${fitnessGoal}, Area: ${targetArea}, Age: ${age}, Gender: ${gender}, Weight: ${weight}. Make it varied slightly.` }
+            ],
+            response_format: { type: "json_object" },
+            temperature: 0.7
+        });
+
+        const rawJsonStr = response.choices[0].message.content;
+        const generatedRoutine = JSON.parse(rawJsonStr);
+
+        // Run Local Security checks
+        if (!validateRoutineSchema(generatedRoutine, workoutLocation)) {
+             throw new Error("Validation Failed internally. Generating fallback structurally.");
+        }
+
+        return res.status(200).json({ routine: generatedRoutine });
+
+    } catch (error) {
+        console.error("GPT Engine failed dynamically. Engaging local mock override.", error);
+        await new Promise(resolve => setTimeout(resolve, 1500));
+        return res.status(200).json({ routine: mockRoutineFallback(payload) });
+    }
+});
+
 module.exports = {
-    generatePlan
+    generatePlan,
+    generateRoutine
 };

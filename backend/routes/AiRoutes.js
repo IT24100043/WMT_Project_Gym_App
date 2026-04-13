@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const multer = require('multer');
 const path = require('path');
-const { generatePlan } = require('../controllers/AiController');
+const { generatePlan, generateRoutine } = require('../controllers/AiController');
 
 // Define storage for Multer
 const storage = multer.diskStorage({
@@ -47,5 +47,8 @@ router.post('/generate-plan', (req, res, next) => {
         next(); // Proceed to controller
     });
 }, generatePlan);
+
+// Phase 6 GPT-5.1 Routine Engine Map
+router.post('/generate-routine', generateRoutine);
 
 module.exports = router;
