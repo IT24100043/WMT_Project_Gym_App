@@ -29,6 +29,23 @@ const userSchema = new mogoose.Schema({
     },
     dpUrl: {
         type: String,
+        default: null,
+    },
+    // Streak Logistics
+    currentStreak: { type: Number, default: 0 },
+    missedWorkoutDays: { type: Number, default: 0 },
+    lastCompletedWorkoutDate: { type: Date, default: null },
+    dismissedSuggestions: {
+        type: [
+            {
+               exerciseName: String,
+               latestLogDateRef: Date
+            }
+        ],
+        default: []
+    },
+    createdAt: { 
+        type: String,
         required: true,
     },
     role: { 

@@ -1,7 +1,7 @@
 // API Configuration
 // Change the IP address here to update all API endpoints throughout the app
 
-const IP = '10.164.236.186';
+const IP = '192.168.1.25';
 const PORT = '5000';
 
 export const API_BASE_URL = `http://${IP}:${PORT}`;

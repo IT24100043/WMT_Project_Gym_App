@@ -180,7 +180,12 @@ exports.deleteUser = async (req, res) => {
 exports.getUserDetails = async (req, res) => {
     try {
         const { userId } = req.params;
-        const user = await User.findById(userId).select('-password'); // Exclude password from the response
+        
+        // Execute Streak Evaluation Lazily
+        const { evaluateUserStreak } = require('../utils/streakEvaluator');
+        await evaluateUserStreak(userId);
+
+        const user = await User.findById(userId).select('-password');
 
         if (!user) {
             return res.status(404).json({ message: 'User not found' });

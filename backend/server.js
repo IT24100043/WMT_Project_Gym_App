@@ -35,8 +35,17 @@ app.use('/api/users', require('./routes/UserRoutes'));
 // Workout Routes
 app.use('/api/workouts', require('./routes/WorkoutRoutes'));
 
+// Session Logging Routes
+app.use('/api/sessions', require('./routes/SessionRoutes'));
+
 // AI Recommendation Routes
 app.use('/api/ai', require('./routes/AiRoutes'));
+
+// Progress Aggregation Routes
+app.use('/api/progress', require('./routes/ProgressRoutes'));
+
+// Smart Coaching Engine Routes
+app.use('/api/coaching', require('./routes/CoachingRoutes'));
 
 // Error Handling Middleware
 const { notFoundHandler, errorHandler } = require('./middleware/errorMiddleware');
