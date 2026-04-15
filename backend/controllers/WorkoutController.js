@@ -165,10 +165,39 @@ const deleteWorkout = asyncHandler(async (req, res) => {
     res.status(200).json({ message: "Successfully deleted your weekly routine structure." });
 });
 
+// 6. Activate a routine
+const activateWorkout = asyncHandler(async (req, res) => {
+    const userId = getRequestUserId(req);
+    if (!userId) {
+        res.status(400);
+        throw new Error("userId is required to authenticate.");
+    }
+
+    const workout = await Workout.findById(req.params.workoutId);
+    if (!workout) {
+        res.status(404);
+        throw new Error("Routine Framework not found");
+    }
+
+    // Ownership Check
+    if (String(workout.userId) !== String(userId)) {
+        res.status(403);
+        throw new Error("Unauthorized: You do not own this workflow routine framework.");
+    }
+
+    await Workout.updateMany({ userId }, { isActive: false });
+    
+    workout.isActive = true;
+    await workout.save();
+
+    res.status(200).json({ message: "Routine activated successfully", workout });
+});
+
 module.exports = {
     addWorkout,
     getWorkouts,
     getWorkoutById,
     updateWorkout,
-    deleteWorkout
+    deleteWorkout,
+    activateWorkout
 };

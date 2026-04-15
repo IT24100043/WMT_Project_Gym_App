@@ -1,7 +1,7 @@
 // API Configuration
 // Change the IP address here to update all API endpoints throughout the app
 
-const IP = '10.164.236.186';
+const IP = '192.168.1.25';
 const PORT = '5000';
 
 export const API_BASE_URL = `http://${IP}:${PORT}`;
@@ -38,12 +38,12 @@ export const API_ENDPOINTS = {
   WORKOUTS: `${API_BASE_URL}/api/workouts`,
   WORKOUTS_BY_USER: (userId: string) => `${API_BASE_URL}/api/workouts/user/${userId}`,
   WORKOUT_BY_ID: (workoutId: string) => `${API_BASE_URL}/api/workouts/${workoutId}`,
+  WORKOUT_ACTIVATE: (workoutId: string) => `${API_BASE_URL}/api/workouts/${workoutId}/activate`,
 
   // Session endpoints
   SESSION_FINISH: `${API_BASE_URL}/api/sessions/finish`,
 
   // AI endpoints
-  AI_GENERATE_PLAN: `${API_BASE_URL}/api/ai/generate-plan`,
   AI_GENERATE_ROUTINE: `${API_BASE_URL}/api/ai/generate-routine`,
 
   // Progress endpoints

@@ -65,6 +65,29 @@ export default function WorkoutListScreen() {
     ]);
   };
 
+  const handleActivate = async (id) => {
+    if (!user) return;
+    try {
+      setLoading(true);
+      const res = await fetch(API_ENDPOINTS.WORKOUT_ACTIVATE(id), {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId: user.id || user._id || 'testUser123' })
+      });
+      
+      if (res.ok) {
+        fetchWorkouts();
+      } else {
+        const data = await res.json();
+        Alert.alert('Error', data.message || 'Failed to activate routine');
+        setLoading(false);
+      }
+    } catch (error) {
+      Alert.alert('Network Error', error.message);
+      setLoading(false);
+    }
+  };
+
   const renderWorkout = ({ item, index }) => {
     // Summarize the 7-day construct intelligently natively
     const workoutDays = item.days?.filter(d => d.dayType === 'workout').length || 0;
@@ -74,8 +97,15 @@ export default function WorkoutListScreen() {
       <View testID={`workout-card-${index}`} style={styles.card}>
         <View style={styles.cardHeader}>
           <Text style={styles.cardTitle}>{item.title}</Text>
-          <View style={styles.badge}>
-             <Text style={styles.badgeText}>{item.locationType}</Text>
+          <View style={styles.badgeContainer}>
+            {item.isActive && (
+                <View style={[styles.badge, styles.activeBadge]}>
+                    <Text style={[styles.badgeText, styles.activeBadgeText]}>ACTIVE</Text>
+                </View>
+            )}
+            <View style={styles.badge}>
+               <Text style={styles.badgeText}>{item.locationType}</Text>
+            </View>
           </View>
         </View>
         
@@ -88,17 +118,24 @@ export default function WorkoutListScreen() {
         </View>
         
         <View style={styles.actionRow}>
-          <TouchableOpacity style={[styles.editBtn, { backgroundColor: '#10b981', marginRight: 10 }]} onPress={() => router.push(`/workouts/view?id=${item._id}`)}>
-            <Text style={[styles.btnText, {color: '#fff'}]}>👁️‍🗨️ View Routine</Text>
-          </TouchableOpacity>
-          
-          <TouchableOpacity testID={`workout-edit-btn-${index}`} style={styles.editBtn} onPress={() => router.push(`/workouts/edit?id=${item._id}`)}>
-            <Text style={styles.btnText}>✏️ Edit</Text>
-          </TouchableOpacity>
-          
-          <TouchableOpacity testID={`workout-delete-btn-${index}`} style={styles.deleteBtn} onPress={() => handleDelete(item._id)}>
-            <Text style={styles.btnText}>🗑️</Text>
-          </TouchableOpacity>
+          {!item.isActive && (
+            <TouchableOpacity style={[styles.editBtn, styles.setActiveBtn]} onPress={() => handleActivate(item._id)}>
+              <Text style={[styles.btnText, {color: '#fff'}]}>✨ Set Active</Text>
+            </TouchableOpacity>
+          )}
+          <View style={styles.secondaryActionRow}>
+            <TouchableOpacity style={[styles.editBtn, styles.viewBtn]} onPress={() => router.push(`/workouts/view?id=${item._id}`)}>
+              <Text style={[styles.btnText, {color: '#fff'}]}>👁️‍🗨️ View Routine</Text>
+            </TouchableOpacity>
+            
+            <TouchableOpacity testID={`workout-edit-btn-${index}`} style={styles.editBtn} onPress={() => router.push(`/workouts/edit?id=${item._id}`)}>
+              <Text style={styles.btnText}>✏️ Edit</Text>
+            </TouchableOpacity>
+            
+            <TouchableOpacity testID={`workout-delete-btn-${index}`} style={styles.deleteBtn} onPress={() => handleDelete(item._id)}>
+              <Text style={styles.btnText}>🗑️</Text>
+            </TouchableOpacity>
+          </View>
         </View>
       </View>
     );
@@ -113,19 +150,10 @@ export default function WorkoutListScreen() {
         <Text testID="workout-list-title" style={styles.title}>Weekly Routines</Text>
       </View>
 
-      {workouts.length === 0 && !loading && (
+      {!loading && (
           <TouchableOpacity testID="workout-list-add-btn" style={styles.addButton} onPress={() => router.push('/workouts/add')}>
-            <Text style={styles.addBtnText}>+ Draft New Routine</Text>
+            <Text style={styles.addBtnText}>+ Add New Routine</Text>
           </TouchableOpacity>
-      )}
-
-      {workouts.length > 0 && !loading && (
-        <View style={styles.replaceContext}>
-            <Text style={styles.helperText}>Creating a new routine will make it the active routine.</Text>
-            <TouchableOpacity testID="workout-list-add-btn" style={styles.replaceButton} onPress={() => router.push('/workouts/add')}>
-               <Text style={styles.replaceBtnText}>+ Replace Active Routine</Text>
-            </TouchableOpacity>
-        </View>
       )}
 
       {loading ? (
@@ -170,9 +198,12 @@ const styles = StyleSheet.create({
   
   card: { backgroundColor: 'white', padding: 22, borderRadius: 16, marginBottom: 18, shadowColor: '#000', shadowOffset: { width:0, height:4 }, shadowOpacity: 0.06, shadowRadius: 8, elevation: 2, borderWidth: 1, borderColor: '#f3f4f6' },
   cardHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 15 },
-  cardTitle: { fontSize: 20, fontWeight: '800', color: '#1f2937', flex: 1 },
-  badge: { backgroundColor: '#eef2ff', paddingHorizontal: 12, paddingVertical: 6, borderRadius: 20 },
+  cardTitle: { fontSize: 20, fontWeight: '800', color: '#1f2937', flex: 1, marginRight: 10 },
+  badgeContainer: { alignItems: 'flex-end' },
+  badge: { backgroundColor: '#eef2ff', paddingHorizontal: 12, paddingVertical: 6, borderRadius: 20, marginBottom: 6 },
   badgeText: { fontSize: 12, color: '#4A60E6', fontWeight: '700', textTransform: 'uppercase' },
+  activeBadge: { backgroundColor: '#d1fae5' },
+  activeBadgeText: { color: '#059669' },
   
   detailsBlock: { backgroundColor: '#f9fafb', padding: 15, borderRadius: 12, marginBottom: 18 },
   cardDetail: { fontSize: 16, color: '#1f2937', marginBottom: 6, fontWeight: '700' },
@@ -180,8 +211,11 @@ const styles = StyleSheet.create({
   workoutDayText: { fontSize: 14, fontWeight: '700', color: '#10b981' },
   restDayText: { fontSize: 14, fontWeight: '700', color: '#9ca3af' },
 
-  actionRow: { flexDirection: 'row', justifyContent: 'flex-end', paddingTop: 5 },
-  editBtn: { backgroundColor: '#f3f4f6', paddingVertical: 10, paddingHorizontal: 18, borderRadius: 10, marginRight: 12 },
-  deleteBtn: { backgroundColor: '#fee2e2', paddingVertical: 10, paddingHorizontal: 18, borderRadius: 10 },
-  btnText: { color: '#374151', fontWeight: '700', fontSize: 14 }
+  actionRow: { flexDirection: 'column', paddingTop: 5 },
+  secondaryActionRow: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'flex-start' },
+  editBtn: { backgroundColor: '#f3f4f6', paddingVertical: 10, paddingHorizontal: 18, borderRadius: 10, marginRight: 10, marginBottom: 10 },
+  deleteBtn: { backgroundColor: '#fee2e2', paddingVertical: 10, paddingHorizontal: 18, borderRadius: 10, marginBottom: 10 },
+  btnText: { color: '#374151', fontWeight: '700', fontSize: 14 },
+  setActiveBtn: { backgroundColor: '#4f46e5', width: '100%', alignItems: 'center', marginRight: 0 },
+  viewBtn: { backgroundColor: '#10b981' }
 });

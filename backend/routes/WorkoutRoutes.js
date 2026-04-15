@@ -6,7 +6,8 @@ const {
     getWorkouts,
     getWorkoutById,
     updateWorkout,
-    deleteWorkout
+    deleteWorkout,
+    activateWorkout
 } = require('../controllers/WorkoutController');
 
 // Clean REST-style routes
@@ -24,5 +25,8 @@ router.put('/:workoutId', updateWorkout);
 
 // DELETE /api/workouts/:workoutId
 router.delete('/:workoutId', deleteWorkout);
+
+// PUT /api/workouts/:workoutId/activate
+router.put('/:workoutId/activate', activateWorkout);
 
 module.exports = router;

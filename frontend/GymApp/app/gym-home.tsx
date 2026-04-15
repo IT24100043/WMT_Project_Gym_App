@@ -15,7 +15,7 @@ import { useRouter, useFocusEffect } from 'expo-router';
 import * as ImagePicker from 'expo-image-picker';
 import { AuthContext } from '@/context/AuthContext';
 import { API_ENDPOINTS } from '@/constants/api';
-import HamburgerMenu from '@/components/HamburgerMenu';
+import HamburgerMenu from '../components/HamburgerMenu';
 
 interface GymDetails {
   _id: string;

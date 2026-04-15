@@ -91,14 +91,6 @@ export default function LoginScreen() {
     }
   };
 
-  // Demo Login - For Testing Only
-  const handleDemoLogin = async () => {
-    try {
-      await login('testuser@gym.com', 'test123', 'user');
-    } catch (error: any) {
-      Alert.alert('Demo Login Failed', 'Please make sure backend is running');
-    }
-  };
 
   // Show loading screen when logging in
   if (isLoading) {
@@ -176,14 +168,6 @@ export default function LoginScreen() {
           )}
         </TouchableOpacity>
 
-        {/* Demo Login Button */}
-        <TouchableOpacity
-          testID="login-demo-button"
-          style={styles.demoButton}
-          onPress={handleDemoLogin}
-        >
-          <Text style={styles.demoButtonText}>🧪 Demo Login (For Testing)</Text>
-        </TouchableOpacity>
 
         {/* Register Link */}
         <View style={styles.registerSection}>
@@ -293,20 +277,6 @@ const styles = StyleSheet.create({
   registerLink: {
     fontSize: 14,
     color: '#007AFF',
-    fontWeight: '600',
-  },
-  demoButton: {
-    backgroundColor: '#28a745',
-    borderRadius: 8,
-    paddingVertical: 12,
-    marginBottom: 20,
-    borderWidth: 1,
-    borderColor: '#20c997',
-  },
-  demoButtonText: {
-    color: 'white',
-    textAlign: 'center',
-    fontSize: 14,
     fontWeight: '600',
   },
 });

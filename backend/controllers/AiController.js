@@ -1,5 +1,5 @@
 const asyncHandler = require('../middleware/asyncHandler');
-const { GoogleGenAI } = require('@google/genai');
+const axios = require('axios');
 
 // Helper to reliably get the requesting User ID whether from future JWT or current body
 const getRequestUserId = (req) => {
@@ -59,6 +59,7 @@ const ruleEngine = (level, loc, goal, days) => {
 };
 
 const generatePlan = asyncHandler(async (req, res) => {
+    // Deprecated: old image-upload AI flow. Kept temporarily for rollback safety.
     const userId = getRequestUserId(req);
     
     // Grab fields from req.body (express handles multipart/form-data via multer into req.body)
@@ -138,116 +139,404 @@ const mockRoutineFallback = (payload) => {
     };
 };
 
-const smartPromptBuilder = (payload) => {
-    const { age, gender, weight, fitnessGoal, experienceLevel, workoutLocation, availableDays, targetArea } = payload;
-    
-    // Add extra intelligence natively
-    let strategicIntelligence = "";
-    const goalLower = fitnessGoal.toLowerCase();
-    
-    if (goalLower.includes("fat loss") || goalLower.includes("weight loss")) strategicIntelligence += "\n- Since goal is fat loss, tightly weave cardio elements or higher rep ranges into the matrix.";
-    if (goalLower.includes("muscle") || goalLower.includes("hypertrophy")) strategicIntelligence += "\n- Since goal is muscle gain, enforce progressive overload patterns securely.";
-    if (experienceLevel.toLowerCase() === "beginner") strategicIntelligence += "\n- Since user is a beginner, strictly avoid complex or mechanically awkward compound movements.";
-    if (workoutLocation.toLowerCase() === "home") strategicIntelligence += "\n- Since user is at home, strictly avoid gym machinery and heavy weight racks. Cap defaultWeight at 0 unless dumbbells are explicitly specified natively.";
 
-    return `You are an elite fitness architect. Generate EXACTLY one raw JSON object containing a 7-day fitness routine natively. No formatting markdown around it. Do not include \`\`\`json or \`\`\`. Just raw JSON data.
-        
-Goals: ${fitnessGoal}, Focus: ${targetArea}, Age: ${age}, Gender: ${gender}, Weight: ${weight}kg.
-Constraints:
-- Output strictly exactly 7 days (Monday through Sunday) inside a "days" array.
-- Use exactly ${availableDays} "workout" days. The remaining must be "rest" days.
-- Location: ${workoutLocation}.
-${strategicIntelligence}
-- Exercise type MUST be strictly "reps" or "time". If "reps", include "sets" and "reps". If "time", include "duration" in seconds.
-- Schema exactly mimicking this structure globally:
-  { "title": "string", "goal": "string", "locationType": "${workoutLocation}", "notes": "string", "days": [ { "dayName": "string", "dayType": "workout" | "rest", "focus": "string", "notes": "string", "exercises": [ { "exerciseName": "string", "type": "reps" | "time", "sets": number, "reps": number, "duration": number, "defaultWeight": number } ] } ] }`;
-};
 
-// Optional future integration for physical image decoding
-const analyzePhysique = (imagePayload) => {
-    return null;
-};
+const buildRoutineFromSplit = ({
+    predictedSplit,
+    fitnessGoal,
+    experienceLevel,
+    workoutLocation,
+    availableDays,
+    targetArea,
+}) => {
+    const daysOfWeek = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
+    const workoutDays = Math.max(1, Math.min(Number(availableDays) || 4, 7));
 
-const validateRoutineSchema = (routine, locOpts) => {
-    if (!routine || !routine.days || routine.days.length !== 7) return false;
-    
-    let workoutCount = 0;
-    for (let d of routine.days) {
-         if (d.dayType === 'workout') {
-             workoutCount++;
-             if (!d.exercises || d.exercises.length === 0) return false;
-             for (let e of d.exercises) {
-                 if (locOpts === 'home' && e.defaultWeight > 0) e.defaultWeight = 0; 
-                 if (e.type === 'reps' && !e.reps) return false;
-                 if (e.type === 'time' && !e.duration) return false;
-             }
-         } else if (d.dayType === 'rest') {
-             if (d.exercises && d.exercises.length > 0) return false;
-         }
+    const makeExercise = (exerciseName, sets, reps, defaultWeight = 0) => ({
+        exerciseName,
+        type: "reps",
+        sets,
+        reps,
+        duration: 0,
+        defaultWeight
+    });
+
+    const makeTimeExercise = (exerciseName, duration) => ({
+        exerciseName,
+        type: "time",
+        sets: 1,
+        reps: 0,
+        duration,
+        defaultWeight: 0
+    });
+
+    const getWarmupExercises = (isGym) => {
+        return isGym
+            ? [
+                makeTimeExercise("Treadmill Walk", 300),
+                makeTimeExercise("Dynamic Shoulder Mobility", 120),
+            ]
+            : [
+                makeTimeExercise("Jumping Jacks", 120),
+                makeTimeExercise("Arm Circles", 90),
+            ];
+    };
+
+    const getCooldownExercises = () => {
+        return [
+            makeTimeExercise("Standing Hamstring Stretch", 60),
+            makeTimeExercise("Chest and Shoulder Stretch", 60),
+        ];
+    };
+
+    const getFatLossCardio = (isGym) => {
+        return isGym
+            ? [
+                makeTimeExercise("Treadmill Intervals", 600),
+                makeTimeExercise("Cycling", 300),
+            ]
+            : [
+                makeTimeExercise("High Knees", 180),
+                makeTimeExercise("Mountain Climbers", 120),
+            ];
+    };
+
+    const makeWorkoutDay = (dayName, focus, exercises, notes = "") => ({
+        dayName,
+        dayType: "workout",
+        focus,
+        notes,
+        exercises
+    });
+
+    const makeRestDay = (dayName, notes = "Recovery day - light walking and mobility recommended") => ({
+        dayName,
+        dayType: "rest",
+        focus: "",
+        notes,
+        exercises: []
+    });
+
+    const isGym = String(workoutLocation || "").toLowerCase() === "gym";
+    const level = String(experienceLevel || "").toLowerCase();
+    const split = String(predictedSplit || "").toLowerCase();
+
+    let workoutTemplates = [];
+
+    if (split.includes("push")) {
+        workoutTemplates = [
+            {
+                focus: "Push",
+                exercises: isGym
+                    ? [
+                        makeExercise("Bench Press", 4, level === "beginner" ? 10 : 8, 20),
+                        makeExercise("Incline Dumbbell Press", 3, 10, 12),
+                        makeExercise("Dumbbell Shoulder Press", 3, 10, 10),
+                        makeExercise("Lateral Raise", 3, 12, 5),
+                        makeExercise("Chest Fly", 3, 12, 8),
+                        makeExercise("Tricep Pushdown", 3, 12, 10),
+                    ]
+                    : [
+                        makeExercise("Push-ups", 4, 12, 0),
+                        makeExercise("Pike Push-ups", 3, 10, 0),
+                        makeExercise("Chair Dips", 3, 12, 0),
+                        makeExercise("Incline Push-ups", 3, 12, 0),
+                        makeExercise("Shoulder Taps", 3, 16, 0),
+                        makeExercise("Diamond Push-ups", 3, 8, 0),
+                    ]
+            },
+            {
+                focus: "Pull",
+                exercises: isGym
+                    ? [
+                        makeExercise("Lat Pulldown", 4, 10, 25),
+                        makeExercise("Seated Row", 3, 10, 20),
+                        makeExercise("Single Arm Dumbbell Row", 3, 10, 12),
+                        makeExercise("Face Pull", 3, 12, 10),
+                        makeExercise("Barbell Curl", 3, 12, 10),
+                        makeExercise("Hammer Curl", 3, 12, 8),
+                    ]
+                    : [
+                        makeExercise("Resistance Band Rows", 4, 12, 0),
+                        makeExercise("Superman Hold", 3, 12, 0),
+                        makeExercise("Back Extensions", 3, 12, 0),
+                        makeExercise("Reverse Snow Angels", 3, 12, 0),
+                        makeExercise("Towel Rows", 3, 10, 0),
+                        makeExercise("Bicep Curl with Band", 3, 12, 0),
+                    ]
+            },
+            {
+                focus: "Legs",
+                exercises: isGym
+                    ? [
+                        makeExercise("Squats", 4, 10, 20),
+                        makeExercise("Leg Press", 3, 12, 40),
+                        makeExercise("Romanian Deadlift", 3, 10, 20),
+                        makeExercise("Walking Lunges", 3, 12, 10),
+                        makeExercise("Leg Curl", 3, 12, 20),
+                        makeExercise("Calf Raises", 4, 15, 15),
+                    ]
+                    : [
+                        makeExercise("Bodyweight Squats", 4, 15, 0),
+                        makeExercise("Lunges", 3, 12, 0),
+                        makeExercise("Glute Bridges", 3, 15, 0),
+                        makeExercise("Step-ups", 3, 12, 0),
+                        makeExercise("Wall Sit", 3, 25, 0),
+                        makeExercise("Standing Calf Raises", 4, 20, 0),
+                    ]
+            }
+        ];
+    } else if (split.includes("upper") && split.includes("lower")) {
+        workoutTemplates = [
+            {
+                focus: "Upper Body",
+                exercises: isGym
+                    ? [
+                        makeExercise("Chest Press", 4, 10, 20),
+                        makeExercise("Lat Pulldown", 4, 10, 25),
+                        makeExercise("Shoulder Press", 3, 10, 10),
+                        makeExercise("Seated Row", 3, 10, 20),
+                        makeExercise("Lateral Raise", 3, 12, 5),
+                        makeExercise("Bicep Curl", 3, 12, 8),
+                        makeExercise("Tricep Pushdown", 3, 12, 10),
+                    ]
+                    : [
+                        makeExercise("Push-ups", 4, 12, 0),
+                        makeExercise("Band Rows", 4, 12, 0),
+                        makeExercise("Shoulder Taps", 3, 16, 0),
+                        makeExercise("Pike Push-ups", 3, 10, 0),
+                        makeExercise("Reverse Snow Angels", 3, 12, 0),
+                        makeExercise("Chair Dips", 3, 12, 0),
+                    ]
+            },
+            {
+                focus: "Lower Body",
+                exercises: isGym
+                    ? [
+                        makeExercise("Squats", 4, 10, 20),
+                        makeExercise("Leg Press", 3, 12, 40),
+                        makeExercise("Romanian Deadlift", 3, 10, 20),
+                        makeExercise("Leg Curl", 3, 12, 20),
+                        makeExercise("Walking Lunges", 3, 12, 10),
+                        makeExercise("Calf Raises", 4, 15, 15),
+                    ]
+                    : [
+                        makeExercise("Bodyweight Squats", 4, 15, 0),
+                        makeExercise("Reverse Lunges", 3, 12, 0),
+                        makeExercise("Glute Bridges", 3, 15, 0),
+                        makeExercise("Wall Sit", 3, 25, 0),
+                        makeExercise("Step-ups", 3, 12, 0),
+                        makeExercise("Standing Calf Raises", 4, 20, 0),
+                    ]
+            }
+        ];
+    } else if (split.includes("rehab") || split.includes("modified")) {
+        workoutTemplates = [
+            {
+                focus: "Low Impact Mobility",
+                exercises: [
+                    makeExercise("March in Place", 2, 20, 0),
+                    makeExercise("Bodyweight Squats", 3, 12, 0),
+                    makeExercise("Wall Push-ups", 3, 12, 0),
+                    makeExercise("Bird Dog", 3, 12, 0),
+                    makeExercise("Glute Bridge", 3, 15, 0),
+                    makeExercise("Standing Calf Raises", 3, 15, 0),
+                ]
+            },
+            {
+                focus: "Core Stability",
+                exercises: [
+                    makeExercise("Dead Bug", 3, 12, 0),
+                    makeExercise("Glute Bridge", 3, 15, 0),
+                    makeExercise("Side Plank", 3, 10, 0),
+                    makeExercise("Wall Sit", 3, 20, 0),
+                    makeExercise("Heel Slides", 3, 12, 0),
+                    makeExercise("Cat-Cow Mobility", 3, 12, 0),
+                ]
+            }
+        ];
+    } else {
+        workoutTemplates = [
+            {
+                focus: targetArea || "Full Body",
+                exercises: isGym
+                    ? [
+                        makeExercise("Chest Press", 3, 10, 20),
+                        makeExercise("Lat Pulldown", 3, 10, 25),
+                        makeExercise("Squats", 3, 12, 20),
+                    ]
+                    : [
+                        makeExercise("Push-ups", 3, 12, 0),
+                        makeExercise("Bodyweight Squats", 3, 15, 0),
+                        makeExercise("Plank", 3, 30, 0),
+                    ]
+            }
+        ];
     }
-    return true;
+
+    const enrichWorkoutExercises = (mainExercises) => {
+        const warmup = getWarmupExercises(isGym);
+        const cooldown = getCooldownExercises();
+        const isFatLoss = String(fitnessGoal || "").toLowerCase().includes("fat");
+
+        let fullPlan = [...warmup, ...mainExercises];
+
+        if (isFatLoss) {
+            fullPlan = [...fullPlan, ...getFatLossCardio(isGym)];
+        }
+
+        fullPlan = [...fullPlan, ...cooldown];
+
+        return fullPlan;
+    };
+
+    const days = [];
+    let templateIndex = 0;
+    let workoutCount = 0;
+
+    for (let i = 0; i < 7; i++) {
+        if (workoutCount < workoutDays && i % 2 === 0) {
+            const template = workoutTemplates[templateIndex % workoutTemplates.length];
+            days.push(
+                makeWorkoutDay(
+                    daysOfWeek[i],
+                    template.focus,
+                    enrichWorkoutExercises(template.exercises),
+                    `Warm up first, complete the main workout, then finish with cooldown${String(fitnessGoal || "").toLowerCase().includes("fat") ? " and cardio finisher" : ""}. ML-predicted split: ${predictedSplit}`
+                )
+            );
+            workoutCount++;
+            templateIndex++;
+        } else {
+            days.push(makeRestDay(daysOfWeek[i]));
+        }
+    }
+
+    return {
+        title: `ML ${predictedSplit} Plan`,
+        goal: fitnessGoal,
+        locationType: workoutLocation,
+        notes: `Generated using local ML model. Predicted split: ${predictedSplit}.`,
+        days
+    };
 };
 
 const generateRoutine = asyncHandler(async (req, res) => {
     const userId = getRequestUserId(req);
-    const { age, gender, height, weight, fitnessGoal, experienceLevel, workoutLocation, availableDays, targetArea } = req.body;
 
-    if (!userId || !age || !gender || !fitnessGoal || !workoutLocation || !availableDays) {
-         return res.status(400).json({ message: "Missing required core fields natively." });
+    const {
+        age,
+        gender,
+        height,
+        weight,
+        fitness_goal,
+        experience_level,
+        equipment,
+        days_per_week,
+        injury,
+        activity_level,
+        body_type,
+        sleep_quality,
+        stress_level,
+        workoutLocation,
+        targetArea
+    } = req.body;
+
+    if (!userId) {
+        return res.status(400).json({ message: "userId is required." });
     }
 
-    const payload = { age, gender, height, weight, fitnessGoal, experienceLevel, workoutLocation, availableDays, targetArea };
-
-    console.log("🔍 AI MODE:", process.env.GEMINI_API_KEY ? "ONLINE (Connected to Gemini)" : "OFFLINE (No Key)");
-
-    if (!process.env.GEMINI_API_KEY) {
-        // Mock AI Fallback 
-        await new Promise(resolve => setTimeout(resolve, 2500));
-        const mockRoutine = mockRoutineFallback(payload);
-        return res.status(200).json({ routine: mockRoutine, mode: 'offline' });
+    if (
+        !age ||
+        !gender ||
+        !height ||
+        !weight ||
+        !fitness_goal ||
+        !experience_level ||
+        !equipment ||
+        !days_per_week ||
+        !injury ||
+        !activity_level ||
+        !body_type ||
+        !sleep_quality ||
+        !stress_level
+    ) {
+        return res.status(400).json({
+            message: "Missing required ML input fields."
+        });
     }
+
+    const payload = {
+        age,
+        gender,
+        height,
+        weight,
+        fitness_goal,
+        experience_level,
+        equipment,
+        days_per_week,
+        injury,
+        activity_level,
+        body_type,
+        sleep_quality,
+        stress_level,
+
+        // extra app-side fields
+        location: workoutLocation || "Gym",
+        target_area: targetArea || "Full Body",
+        session_duration: 60
+    };
 
     try {
-        const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
-        console.log("🔍 MODEL: gemini-2.0-flash | MODE: ONLINE");
+        const mlServiceUrl = process.env.ML_SERVICE_URL || "http://127.0.0.1:8001";
 
-        const prompt = smartPromptBuilder(payload);
+        const mlResponse = await axios.post(`${mlServiceUrl}/predict`, payload);
 
-        let cleanText = "";
-        try {
-            const result = await ai.models.generateContent({
-                model: 'gemini-2.0-flash',
-                contents: prompt,
-            });
-            const text = result.text;
-            
-            // Strip markdown backticks if Gemini hallucinated them
-            cleanText = text.replace(/```json|```/g, "").trim();
-        } catch (genError) {
-             throw new Error(`Google API Fault: ${genError.message}`);
+        if (!mlResponse.data || !mlResponse.data.success) {
+            throw new Error("ML service returned unsuccessful response.");
         }
 
-        const generatedRoutine = JSON.parse(cleanText);
-
-        // Run Local Security checks
-        if (!validateRoutineSchema(generatedRoutine, workoutLocation)) {
-             throw new Error("Validation Failed internally. Generating fallback structurally.");
+        let predictedSplit = mlResponse.data.predicted_split;
+        if (
+            predictedSplit === "Modified / Rehab" &&
+            injury === "No" &&
+            String(fitness_goal).toLowerCase() === "muscle gain"
+        ) {
+            predictedSplit = equipment === "Full Gym" ? "Push Pull Legs" : "Full Body";
         }
 
-        return res.status(200).json({ routine: generatedRoutine, mode: 'online' });
+        const routine = buildRoutineFromSplit({
+            predictedSplit,
+            fitnessGoal: fitness_goal,
+            experienceLevel: experience_level,
+            workoutLocation: workoutLocation || "Gym",
+            availableDays: days_per_week,
+            targetArea: targetArea || "Full Body",
+        });
 
+        return res.status(200).json({
+            routine,
+            mode: "ml_model",
+            predictedSplit
+        });
     } catch (error) {
-        console.error("❌ GEMINI ERROR:", error.message);
-        await new Promise(resolve => setTimeout(resolve, 1500));
-        return res.status(200).json({ 
-             routine: mockRoutineFallback(payload), 
-             mode: 'offline',
-             error: error.message 
+        console.error("❌ ML SERVICE ERROR:", error.message);
+
+        const fallbackPayload = {
+            fitnessGoal: fitness_goal || "General Fitness",
+            targetArea: targetArea || "Full Body",
+            workoutLocation: workoutLocation || "Gym",
+            availableDays: Number(days_per_week) || 4
+        };
+
+        return res.status(200).json({
+            routine: mockRoutineFallback(fallbackPayload),
+            mode: "offline",
+            error: "ML model unavailable. Showing fallback routine."
         });
     }
 });
 
 module.exports = {
-    generatePlan,
     generateRoutine
 };
