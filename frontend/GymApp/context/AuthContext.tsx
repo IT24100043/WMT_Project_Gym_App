@@ -43,9 +43,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   const bootstrapAsync = async () => {
     try {
-      // Add a small delay to ensure native modules are loaded
-      await new Promise(resolve => setTimeout(resolve, 100));
-      
       const storedUser = await AsyncStorage.getItem('user');
       console.log('StoredUser retrieved:', storedUser ? 'Found' : 'Not found');
       if (storedUser) {

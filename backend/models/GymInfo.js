@@ -5,7 +5,6 @@ const gymInfoSchema = new mogoose.Schema({
         type: mogoose.Schema.Types.ObjectId,
         ref: 'Gym',
         required: true,
-        unique: true,
     },
     gymInfotmation: {
         type: String,

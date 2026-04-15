@@ -1,5 +1,6 @@
 const GymInfo = require('../models/GymInfo');
 const Gym = require('../models/Gym');
+const mogoose = require('mongoose');
 
 // --- Add Gym Information --- //
 
@@ -263,6 +264,35 @@ exports.deleteGymPackages = async (req, res) => {
 };
 
 
+// --- Update Gym Image --- //
+
+exports.updateGymImage = async (req, res) => {
+    try {
+        const { infoId } = req.params;
+        const { gymImg } = req.body;
+
+        if (!gymImg) {
+            return res.status(400).json({ message: 'Gym image URL is required' });
+        }
+
+        // Update gym image in database
+        const gymInfo = await GymInfo.findByIdAndUpdate(
+            infoId,
+            { $set: { gymImg: gymImg } },
+            { new: true }
+        );
+
+        if (!gymInfo) {
+            return res.status(404).json({ message: 'Gym information not found' });
+        }
+
+        res.status(200).json({ message: 'Gym image updated successfully', gymInfo });
+
+    } catch (error) {
+        res.status(500).json({ message: 'Server Error', error: error.message });
+    }
+};
+
 // --- Delete Gym Information --- //
 
 exports.deleteGymInfo = async (req, res) => {
@@ -317,6 +347,38 @@ exports.getAllGymInformation = async (req, res) => {
         res.status(200).json({ gymInfos });
         
     } catch (error) {
+        res.status(500).json({ message: 'Server Error', error: error.message });
+    }
+};
+
+// --- Get Gym Information by Gym ID --- //
+
+exports.getGymInfoByGymId = async (req, res) => {
+    try {
+        const { gymId } = req.params;
+
+        // Convert string gymId to ObjectId
+        let query = {};
+        try {
+            query = { gymId: new mogoose.Types.ObjectId(gymId) };
+        } catch (err) {
+            query = { gymId: gymId };
+        }
+
+        console.log('Query:', JSON.stringify(query));
+
+        const gymInfos = await GymInfo.find(query).populate('gymId', 'GymName Address');
+
+        console.log('Found gym posts:', gymInfos);
+
+        if (!gymInfos || gymInfos.length === 0) {
+            return res.status(200).json({ message: 'No gym posts found for this gym', gymInfos: [] });
+        }
+
+        res.status(200).json({ gymInfos });
+        
+    } catch (error) {
+        console.error('Error in getGymInfoByGymId:', error);
         res.status(500).json({ message: 'Server Error', error: error.message });
     }
 };

@@ -4,6 +4,7 @@ import * as ImagePicker from 'expo-image-picker';
 import axios from 'axios';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { API_ENDPOINTS } from '@/constants/api';
+import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 
 export default function RegisterScreen() {
   const router = useRouter();
@@ -13,6 +14,10 @@ export default function RegisterScreen() {
   const [registrationType, setRegistrationType] = useState<'gym' | 'user' | null>(
     (params.type as 'gym' | 'user') || null
   );
+  const [showGymPassword, setShowGymPassword] = useState(false);
+  const [showGymConfirmPassword, setShowGymConfirmPassword] = useState(false);
+  const [showUserPassword, setShowUserPassword] = useState(false);
+  const [showUserConfirmPassword, setShowUserConfirmPassword] = useState(false);
 
   // Gym Registration Form Data
   const [gymFormData, setGymFormData] = useState({
@@ -125,6 +130,12 @@ export default function RegisterScreen() {
     setImageUri(null);
   };
 
+  // Validation function for contact number
+  const validateContactNumber = (contactNumber: string): boolean => {
+    const cleanedNumber = contactNumber.replace(/\D/g, '');
+    return cleanedNumber.length === 10;
+  };
+
   const handleRegister = async () => {
     if (registrationType === 'gym') {
       await handleGymRegister();
@@ -134,15 +145,16 @@ export default function RegisterScreen() {
   };
 
   const handleGymRegister = async () => {
-    if (!gymFormData.logoUrl) {
-      return Alert.alert("Error", "Please upload a logo first");
-    }
-
     // Validation
     if (!gymFormData.GymName || !gymFormData.registrationNumber || !gymFormData.OwnerName || 
         !gymFormData.OwnerNIC || !gymFormData.Address || !gymFormData.ownerContactNumber || 
         !gymFormData.gymType || !gymFormData.email || !gymFormData.password) {
       return Alert.alert("Error", "Please fill all fields");
+    }
+
+    // Contact number validation
+    if (!validateContactNumber(gymFormData.ownerContactNumber)) {
+      return Alert.alert("Error", "Contact number must contain exactly 10 digits");
     }
 
     // Password validation
@@ -174,14 +186,15 @@ export default function RegisterScreen() {
   };
 
   const handleUserRegister = async () => {
-    if (!userFormData.dpUrl) {
-      return Alert.alert("Error", "Please upload a profile picture first");
-    }
-
     // Validation
     if (!userFormData.name || !userFormData.age || !userFormData.userNICcardNumber || 
         !userFormData.userContactNumber || !userFormData.userEmail || !userFormData.password) {
       return Alert.alert("Error", "Please fill all fields");
+    }
+
+    // Contact number validation
+    if (!validateContactNumber(userFormData.userContactNumber)) {
+      return Alert.alert("Error", "Contact number must contain exactly 10 digits");
     }
 
     // Password validation
@@ -253,8 +266,7 @@ export default function RegisterScreen() {
           <TouchableOpacity 
             style={styles.backButton}
             onPress={() => {
-              setRegistrationType(null);
-              resetFormData();
+              router.replace('/login');
             }}
           >
             <Text style={styles.backButtonText}>← Back</Text>
@@ -338,22 +350,46 @@ export default function RegisterScreen() {
                 value={gymFormData.email}
                 placeholderTextColor="#999"
               />
-              <TextInput 
-                style={styles.input} 
-                placeholder="Password" 
-                secureTextEntry 
-                onChangeText={(val) => setGymFormData({...gymFormData, password: val})} 
-                value={gymFormData.password}
-                placeholderTextColor="#999"
-              />
-              <TextInput 
-                style={styles.input} 
-                placeholder="Confirm Password" 
-                secureTextEntry 
-                onChangeText={(val) => setGymFormData({...gymFormData, confirmPassword: val})} 
-                value={gymFormData.confirmPassword}
-                placeholderTextColor="#999"
-              />
+              <View style={styles.passwordContainer}>
+                <TextInput 
+                  style={styles.passwordInput} 
+                  placeholder="Password" 
+                  secureTextEntry={!showGymPassword}
+                  onChangeText={(val) => setGymFormData({...gymFormData, password: val})} 
+                  value={gymFormData.password}
+                  placeholderTextColor="#999"
+                />
+                <TouchableOpacity
+                  style={styles.passwordToggle}
+                  onPress={() => setShowGymPassword(!showGymPassword)}
+                >
+                  <MaterialCommunityIcons
+                    name={showGymPassword ? 'eye' : 'eye-off'}
+                    size={24}
+                    color="#666"
+                  />
+                </TouchableOpacity>
+              </View>
+              <View style={styles.passwordContainer}>
+                <TextInput 
+                  style={styles.passwordInput} 
+                  placeholder="Confirm Password" 
+                  secureTextEntry={!showGymConfirmPassword}
+                  onChangeText={(val) => setGymFormData({...gymFormData, confirmPassword: val})} 
+                  value={gymFormData.confirmPassword}
+                  placeholderTextColor="#999"
+                />
+                <TouchableOpacity
+                  style={styles.passwordToggle}
+                  onPress={() => setShowGymConfirmPassword(!showGymConfirmPassword)}
+                >
+                  <MaterialCommunityIcons
+                    name={showGymConfirmPassword ? 'eye' : 'eye-off'}
+                    size={24}
+                    color="#666"
+                  />
+                </TouchableOpacity>
+              </View>
             </>
           )}
 
@@ -409,22 +445,46 @@ export default function RegisterScreen() {
                 value={userFormData.userEmail}
                 placeholderTextColor="#999"
               />
-              <TextInput 
-                style={styles.input} 
-                placeholder="Password" 
-                secureTextEntry 
-                onChangeText={(val) => setUserFormData({...userFormData, password: val})} 
-                value={userFormData.password}
-                placeholderTextColor="#999"
-              />
-              <TextInput 
-                style={styles.input} 
-                placeholder="Confirm Password" 
-                secureTextEntry 
-                onChangeText={(val) => setUserFormData({...userFormData, confirmPassword: val})} 
-                value={userFormData.confirmPassword}
-                placeholderTextColor="#999"
-              />
+              <View style={styles.passwordContainer}>
+                <TextInput 
+                  style={styles.passwordInput} 
+                  placeholder="Password" 
+                  secureTextEntry={!showUserPassword}
+                  onChangeText={(val) => setUserFormData({...userFormData, password: val})} 
+                  value={userFormData.password}
+                  placeholderTextColor="#999"
+                />
+                <TouchableOpacity
+                  style={styles.passwordToggle}
+                  onPress={() => setShowUserPassword(!showUserPassword)}
+                >
+                  <MaterialCommunityIcons
+                    name={showUserPassword ? 'eye' : 'eye-off'}
+                    size={24}
+                    color="#666"
+                  />
+                </TouchableOpacity>
+              </View>
+              <View style={styles.passwordContainer}>
+                <TextInput 
+                  style={styles.passwordInput} 
+                  placeholder="Confirm Password" 
+                  secureTextEntry={!showUserConfirmPassword}
+                  onChangeText={(val) => setUserFormData({...userFormData, confirmPassword: val})} 
+                  value={userFormData.confirmPassword}
+                  placeholderTextColor="#999"
+                />
+                <TouchableOpacity
+                  style={styles.passwordToggle}
+                  onPress={() => setShowUserConfirmPassword(!showUserConfirmPassword)}
+                >
+                  <MaterialCommunityIcons
+                    name={showUserConfirmPassword ? 'eye' : 'eye-off'}
+                    size={24}
+                    color="#666"
+                  />
+                </TouchableOpacity>
+              </View>
             </>
           )}
 
@@ -537,6 +597,25 @@ const styles = StyleSheet.create({
     borderWidth: 1, 
     borderColor: '#ddd',
     fontSize: 16,
+  },
+  passwordContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#f0f2f5',
+    borderRadius: 10,
+    marginBottom: 15,
+    borderWidth: 1,
+    borderColor: '#ddd',
+  },
+  passwordInput: {
+    flex: 1,
+    padding: 15,
+    fontSize: 16,
+    color: '#333',
+  },
+  passwordToggle: {
+    paddingHorizontal: 15,
+    paddingVertical: 15,
   },
   button: { 
     backgroundColor: '#1a73e8', 

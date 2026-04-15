@@ -46,7 +46,7 @@ const userSchema = new mogoose.Schema({
     },
     createdAt: { 
         type: String,
-        required: true,
+        required: false,
     },
     role: { 
         type: String,

@@ -20,27 +20,23 @@ function RootLayoutNav() {
   console.log('RootLayoutNav render - isLoading:', isLoading, 'user role:', user?.role);
 
   useEffect(() => {
-    const timer = setTimeout(() => {
-      console.log('Navigation effect triggered - isLoading:', isLoading, 'user:', user?.role);
-      
-      if (!isLoading) {
-        if (!user) {
-          console.log('→ Navigating to /login');
-          router.replace('/login');
-        } else if (user.role === 'user') {
-          console.log('→ Navigating to /user-home');
-          router.replace('/user-home');
-        } else if (user.role === 'gym') {
-          console.log('→ Navigating to /gym-home');
-          router.replace('/gym-home');
-        } else {
-          console.log('→ Unknown role, navigating to /login');
-          router.replace('/login');
-        }
+    console.log('Navigation effect triggered - isLoading:', isLoading, 'user:', user?.role);
+    
+    if (!isLoading) {
+      if (!user) {
+        console.log('→ Navigating to /login');
+        router.replace('/login');
+      } else if (user.role === 'user') {
+        console.log('→ Navigating to /user-home');
+        router.replace('/user-home');
+      } else if (user.role === 'gym') {
+        console.log('→ Navigating to /gym-home');
+        router.replace('/gym-home');
+      } else {
+        console.log('→ Unknown role, navigating to /login');
+        router.replace('/login');
       }
-    }, 500); // Small delay to ensure Stack is ready
-
-    return () => clearTimeout(timer);
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user, isLoading]);
 
@@ -75,6 +71,12 @@ function RootLayoutNav() {
         />
         <Stack.Screen 
           name="gym-home" 
+          options={{ 
+            headerShown: false,
+          }} 
+        />
+        <Stack.Screen 
+          name="all-gyms" 
           options={{ 
             headerShown: false,
           }} 

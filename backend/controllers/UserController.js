@@ -197,3 +197,28 @@ exports.getUserDetails = async (req, res) => {
         res.status(500).json({ message: 'Server Error', error: error.message });
     }
 };
+
+
+// --- Update User Profile (dpUrl) --- //
+
+exports.updateProfile = async (req, res) => {
+    try {
+        const { userId } = req.params;
+        const { dpUrl } = req.body;
+
+        // Update the user's profile picture
+        const user = await User.findByIdAndUpdate(
+            userId, 
+            { $set: { dpUrl: dpUrl } }, 
+            { new: true }).select('-password');
+
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+        res.status(200).json({ message: 'Profile picture updated successfully', user });
+
+    } catch (error) {
+        res.status(500).json({ message: 'Server Error', error: error.message });
+    }
+};
