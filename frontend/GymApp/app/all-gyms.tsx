@@ -44,7 +44,7 @@ export default function AllGymsScreen() {
   const fetchAllGymPosts = async () => {
     try {
       setLoading(true);
-      const response = await fetch('https://your-api-url.com/gyms'); // Replace with your actual API endpoint
+      const response = await fetch(API_ENDPOINTS.GYM_INFO_ALL_INFORMATION);
       const text = await response.text();
 
       if (response.ok) {

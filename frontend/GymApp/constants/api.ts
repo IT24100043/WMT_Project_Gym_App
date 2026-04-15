@@ -1,7 +1,7 @@
 // API Configuration
 // Change the IP address here to update all API endpoints throughout the app
 
-const IP = '192.168.1.25';
+const IP = '192.168.1.5';
 const PORT = '5000';
 
 export const API_BASE_URL = `http://${IP}:${PORT}`;
@@ -33,6 +33,21 @@ export const API_ENDPOINTS = {
   USER_UPDATE_CONTACT: (userId: string) => `${API_BASE_URL}/api/users/user-contact/${userId}`,
   USER_UPDATE_PASSWORD: (userId: string) => `${API_BASE_URL}/api/users/user-password/${userId}`,
   USER_DELETE: (userId: string) => `${API_BASE_URL}/api/users/user-delete/${userId}`,
+
+  // Gym Info endpoints
+  GYM_INFO_BY_GYM_ID: (gymId: string) => `${API_BASE_URL}/api/gyminfo/info-by-gym/${gymId}`,
+  GYM_INFO_UPDATE_DESCRIPTION: (infoId: string) => `${API_BASE_URL}/api/gyminfo/info-update-information/${infoId}`,
+  GYM_INFO_UPDATE_OPEN_HOURS: (infoId: string) => `${API_BASE_URL}/api/gyminfo/info-update-open-hours/${infoId}`,
+  GYM_INFO_UPDATE_CLOSE_HOURS: (infoId: string) => `${API_BASE_URL}/api/gyminfo/info-update-close-hours/${infoId}`,
+  GYM_INFO_UPDATE_CONTACT_NUMBER: (infoId: string) => `${API_BASE_URL}/api/gyminfo/info-update-contact-number/${infoId}`,
+  GYM_INFO_UPDATE_CITY: (infoId: string) => `${API_BASE_URL}/api/gyminfo/info-update-city/${infoId}`,
+  GYM_INFO_ADD_FACILITY: (infoId: string) => `${API_BASE_URL}/api/gyminfo/info-add-fasility/${infoId}`,
+  GYM_INFO_DELETE_FACILITY: (infoId: string) => `${API_BASE_URL}/api/gyminfo/info-delete-fasility/${infoId}`,
+  GYM_INFO_ADD_PACKAGE: (infoId: string) => `${API_BASE_URL}/api/gyminfo/info-add-package/${infoId}`,
+  GYM_INFO_DELETE_PACKAGE: (infoId: string) => `${API_BASE_URL}/api/gyminfo/info-delete-package/${infoId}`,
+  GYM_INFO_DELETE: (infoId: string) => `${API_BASE_URL}/api/gyminfo/info-delete-info/${infoId}`,
+  GYM_INFO_UPDATE_IMAGE: (infoId: string) => `${API_BASE_URL}/api/gyminfo/info-update-image/${infoId}`,
+  GYM_INFO_ALL_INFORMATION: `${API_BASE_URL}/api/gyminfo/info-all-information`,
 
   // Workout endpoints
   WORKOUTS: `${API_BASE_URL}/api/workouts`,

@@ -26,7 +26,7 @@ export default function HamburgerMenu({
 
   const handleGymsPress = () => {
     setMenuVisible(false);
-    router.push('/gym-home');
+    router.push('/all-gyms');
   };
 
   return (

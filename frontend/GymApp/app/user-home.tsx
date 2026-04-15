@@ -14,6 +14,7 @@ import {
 import { useRouter } from 'expo-router';
 import { AuthContext } from '@/context/AuthContext';
 import { API_ENDPOINTS } from '@/constants/api';
+import HamburgerMenu from '../components/HamburgerMenu';
 
 interface UserDetails {
   _id: string;
@@ -223,6 +224,12 @@ export default function UserHomeScreen() {
     ]);
   };
 
+  // Hamburger Menu Handlers
+  const handleProfilePress = () => {
+    // Already on user home page, so just return
+    return;
+  };
+
   if (loading) {
     return (
       <View style={styles.container}>
@@ -232,7 +239,14 @@ export default function UserHomeScreen() {
   }
 
   return (
-    <ScrollView style={styles.container} testID="user-home-screen">
+    <View style={{ flex: 1 }}>
+      {/* Hamburger Menu */}
+      <HamburgerMenu
+        pageType="user"
+        onProfilePress={handleProfilePress}
+      />
+
+      <ScrollView style={styles.container} testID="user-home-screen">
       {/* Header Section with Profile Picture */}
       <View style={styles.headerSection}>
         {userDetails?.dpUrl && (
@@ -477,7 +491,8 @@ export default function UserHomeScreen() {
           </View>
         </View>
       </Modal>
-    </ScrollView>
+      </ScrollView>
+    </View>
   );
 }
 
