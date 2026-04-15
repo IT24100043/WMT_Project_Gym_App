@@ -91,11 +91,6 @@ export default function LoginScreen() {
     }
   };
 
-<<<<<<< HEAD
-=======
-
->>>>>>> 50e3bfffa18e48ca4ca8b0602b35f648681dc568
-
   // Show loading screen when logging in
   if (isLoading) {
     return <LoadingScreen message="Logging in..." />;
