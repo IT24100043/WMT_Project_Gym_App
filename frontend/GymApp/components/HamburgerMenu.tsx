@@ -85,6 +85,42 @@ export default function HamburgerMenu({
                 <Text style={styles.menuIcon}>🏋️</Text>
                 <Text style={styles.menuText}>Gym Zone</Text>
               </TouchableOpacity>
+
+              {/* Manage Workouts Option */}
+              <TouchableOpacity
+                style={styles.menuItem}
+                onPress={() => {
+                  setMenuVisible(false);
+                  router.push('/workouts');
+                }}
+              >
+                <Text style={styles.menuIcon}>💪</Text>
+                <Text style={styles.menuText}>Manage Workouts</Text>
+              </TouchableOpacity>
+
+              {/* Analyze Progress Option */}
+              <TouchableOpacity
+                style={styles.menuItem}
+                onPress={() => {
+                  setMenuVisible(false);
+                  router.push('/progress');
+                }}
+              >
+                <Text style={styles.menuIcon}>📊</Text>
+                <Text style={styles.menuText}>Analyze Progress</Text>
+              </TouchableOpacity>
+
+              {/* Gemini AI Engine Option */}
+              <TouchableOpacity
+                style={styles.menuItem}
+                onPress={() => {
+                  setMenuVisible(false);
+                  router.push('/ai/generate');
+                }}
+              >
+                <Text style={styles.menuIcon}>🤖</Text>
+                <Text style={styles.menuText}>Gemini AI Engine</Text>
+              </TouchableOpacity>
             </View>
           </TouchableOpacity>
         </TouchableOpacity>

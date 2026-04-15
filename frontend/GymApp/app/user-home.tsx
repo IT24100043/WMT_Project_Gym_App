@@ -294,32 +294,6 @@ export default function UserHomeScreen() {
           <Text style={styles.secondaryActionText}>📞 Update Contact</Text>
         </TouchableOpacity>
 
-        {/* Workout Management Integration */}
-        <TouchableOpacity
-          testID="user-home-workouts-btn"
-          style={[styles.actionButton, styles.secondaryAction]}
-          onPress={() => router.push('/workouts')}
-        >
-          <Text style={styles.secondaryActionText} numberOfLines={2}>Manage Workouts</Text>
-        </TouchableOpacity>
-
-        {/* Progress Analytics Integration */}
-        <TouchableOpacity
-          style={[styles.actionButton, styles.secondaryAction]}
-          onPress={() => router.push('/progress')}
-        >
-          <Text style={styles.secondaryActionText} numberOfLines={2}>📊 Analyze Progress</Text>
-        </TouchableOpacity>
-
-        {/* AI Recommendation Button */}
-        <TouchableOpacity 
-            testID="user-home-ai-btn"
-            style={[styles.actionButton, styles.secondaryAction, { borderColor: '#8b5cf6', borderWidth: 2, backgroundColor: '#f5f3ff' }]}
-            onPress={() => router.push('/ai/generate')}
-        >
-            <Text style={[styles.secondaryActionText, { color: '#6d28d9', fontWeight: '900' }]}>🤖 Gemini AI Engine</Text>
-        </TouchableOpacity>
-
         <TouchableOpacity
           style={[styles.actionButton, styles.secondaryAction]}
           onPress={() => setPasswordModalVisible(true)}

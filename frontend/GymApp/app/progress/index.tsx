@@ -46,6 +46,23 @@ export default function ProgressDashboardScreen() {
         );
     }
 
+    // Handle Gym users - show appropriate message
+    if (user?.role === 'gym') {
+        return (
+            <View style={[styles.container, { justifyContent: 'center', alignItems: 'center' }]}>
+                <Text style={{ fontSize: 16, color: '#6b7280', textAlign: 'center', marginBottom: 20 }}>
+                    Progress tracking is available for individual users only.
+                </Text>
+                <TouchableOpacity
+                    style={{ paddingVertical: 12, paddingHorizontal: 20, backgroundColor: '#f97316', borderRadius: 8 }}
+                    onPress={() => router.back()}
+                >
+                    <Text style={{ color: 'white', fontWeight: '600', fontSize: 14 }}>Go Back</Text>
+                </TouchableOpacity>
+            </View>
+        );
+    }
+
     if (!data) return null;
 
     return (
