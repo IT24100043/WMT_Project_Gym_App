@@ -1,0 +1,23 @@
+appId: com.anonymous.GymApp
+---
+- launchApp
+- tapOn:
+    id: "login-demo-button"
+- assertVisible:
+    id: "user-home-screen"
+    timeout: 10000
+- tapOn:
+    id: "user-home-workouts-btn"
+- assertVisible:
+    id: "workout-list-title"
+    timeout: 5000
+- tapOn:
+    id: "workout-list-add-btn"
+- assertVisible:
+    id: "add-workout-title-input"
+    timeout: 5000
+- tapOn:
+    id: "add-workout-title-input"
+- inputText: "Maestro Test Workout"
+- tapOn:
+    id: "add-workout-save-btn"

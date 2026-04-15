@@ -2,8 +2,9 @@ import React, { useState, useContext, useCallback } from 'react';
 import { View, Text, StyleSheet, ScrollView, ActivityIndicator, TouchableOpacity, RefreshControl } from 'react-native';
 import { useFocusEffect, useRouter } from 'expo-router';
 import { AuthContext } from '@/context/AuthContext';
+import { API_ENDPOINTS } from '@/constants/api';
 
-const PROGRESS_API = 'http://192.168.1.25:5000/api/progress';
+
 
 export default function ProgressDashboardScreen() {
     const router = useRouter();
@@ -15,7 +16,7 @@ export default function ProgressDashboardScreen() {
     const fetchProgress = async () => {
         if (!user) return;
         try {
-            const res = await fetch(`${PROGRESS_API}/${user.id || user._id || 'testUser123'}?limit=5`);
+            const res = await fetch(`${API_ENDPOINTS.PROGRESS(user.id || user._id || 'testUser123')}?limit=5`);
             const json = await res.json();
             if (res.ok) setData(json);
         } catch (error) {

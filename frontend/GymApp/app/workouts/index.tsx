@@ -2,9 +2,10 @@ import React, { useContext, useState } from 'react';
 import { View, Text, StyleSheet, FlatList, TouchableOpacity, Alert, ActivityIndicator } from 'react-native';
 import { useRouter, useFocusEffect } from 'expo-router';
 import { AuthContext } from '@/context/AuthContext';
+import { API_ENDPOINTS } from '@/constants/api';
 import { useCallback } from 'react';
 
-const API_URL = 'http://192.168.1.25:5000/api/workouts';
+const API_URL = API_ENDPOINTS.WORKOUTS;
 
 export default function WorkoutListScreen() {
   const router = useRouter();
@@ -64,13 +65,13 @@ export default function WorkoutListScreen() {
     ]);
   };
 
-  const renderWorkout = ({ item }) => {
+  const renderWorkout = ({ item, index }) => {
     // Summarize the 7-day construct intelligently natively
     const workoutDays = item.days?.filter(d => d.dayType === 'workout').length || 0;
     const restDays = item.days?.filter(d => d.dayType === 'rest').length || 0;
 
     return (
-      <View style={styles.card}>
+      <View testID={`workout-card-${index}`} style={styles.card}>
         <View style={styles.cardHeader}>
           <Text style={styles.cardTitle}>{item.title}</Text>
           <View style={styles.badge}>
@@ -91,11 +92,11 @@ export default function WorkoutListScreen() {
             <Text style={[styles.btnText, {color: '#fff'}]}>👁️‍🗨️ View Routine</Text>
           </TouchableOpacity>
           
-          <TouchableOpacity style={styles.editBtn} onPress={() => router.push(`/workouts/edit?id=${item._id}`)}>
+          <TouchableOpacity testID={`workout-edit-btn-${index}`} style={styles.editBtn} onPress={() => router.push(`/workouts/edit?id=${item._id}`)}>
             <Text style={styles.btnText}>✏️ Edit</Text>
           </TouchableOpacity>
           
-          <TouchableOpacity style={styles.deleteBtn} onPress={() => handleDelete(item._id)}>
+          <TouchableOpacity testID={`workout-delete-btn-${index}`} style={styles.deleteBtn} onPress={() => handleDelete(item._id)}>
             <Text style={styles.btnText}>🗑️</Text>
           </TouchableOpacity>
         </View>
@@ -109,11 +110,11 @@ export default function WorkoutListScreen() {
         <TouchableOpacity onPress={() => router.back()} style={styles.backBtn}>
             <Text style={styles.backBtnText}>{"← Dashboard"}</Text>
         </TouchableOpacity>
-        <Text style={styles.title}>Weekly Routines</Text>
+        <Text testID="workout-list-title" style={styles.title}>Weekly Routines</Text>
       </View>
 
       {workouts.length === 0 && !loading && (
-          <TouchableOpacity style={styles.addButton} onPress={() => router.push('/workouts/add')}>
+          <TouchableOpacity testID="workout-list-add-btn" style={styles.addButton} onPress={() => router.push('/workouts/add')}>
             <Text style={styles.addBtnText}>+ Draft New Routine</Text>
           </TouchableOpacity>
       )}
@@ -121,7 +122,7 @@ export default function WorkoutListScreen() {
       {workouts.length > 0 && !loading && (
         <View style={styles.replaceContext}>
             <Text style={styles.helperText}>Creating a new routine will make it the active routine.</Text>
-            <TouchableOpacity style={styles.replaceButton} onPress={() => router.push('/workouts/add')}>
+            <TouchableOpacity testID="workout-list-add-btn" style={styles.replaceButton} onPress={() => router.push('/workouts/add')}>
                <Text style={styles.replaceBtnText}>+ Replace Active Routine</Text>
             </TouchableOpacity>
         </View>
@@ -136,6 +137,7 @@ export default function WorkoutListScreen() {
         </View>
       ) : (
         <FlatList
+          testID="workout-list"
           data={workouts}
           keyExtractor={(item) => item._id}
           renderItem={renderWorkout}

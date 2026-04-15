@@ -234,7 +234,7 @@ export default function UserHomeScreen() {
   }
 
   return (
-    <ScrollView style={styles.container}>
+    <ScrollView style={styles.container} testID="user-home-screen">
       {/* Header Section with Profile Picture */}
       <View style={styles.headerSection}>
         {userDetails?.dpUrl && (
@@ -293,6 +293,7 @@ export default function UserHomeScreen() {
 
         {/* Workout Management Integration */}
         <TouchableOpacity
+          testID="user-home-workouts-btn"
           style={[styles.actionButton, styles.secondaryAction]}
           onPress={() => router.push('/workouts')}
         >
@@ -309,6 +310,7 @@ export default function UserHomeScreen() {
 
         {/* AI Recommendation Button */}
         <TouchableOpacity 
+            testID="user-home-ai-btn"
             style={[styles.actionButton, styles.secondaryAction, { borderColor: '#8b5cf6', borderWidth: 2, backgroundColor: '#f5f3ff' }]}
             onPress={() => router.push('/ai/generate')}
         >
@@ -331,7 +333,7 @@ export default function UserHomeScreen() {
       </View>
 
       {/* Logout Button */}
-      <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
+      <TouchableOpacity testID="user-home-logout-btn" style={styles.logoutButton} onPress={handleLogout}>
         <Text style={styles.logoutButtonText}>Logout</Text>
       </TouchableOpacity>
 

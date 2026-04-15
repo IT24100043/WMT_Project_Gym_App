@@ -2,9 +2,10 @@ import React, { useEffect, useState, useContext } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Image, ActivityIndicator, Alert } from 'react-native';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { AuthContext } from '@/context/AuthContext';
+import { API_BASE_URL, API_ENDPOINTS } from '@/constants/api';
 
-const SERVER_URL = 'http://192.168.1.25:5000'; 
-const WORKOUTS_API = 'http://192.168.1.25:5000/api/workouts';
+const SERVER_URL = API_BASE_URL; 
+const WORKOUTS_API = API_ENDPOINTS.WORKOUTS;
 
 export default function AIResultScreen() {
   const router = useRouter();

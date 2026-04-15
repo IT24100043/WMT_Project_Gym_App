@@ -8,6 +8,9 @@ export const API_BASE_URL = `http://${IP}:${PORT}`;
 
 // API Endpoints
 export const API_ENDPOINTS = {
+  // Health check
+  HEALTH: `${API_BASE_URL}/api/health`,
+
   // Auth endpoints
   GYM_LOGIN: `${API_BASE_URL}/api/gyms/gym-login`,
   USER_LOGIN: `${API_BASE_URL}/api/users/user-login`,
@@ -30,4 +33,25 @@ export const API_ENDPOINTS = {
   USER_UPDATE_CONTACT: (userId: string) => `${API_BASE_URL}/api/users/user-contact/${userId}`,
   USER_UPDATE_PASSWORD: (userId: string) => `${API_BASE_URL}/api/users/user-password/${userId}`,
   USER_DELETE: (userId: string) => `${API_BASE_URL}/api/users/user-delete/${userId}`,
+
+  // Workout endpoints
+  WORKOUTS: `${API_BASE_URL}/api/workouts`,
+  WORKOUTS_BY_USER: (userId: string) => `${API_BASE_URL}/api/workouts/user/${userId}`,
+  WORKOUT_BY_ID: (workoutId: string) => `${API_BASE_URL}/api/workouts/${workoutId}`,
+
+  // Session endpoints
+  SESSION_FINISH: `${API_BASE_URL}/api/sessions/finish`,
+
+  // AI endpoints
+  AI_GENERATE_PLAN: `${API_BASE_URL}/api/ai/generate-plan`,
+  AI_GENERATE_ROUTINE: `${API_BASE_URL}/api/ai/generate-routine`,
+
+  // Progress endpoints
+  PROGRESS: (userId: string) => `${API_BASE_URL}/api/progress/${userId}`,
+
+  // Coaching endpoints
+  COACHING: (userId: string) => `${API_BASE_URL}/api/coaching/${userId}`,
+  COACHING_APPLY: `${API_BASE_URL}/api/coaching/apply`,
+  COACHING_DISMISS: `${API_BASE_URL}/api/coaching/dismiss`,
 };
+

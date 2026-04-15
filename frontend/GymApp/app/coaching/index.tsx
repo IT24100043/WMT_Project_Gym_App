@@ -2,8 +2,9 @@ import React, { useState, useContext, useCallback } from 'react';
 import { View, Text, StyleSheet, ScrollView, ActivityIndicator, TouchableOpacity, Alert } from 'react-native';
 import { useFocusEffect, useRouter } from 'expo-router';
 import { AuthContext } from '@/context/AuthContext';
+import { API_ENDPOINTS } from '@/constants/api';
 
-const COACHING_API = 'http://192.168.1.25:5000/api/coaching';
+
 
 export default function CoachingScreen() {
     const router = useRouter();
@@ -15,7 +16,7 @@ export default function CoachingScreen() {
         if (!user) return;
         try {
             setLoading(true);
-            const res = await fetch(`${COACHING_API}/${user.id || user._id || 'testUser123'}`);
+            const res = await fetch(API_ENDPOINTS.COACHING(user.id || user._id || 'testUser123'));
             const json = await res.json();
             if (res.ok) setSuggestions(json.suggestions || []);
         } catch (error) {
@@ -35,7 +36,7 @@ export default function CoachingScreen() {
                 style: 'default',
                 onPress: async () => {
                     try {
-                        const res = await fetch(`${COACHING_API}/apply`, {
+                        const res = await fetch(API_ENDPOINTS.COACHING_APPLY, {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
                             body: JSON.stringify({ 
@@ -59,7 +60,7 @@ export default function CoachingScreen() {
 
     const handleDismiss = async (sug) => {
         try {
-             const res = await fetch(`${COACHING_API}/dismiss`, {
+             const res = await fetch(API_ENDPOINTS.COACHING_DISMISS, {
                   method: 'POST',
                   headers: { 'Content-Type': 'application/json' },
                   body: JSON.stringify({ 

@@ -118,6 +118,7 @@ export default function LoginScreen() {
 
         {/* Email Input */}
         <TextInput
+          testID="login-email-input"
           style={styles.input}
           placeholder="Email (User or Gym)"
           placeholderTextColor="#999"
@@ -130,6 +131,7 @@ export default function LoginScreen() {
 
         {/* Password Input */}
         <TextInput
+          testID="login-password-input"
           style={styles.input}
           placeholder="Password"
           placeholderTextColor="#999"
@@ -141,6 +143,7 @@ export default function LoginScreen() {
 
         {/* Login Button */}
         <TouchableOpacity
+          testID="login-button"
           style={[styles.loginButton, (isLoading || isCheckingRole) && styles.loginButtonDisabled]}
           onPress={handleLogin}
           disabled={isLoading || isCheckingRole}
@@ -159,6 +162,7 @@ export default function LoginScreen() {
 
         {/* Demo Login Button */}
         <TouchableOpacity
+          testID="login-demo-button"
           style={styles.demoButton}
           onPress={handleDemoLogin}
         >

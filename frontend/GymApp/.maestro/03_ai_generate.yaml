@@ -1,0 +1,26 @@
+appId: com.anonymous.GymApp
+---
+- launchApp
+- tapOn:
+    id: "login-demo-button"
+- assertVisible:
+    id: "user-home-screen"
+    timeout: 10000
+- tapOn:
+    id: "user-home-ai-btn"
+- assertVisible:
+    id: "ai-target-input"
+    timeout: 5000
+- tapOn:
+    id: "ai-target-input"
+- clearInput
+- inputText: "Full Body"
+- tapOn:
+    id: "ai-days-input"
+- clearInput
+- inputText: "4"
+- tapOn:
+    id: "ai-generate-btn"
+- assertVisible:
+    id: "ai-mode-badge"
+    timeout: 30000

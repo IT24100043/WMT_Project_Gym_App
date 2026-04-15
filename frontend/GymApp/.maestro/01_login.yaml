@@ -1,0 +1,8 @@
+appId: com.anonymous.GymApp
+---
+- launchApp
+- tapOn:
+    id: "login-demo-button"
+- assertVisible:
+    id: "user-home-screen"
+    timeout: 10000

@@ -2,10 +2,11 @@ import React, { useState, useContext } from 'react';
 import { View, Text, StyleSheet, ScrollView, TextInput, TouchableOpacity, ActivityIndicator, Alert, Image } from 'react-native';
 import { useRouter } from 'expo-router';
 import { AuthContext } from '@/context/AuthContext';
+import { API_ENDPOINTS } from '@/constants/api';
 import * as ImagePicker from 'expo-image-picker';
 
-const AI_API = 'http://192.168.1.25:5000/api/ai/generate-routine';
-const WORKOUT_API = 'http://192.168.1.25:5000/api/workouts';
+const AI_API = API_ENDPOINTS.AI_GENERATE_ROUTINE;
+const WORKOUT_API = API_ENDPOINTS.WORKOUTS;
 
 export default function GenerateRoutineScreen() {
     const router = useRouter();
@@ -122,12 +123,12 @@ export default function GenerateRoutineScreen() {
                      </TouchableOpacity>
 
                      <Text style={styles.label}>Target Focus Area</Text>
-                     <TextInput style={styles.input} value={form.targetArea} onChangeText={t => setForm({...form, targetArea: t})} placeholder="e.g. Chest & Triceps, Full Body" />
+                     <TextInput testID="ai-target-input" style={styles.input} value={form.targetArea} onChangeText={t => setForm({...form, targetArea: t})} placeholder="e.g. Chest & Triceps, Full Body" />
 
                      <Text style={styles.label}>Days Per Week</Text>
-                     <TextInput style={styles.input} keyboardType="numeric" value={form.availableDays} onChangeText={t => setForm({...form, availableDays: t})} />
+                     <TextInput testID="ai-days-input" style={styles.input} keyboardType="numeric" value={form.availableDays} onChangeText={t => setForm({...form, availableDays: t})} />
 
-                     <TouchableOpacity style={styles.genBtn} onPress={handleGenerate}>
+                     <TouchableOpacity testID="ai-generate-btn" style={styles.genBtn} onPress={handleGenerate}>
                           <Text style={styles.genBtnText}>🤖 Generate Execution Plan</Text>
                      </TouchableOpacity>
                 </View>
@@ -141,7 +142,7 @@ export default function GenerateRoutineScreen() {
             )}
 
             {routine && !loading && (
-                <View style={styles.reviewBox}>
+                <View testID="ai-result-container" style={styles.reviewBox}>
                      <View style={styles.actionRow}>
                          <TouchableOpacity style={styles.acceptBtn} onPress={handleAccept}>
                              <Text style={styles.acceptBtnText}>✅ Accept Routine</Text>
@@ -151,7 +152,7 @@ export default function GenerateRoutineScreen() {
                          </TouchableOpacity>
                      </View>
 
-                     <View style={[styles.aiModeBadge, { backgroundColor: aiMode === 'online' ? '#ecfdf5' : '#fffbeb', borderColor: aiMode === 'online' ? '#10b981' : '#f59e0b' }]}>
+                     <View testID="ai-mode-badge" style={[styles.aiModeBadge, { backgroundColor: aiMode === 'online' ? '#ecfdf5' : '#fffbeb', borderColor: aiMode === 'online' ? '#10b981' : '#f59e0b' }]}>
                          <Text style={[styles.aiModeText, { color: aiMode === 'online' ? '#065f46' : '#b45309' }]}>
                              {aiMode === 'online' ? '🤖 AI Generated Plan (Real-time)' : '⚙️ Demo Mode: Using pre-built plan (No internet AI)'}
                          </Text>
@@ -163,7 +164,7 @@ export default function GenerateRoutineScreen() {
                           </View>
                      )}
 
-                     <Text style={styles.routineTitle}>{routine.title}</Text>
+                     <Text testID="ai-routine-title" style={styles.routineTitle}>{routine.title}</Text>
                      <Text style={styles.routineGoal}>Target Area: {routine.goal}</Text>
 
                      <View style={styles.aiNoteBlock}>

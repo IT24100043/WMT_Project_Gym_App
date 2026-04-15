@@ -2,9 +2,10 @@ import React, { useState, useEffect, useContext } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Alert, ActivityIndicator } from 'react-native';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { AuthContext } from '@/context/AuthContext';
+import { API_ENDPOINTS } from '@/constants/api';
 
-const WORKOUTS_API = 'http://192.168.1.25:5000/api/workouts';
-const SESSIONS_API = 'http://192.168.1.25:5000/api/sessions';
+const WORKOUTS_API = API_ENDPOINTS.WORKOUTS;
+const SESSIONS_API = API_ENDPOINTS.SESSION_FINISH;
 
 export default function RoutineViewScreen() {
   const router = useRouter();
@@ -48,7 +49,7 @@ export default function RoutineViewScreen() {
         exercises: []
       };
 
-      const res = await fetch(`${SESSIONS_API}/finish`, {
+      const res = await fetch(SESSIONS_API, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)

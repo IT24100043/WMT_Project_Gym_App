@@ -4,6 +4,7 @@ require('dotenv').config();
 const connectDB = require('./config/db.js');
 const path = require('path');
 const fs = require('fs');
+const mongoose = require('mongoose');
 
 const app = express();
 
@@ -22,6 +23,16 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // Database Connection
 connectDB();
+
+// Health Check Endpoint (for test/demo verification)
+const DB_STATES = { 0: 'disconnected', 1: 'connected', 2: 'connecting', 3: 'disconnecting' };
+app.get('/api/health', (req, res) => {
+    res.status(200).json({
+        status: 'ok',
+        timestamp: new Date().toISOString(),
+        db: DB_STATES[mongoose.connection.readyState] || 'unknown',
+    });
+});
 
 // Gym Routes
 app.use('/api/gyms', require('./routes/GymRoutes'));

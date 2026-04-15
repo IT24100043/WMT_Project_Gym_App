@@ -2,8 +2,9 @@ import React, { useState, useContext, useEffect } from 'react';
 import { View, Text, TextInput, StyleSheet, TouchableOpacity, ScrollView, Alert, ActivityIndicator } from 'react-native';
 import { useRouter } from 'expo-router';
 import { AuthContext } from '@/context/AuthContext';
+import { API_ENDPOINTS } from '@/constants/api';
 
-const API_URL = 'http://192.168.1.25:5000/api/workouts';
+const API_URL = API_ENDPOINTS.WORKOUTS;
 
 const PillSelector = ({ options, selected, onSelect }) => (
   <View style={styles.pillContainer}>
@@ -223,7 +224,7 @@ export default function AddWorkoutScreen() {
       <View style={styles.card}>
         <Text style={styles.cardHeader}>📋 Base Information</Text>
         <Text style={styles.label}>Routine Title (e.g. Mass Builder Phase 1) *</Text>
-        <TextInput style={styles.input} placeholder="Title" value={title} onChangeText={setTitle} />
+        <TextInput testID="add-workout-title-input" style={styles.input} placeholder="Title" value={title} onChangeText={setTitle} />
 
         <Text style={styles.label}>Primary Goal</Text>
         <PillSelector options={['Muscle Gain', 'Weight Loss', 'Maintenance', 'Endurance']} selected={goal} onSelect={setGoal} />
@@ -321,7 +322,7 @@ export default function AddWorkoutScreen() {
         </View>
       ))}
 
-      <TouchableOpacity style={styles.saveBtn} onPress={handleSave} disabled={loading}>
+      <TouchableOpacity testID="add-workout-save-btn" style={styles.saveBtn} onPress={handleSave} disabled={loading}>
           {loading ? <ActivityIndicator color="#fff" /> : <Text style={styles.saveBtnText}>Save Weekly Routine</Text>}
       </TouchableOpacity>
 

@@ -2,8 +2,9 @@ import React, { useState, useEffect, useContext } from 'react';
 import { View, Text, TextInput, StyleSheet, TouchableOpacity, ScrollView, Alert, ActivityIndicator } from 'react-native';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { AuthContext } from '@/context/AuthContext';
+import { API_ENDPOINTS } from '@/constants/api';
 
-const API_URL = 'http://192.168.1.25:5000/api/workouts';
+const API_URL = API_ENDPOINTS.WORKOUTS;
 
 const PillSelector = ({ options, selected, onSelect }) => (
   <View style={styles.pillContainer}>
@@ -267,7 +268,7 @@ export default function EditWorkoutScreen() {
       <View style={styles.card}>
         <Text style={styles.cardHeader}>📋 Edit Base Data</Text>
         <Text style={styles.label}>Routine Title *</Text>
-        <TextInput style={styles.input} value={title} onChangeText={setTitle} />
+        <TextInput testID="edit-workout-title-input" style={styles.input} value={title} onChangeText={setTitle} />
 
         <Text style={styles.label}>Primary Goal</Text>
         <PillSelector options={['Muscle Gain', 'Weight Loss', 'Maintenance', 'Endurance']} selected={goal} onSelect={setGoal} />
@@ -367,7 +368,7 @@ export default function EditWorkoutScreen() {
         </View>
       ))}
 
-      <TouchableOpacity style={styles.saveBtn} onPress={handleUpdate} disabled={saving}>
+      <TouchableOpacity testID="edit-workout-save-btn" style={styles.saveBtn} onPress={handleUpdate} disabled={saving}>
           {saving ? <ActivityIndicator color="#fff" /> : <Text style={styles.saveBtnText}>Save Architecture Changes</Text>}
       </TouchableOpacity>
 
