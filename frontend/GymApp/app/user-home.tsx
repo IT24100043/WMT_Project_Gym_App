@@ -11,7 +11,7 @@ import {
   ActivityIndicator,
   Modal,
 } from 'react-native';
-import { useRouter, useFocusEffect } from 'expo-router';
+import { useRouter } from 'expo-router';
 import { AuthContext } from '@/context/AuthContext';
 import { API_ENDPOINTS } from '@/constants/api';
 
@@ -49,12 +49,10 @@ export default function UserHomeScreen() {
     password: '',
   });
 
-  // Fetch user details on load and focus
-  useFocusEffect(
-    React.useCallback(() => {
-      fetchUserDetails();
-    }, [user?.id])
-  );
+  // Fetch user details on mount
+  useEffect(() => {
+    fetchUserDetails();
+  }, []);
 
   const fetchUserDetails = async () => {
     try {
@@ -245,15 +243,6 @@ export default function UserHomeScreen() {
         )}
         <Text style={styles.greeting}>Hi {userDetails?.name}!</Text>
         <Text style={styles.subtitle}>Welcome to gym fitness</Text>
-      </View>
-
-      {/* Dynamic Streak Widget Phase 3 */}
-      <View style={styles.streakWidget}>
-        <Text style={styles.streakIcon}>{userDetails?.currentStreak > 0 ? '🔥' : '⏳'}</Text>
-        <View style={styles.streakTextCol}>
-           <Text style={styles.streakTitle}>{userDetails?.currentStreak || 0} Day Streak</Text>
-           <Text style={styles.streakSub}>{userDetails?.currentStreak > 0 ? "Consistency beats intensity. Keep pushing!" : "Time to start your routine. Execute today!"}</Text>
-        </View>
       </View>
 
       {/* Profile Info Card */}
@@ -524,11 +513,6 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
     elevation: 3,
   },
-  streakWidget: { backgroundColor: '#fff', marginHorizontal: 20, marginTop: -20, marginBottom: 20, padding: 18, borderRadius: 16, flexDirection: 'row', alignItems: 'center', shadowColor: '#f97316', shadowOffset: { width:0, height:4 }, shadowOpacity: 0.15, shadowRadius: 8, elevation: 5, borderWidth: 1, borderColor: '#ffedd5' },
-  streakIcon: { fontSize: 36, marginRight: 15 },
-  streakTextCol: { flex: 1 },
-  streakTitle: { fontSize: 20, fontWeight: '900', color: '#1f2937' },
-  streakSub: { fontSize: 13, fontWeight: '600', color: '#ea580c', marginTop: 3 },
   detailRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -576,9 +560,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#ddd',
     flex: 1,
-    minWidth: 90,
     marginRight: 6,
-    marginBottom: 6,
   },
   dangerAction: {
     backgroundColor: '#FF3B30',
@@ -593,8 +575,6 @@ const styles = StyleSheet.create({
     fontSize: 15,
     fontWeight: '600',
     color: '#333',
-    textAlign: 'center',
-    flexWrap: 'wrap',
   },
   logoutButton: {
     backgroundColor: 'white',

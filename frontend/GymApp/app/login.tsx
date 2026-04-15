@@ -15,12 +15,14 @@ import { useRouter } from 'expo-router';
 import { AuthContext } from '@/context/AuthContext';
 import LoadingScreen from '@/components/LoadingScreen';
 import { API_ENDPOINTS } from '@/constants/api';
+import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 
 export default function LoginScreen() {
   const router = useRouter();
   const { login, isLoading } = useContext(AuthContext);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [isCheckingRole, setIsCheckingRole] = useState(false);
 
   const detectUserRole = async (userEmail: string): Promise<'user' | 'gym' | null> => {
@@ -105,10 +107,11 @@ export default function LoginScreen() {
 
   return (
     <KeyboardAvoidingView
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      behavior={Platform.OS === 'ios' ? 'padding' : 'padding'}
       style={styles.container}
+      enabled
     >
-      <ScrollView contentContainerStyle={styles.scrollContent}>
+      <ScrollView contentContainerStyle={styles.scrollContent} keyboardShouldPersistTaps="handled">
         {/* Header */}
         <View style={styles.headerSection}>
           <Text style={styles.logo}>💪</Text>
@@ -130,16 +133,29 @@ export default function LoginScreen() {
         />
 
         {/* Password Input */}
-        <TextInput
-          testID="login-password-input"
-          style={styles.input}
-          placeholder="Password"
-          placeholderTextColor="#999"
-          value={password}
-          onChangeText={setPassword}
-          secureTextEntry
-          editable={!isLoading && !isCheckingRole}
-        />
+        <View style={styles.passwordContainer}>
+          <TextInput
+            testID="login-password-input"
+            style={styles.passwordInput}
+            placeholder="Password"
+            placeholderTextColor="#999"
+            value={password}
+            onChangeText={setPassword}
+            secureTextEntry={!showPassword}
+            editable={!isLoading && !isCheckingRole}
+          />
+          <TouchableOpacity
+            style={styles.passwordToggle}
+            onPress={() => setShowPassword(!showPassword)}
+            disabled={!isLoading && isCheckingRole}
+          >
+            <MaterialCommunityIcons
+              name={showPassword ? 'eye' : 'eye-off'}
+              size={24}
+              color="#666"
+            />
+          </TouchableOpacity>
+        </View>
 
         {/* Login Button */}
         <TouchableOpacity
@@ -220,6 +236,27 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#ddd',
     color: '#333',
+  },
+  passwordContainer: {
+    position: 'relative',
+    marginBottom: 15,
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: 'white',
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: '#ddd',
+  },
+  passwordInput: {
+    flex: 1,
+    paddingHorizontal: 15,
+    paddingVertical: 15,
+    fontSize: 14,
+    color: '#333',
+  },
+  passwordToggle: {
+    paddingHorizontal: 15,
+    paddingVertical: 15,
   },
   loginButton: {
     backgroundColor: '#007AFF',
