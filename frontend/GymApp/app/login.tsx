@@ -91,6 +91,10 @@ export default function LoginScreen() {
     }
   };
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> 50e3bfffa18e48ca4ca8b0602b35f648681dc568
 
   // Show loading screen when logging in
   if (isLoading) {
@@ -113,7 +117,6 @@ export default function LoginScreen() {
 
         {/* Email Input */}
         <TextInput
-          testID="login-email-input"
           style={styles.input}
           placeholder="Email (User or Gym)"
           placeholderTextColor="#999"
@@ -127,7 +130,6 @@ export default function LoginScreen() {
         {/* Password Input */}
         <View style={styles.passwordContainer}>
           <TextInput
-            testID="login-password-input"
             style={styles.passwordInput}
             placeholder="Password"
             placeholderTextColor="#999"
@@ -151,7 +153,6 @@ export default function LoginScreen() {
 
         {/* Login Button */}
         <TouchableOpacity
-          testID="login-button"
           style={[styles.loginButton, (isLoading || isCheckingRole) && styles.loginButtonDisabled]}
           onPress={handleLogin}
           disabled={isLoading || isCheckingRole}
@@ -167,7 +168,6 @@ export default function LoginScreen() {
             <Text style={styles.loginButtonText}>Login</Text>
           )}
         </TouchableOpacity>
-
 
         {/* Register Link */}
         <View style={styles.registerSection}>
