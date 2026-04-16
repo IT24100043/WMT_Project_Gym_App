@@ -30,12 +30,14 @@ export const API_ENDPOINTS = {
 
   // User profile endpoints
   USER_DETAILS: (userId: string) => `${API_BASE_URL}/api/users/user-details/${userId}`,
+  USER_UPDATE_PROFILE: (userId: string) => `${API_BASE_URL}/api/users/user-profile/${userId}`,
   USER_UPDATE_CONTACT: (userId: string) => `${API_BASE_URL}/api/users/user-contact/${userId}`,
   USER_UPDATE_PASSWORD: (userId: string) => `${API_BASE_URL}/api/users/user-password/${userId}`,
   USER_DELETE: (userId: string) => `${API_BASE_URL}/api/users/user-delete/${userId}`,
 
   // Gym Info endpoints
   GYM_INFO_BY_GYM_ID: (gymId: string) => `${API_BASE_URL}/api/gyminfo/info-by-gym/${gymId}`,
+  GYM_INFO_CREATE: (gymId: string) => `${API_BASE_URL}/api/gyminfo/info-create/${gymId}`,
   GYM_INFO_UPDATE_DESCRIPTION: (infoId: string) => `${API_BASE_URL}/api/gyminfo/info-update-information/${infoId}`,
   GYM_INFO_UPDATE_OPEN_HOURS: (infoId: string) => `${API_BASE_URL}/api/gyminfo/info-update-open-hours/${infoId}`,
   GYM_INFO_UPDATE_CLOSE_HOURS: (infoId: string) => `${API_BASE_URL}/api/gyminfo/info-update-close-hours/${infoId}`,

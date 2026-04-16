@@ -12,9 +12,10 @@ import {
   Modal,
 } from 'react-native';
 import { useRouter } from 'expo-router';
+import * as ImagePicker from 'expo-image-picker';
 import { AuthContext } from '@/context/AuthContext';
 import { API_ENDPOINTS } from '@/constants/api';
-import HamburgerMenu from '../components/HamburgerMenu';
+import HamburgerMenu from '@/components/HamburgerMenu';
 
 interface UserDetails {
   _id: string;
@@ -35,6 +36,9 @@ export default function UserHomeScreen() {
   const [passwordModalVisible, setPasswordModalVisible] = useState(false);
   const [contactModalVisible, setContactModalVisible] = useState(false);
   const [deleteModalVisible, setDeleteModalVisible] = useState(false);
+  const [changeProfileImageModal, setChangeProfileImageModal] = useState(false);
+  const [imageLoading, setImageLoading] = useState(false);
+  const [selectedImageUri, setSelectedImageUri] = useState<string | null>(null);
 
   const [passwordForm, setPasswordForm] = useState({
     oldPassword: '',
@@ -127,6 +131,13 @@ export default function UserHomeScreen() {
         return;
       }
 
+      // Validate contact number - must be exactly 10 digits
+      const cleanedNumber = contactForm.newContactNumber.replace(/\D/g, '');
+      if (cleanedNumber.length !== 10) {
+        Alert.alert('Error', 'Contact number must contain exactly 10 digits');
+        return;
+      }
+
       if (!user?.id) {
         Alert.alert('Error', 'User ID not found');
         return;
@@ -171,6 +182,138 @@ export default function UserHomeScreen() {
         },
       ]
     );
+  };
+
+  const pickImageForChange = async () => {
+    try {
+      const result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        allowsEditing: true,
+        aspect: [1, 1],
+        quality: 1,
+      });
+
+      if (!result.canceled) {
+        setSelectedImageUri(result.assets[0].uri);
+        setChangeProfileImageModal(true);
+      }
+    } catch (error) {
+      Alert.alert('Error', 'Failed to pick image');
+    }
+  };
+
+  const uploadImageToCloudinary = async (imageUri: string): Promise<string | null> => {
+    try {
+      const formData = new FormData();
+      const filename = imageUri.split('/').pop() || 'profile-image.jpg';
+      
+      formData.append('file', {
+        uri: imageUri,
+        type: 'image/jpeg',
+        name: filename,
+      } as any);
+      formData.append('upload_preset', 'gym_logo');
+      formData.append('cloud_name', 'dcahmv4lj');
+
+      console.log('Uploading image to Cloudinary...');
+      const response = await fetch('https://api.cloudinary.com/v1_1/dcahmv4lj/image/upload', {
+        method: 'POST',
+        body: formData,
+      });
+
+      const responseText = await response.text();
+      console.log('Cloudinary response:', responseText);
+      
+      let data;
+      try {
+        data = JSON.parse(responseText);
+      } catch (e) {
+        console.error('Failed to parse response:', responseText);
+        throw new Error('Invalid response from Cloudinary');
+      }
+      
+      if (!response.ok) {
+        console.error('Cloudinary error:', data);
+        throw new Error(data.error?.message || `Upload failed: ${response.status}`);
+      }
+
+      if (data.secure_url) {
+        console.log('Image uploaded successfully:', data.secure_url);
+        return data.secure_url;
+      } else {
+        throw new Error('No secure URL returned from Cloudinary');
+      }
+    } catch (error) {
+      console.error('Cloudinary upload error:', error);
+      Alert.alert('Upload Error', `Failed to upload image: ${error}`);
+      return null;
+    }
+  };
+
+  const handleUpdateProfileImage = async () => {
+    try {
+      if (!selectedImageUri) {
+        Alert.alert('Error', 'Please select an image first');
+        return;
+      }
+
+      setImageLoading(true);
+
+      // Upload to Cloudinary
+      const imageUrl = await uploadImageToCloudinary(selectedImageUri);
+
+      if (!imageUrl) {
+        Alert.alert('Error', 'Failed to upload image');
+        setImageLoading(false);
+        return;
+      }
+
+      // Update in database
+      if (!user?.id) {
+        Alert.alert('Error', 'User ID not found');
+        setImageLoading(false);
+        return;
+      }
+
+      const updateUrl = API_ENDPOINTS.USER_UPDATE_PROFILE(user.id);
+      console.log('Updating user profile at:', updateUrl);
+      console.log('Sending dpUrl:', imageUrl);
+
+      const response = await fetch(
+        updateUrl,
+        {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ dpUrl: imageUrl }),
+        }
+      );
+
+      const responseText = await response.text();
+      let data;
+      
+      try {
+        data = JSON.parse(responseText);
+      } catch (e) {
+        console.error('Failed to parse response:', responseText);
+        Alert.alert('Error', 'Server error: Invalid response from server');
+        setImageLoading(false);
+        return;
+      }
+
+      if (response.ok) {
+        setUserDetails(data.user);
+        Alert.alert('Success', 'Profile picture updated successfully');
+        setChangeProfileImageModal(false);
+        setSelectedImageUri(null);
+      } else {
+        Alert.alert('Error', data.message || 'Failed to update profile picture');
+      }
+    } catch (error) {
+      console.error('Error updating profile picture:', error);
+      Alert.alert('Error', 'Failed to update profile picture');
+    } finally {
+      setImageLoading(false);
+    }
   };
 
   const performDelete = async () => {
@@ -246,18 +389,28 @@ export default function UserHomeScreen() {
         onProfilePress={handleProfilePress}
       />
 
-      <ScrollView style={styles.container} testID="user-home-screen">
-      {/* Header Section with Profile Picture */}
-      <View style={styles.headerSection}>
-        {userDetails?.dpUrl && (
-          <Image
-            source={{ uri: userDetails.dpUrl }}
-            style={styles.topLogo}
-          />
-        )}
-        <Text style={styles.greeting}>Hi {userDetails?.name}!</Text>
-        <Text style={styles.subtitle}>Welcome to gym fitness</Text>
-      </View>
+      <ScrollView style={styles.container}>
+        {/* Header Section with Profile Picture */}
+        <View style={styles.headerSection}>
+          {userDetails?.dpUrl ? (
+            <Image
+              source={{ uri: userDetails.dpUrl }}
+              style={styles.topLogo}
+            />
+          ) : (
+            <View style={styles.topLogo}>
+              <Text style={styles.placeholderText}>Empty</Text>
+            </View>
+          )}
+          <TouchableOpacity
+            style={styles.compactImageButton}
+            onPress={pickImageForChange}
+          >
+            <Text style={styles.compactImageButtonText}>Change Profile</Text>
+          </TouchableOpacity>
+          <Text style={styles.greeting}>Hi {userDetails?.name}!</Text>
+          <Text style={styles.subtitle}>Welcome to gym fitness</Text>
+        </View>
 
       {/* Profile Info Card */}
       <View style={styles.profileCard}>
@@ -310,7 +463,7 @@ export default function UserHomeScreen() {
       </View>
 
       {/* Logout Button */}
-      <TouchableOpacity testID="user-home-logout-btn" style={styles.logoutButton} onPress={handleLogout}>
+      <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
         <Text style={styles.logoutButtonText}>Logout</Text>
       </TouchableOpacity>
 
@@ -465,7 +618,53 @@ export default function UserHomeScreen() {
           </View>
         </View>
       </Modal>
-      </ScrollView>
+
+      {/* Change Profile Image Modal */}
+      <Modal visible={changeProfileImageModal} transparent={true} animationType="slide">
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContent}>
+            <Text style={styles.modalTitle}>Change Profile Picture</Text>
+            
+            <TouchableOpacity
+              style={styles.imagePickerBox}
+              onPress={pickImageForChange}
+              disabled={imageLoading}
+            >
+              {selectedImageUri ? (
+                <Image
+                  source={{ uri: selectedImageUri }}
+                  style={styles.imagePreview}
+                />
+              ) : (
+                <Text style={styles.imagePickerPlaceholder}>📸 Click to select image</Text>
+              )}
+            </TouchableOpacity>
+
+            <View style={styles.buttonGroup}>
+              <TouchableOpacity
+                style={[styles.button, styles.saveButton]}
+                onPress={handleUpdateProfileImage}
+                disabled={!selectedImageUri || imageLoading}
+              >
+                <Text style={styles.buttonText}>
+                  {imageLoading ? 'Uploading...' : 'Update Image'}
+                </Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={[styles.button, styles.cancelButton]}
+                onPress={() => {
+                  setChangeProfileImageModal(false);
+                  setSelectedImageUri(null);
+                }}
+                disabled={imageLoading}
+              >
+                <Text style={styles.cancelButtonText}>Cancel</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
+    </ScrollView>
     </View>
   );
 }
@@ -586,6 +785,8 @@ const styles = StyleSheet.create({
     borderRadius: 50,
     backgroundColor: '#f0f0f0',
     marginBottom: 15,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   input: {
     borderWidth: 1,
@@ -653,4 +854,49 @@ const styles = StyleSheet.create({
   bottomSpacer: {
     height: 20,
   },
+  imagePickerBox: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginVertical: 20,
+    borderRadius: 12,
+    overflow: 'hidden',
+    backgroundColor: '#f9f9f9',
+    height: 250,
+    width: 250,
+    borderWidth: 2,
+    borderColor: '#ddd',
+    borderStyle: 'dashed',
+    alignSelf: 'center',
+  },
+  imagePreview: {
+    width: '100%',
+    height: '100%',
+    resizeMode: 'cover',
+  },
+  imagePickerPlaceholder: {
+    fontSize: 16,
+    color: '#999',
+    fontWeight: '500',
+  },
+  compactImageButton: {
+    backgroundColor: 'white',
+    borderWidth: 1,
+    borderColor: '#ddd',
+    borderRadius: 20,
+    paddingVertical: 8,
+    paddingHorizontal: 14,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  compactImageButtonText: {
+    fontSize: 12,
+    fontWeight: '400',
+    color: '#333',
+  },
+  placeholderText: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#999',
+  },
 });
+

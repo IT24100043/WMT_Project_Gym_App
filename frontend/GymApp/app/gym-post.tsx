@@ -329,7 +329,7 @@ export default function GymPostScreen() {
       }
 
       const response = await fetch(
-        `${API_ENDPOINTS.GYM_DETAILS(user?.id || '')}/info`,
+        API_ENDPOINTS.GYM_INFO_CREATE(user?.id || ''),
         {
           method: 'POST',
           headers: {
