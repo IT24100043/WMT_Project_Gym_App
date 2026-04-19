@@ -14,12 +14,18 @@ export const API_ENDPOINTS = {
   // Auth endpoints
   GYM_LOGIN: `${API_BASE_URL}/api/gyms/gym-login`,
   USER_LOGIN: `${API_BASE_URL}/api/users/user-login`,
+  COACH_LOGIN: `${API_BASE_URL}/api/coaches/coach-login`,
+  ADMIN_LOGIN: `${API_BASE_URL}/api/admins/admin-login`,
   GYM_ROLE: `${API_BASE_URL}/api/gyms/gym-role`,
   USER_ROLE: `${API_BASE_URL}/api/users/user-role`,
+  COACH_ROLE: `${API_BASE_URL}/api/coaches/coach-role`,
+  ADMIN_ROLE: `${API_BASE_URL}/api/admins/admin-role`,
   
   // Registration endpoints
   GYM_REGISTER: `${API_BASE_URL}/api/gyms/gym-register`,
   USER_REGISTER: `${API_BASE_URL}/api/users/user-register`,
+  COACH_REGISTER: `${API_BASE_URL}/api/coaches/coach-register`,
+  ADMIN_REGISTER: `${API_BASE_URL}/api/admins/admin-register`,
 
   // Gym profile endpoints
   GYM_DETAILS: (gymId: string) => `${API_BASE_URL}/api/gyms/gym-details/${gymId}`,
@@ -33,7 +39,21 @@ export const API_ENDPOINTS = {
   USER_UPDATE_PROFILE: (userId: string) => `${API_BASE_URL}/api/users/user-profile/${userId}`,
   USER_UPDATE_CONTACT: (userId: string) => `${API_BASE_URL}/api/users/user-contact/${userId}`,
   USER_UPDATE_PASSWORD: (userId: string) => `${API_BASE_URL}/api/users/user-password/${userId}`,
-  USER_DELETE: (userId: string) => `${API_BASE_URL}/api/users/user-delete/${userId}`,
+  USER_DELETE: (userId: string) => `${API_BASE_URL}/api/admins/admin-delete-user/${userId}`,
+  USER_GET_ALL: `${API_BASE_URL}/api/admins/admin-all-users`,
+
+  // Admin profile endpoints
+  ADMIN_DETAILS: (adminId: string) => `${API_BASE_URL}/api/admins/admin-details/${adminId}`,
+  ADMIN_UPDATE_PROFILE: (adminId: string) => `${API_BASE_URL}/api/admins/admin-profile/${adminId}`,
+  ADMIN_UPDATE_CONTACT: (adminId: string) => `${API_BASE_URL}/api/admins/admin-contact/${adminId}`,
+  ADMIN_UPDATE_PASSWORD: (adminId: string) => `${API_BASE_URL}/api/admins/admin-password/${adminId}`,
+  ADMIN_DELETE: (adminId: string) => `${API_BASE_URL}/api/admins/admin-delete/${adminId}`,
+  COACH_GET_ALL: `${API_BASE_URL}/api/admins/admin-all-coaches`,
+  COACH_DELETE: (coachId: string) => `${API_BASE_URL}/api/admins/admin-delete-coach/${coachId}`,
+  GYM_GET_ALL: `${API_BASE_URL}/api/admins/admin-all-gyms`,
+  GYM_DELETE_BY_ADMIN: (gymId: string) => `${API_BASE_URL}/api/admins/admin-delete-gym/${gymId}`,
+  ADMIN_GET_ALL: `${API_BASE_URL}/api/admins/admin-all-admins`,
+  ADMIN_DELETE_BY_ADMIN: (adminId: string) => `${API_BASE_URL}/api/admins/admin-delete-admin/${adminId}`,
 
   // Gym Info endpoints
   GYM_INFO_BY_GYM_ID: (gymId: string) => `${API_BASE_URL}/api/gyminfo/info-by-gym/${gymId}`,

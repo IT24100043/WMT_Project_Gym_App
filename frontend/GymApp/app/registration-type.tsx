@@ -4,6 +4,7 @@ import {
   View,
   Text,
   TouchableOpacity,
+  ScrollView,
 } from 'react-native';
 import { useRouter } from 'expo-router';
 
@@ -18,6 +19,10 @@ export default function RegistrationTypeScreen() {
     router.push({ pathname: '/register', params: { type: 'gym' } });
   };
 
+  const handleCoachRegistration = () => {
+    router.push({ pathname: '/register', params: { type: 'coach' } });
+  };
+
   const handleBack = () => {
     router.back();
   };
@@ -29,14 +34,15 @@ export default function RegistrationTypeScreen() {
         <Text style={styles.backButtonText}>← Back</Text>
       </TouchableOpacity>
 
-      <View style={styles.headerSection}>
-        <Text style={styles.logo}>💪</Text>
-        <Text style={styles.title}>Gym Fitness</Text>
-        <Text style={styles.subtitle}>Choose Registration Type</Text>
-      </View>
+      <ScrollView style={styles.scrollViewContainer} contentContainerStyle={styles.scrollViewContent} showsVerticalScrollIndicator={true}>
+        <View style={styles.headerSection}>
+          <Text style={styles.logo}>💪</Text>
+          <Text style={styles.title}>Gym Fitness</Text>
+          <Text style={styles.subtitle}>Choose Registration Type</Text>
+        </View>
 
-      {/* Selection Buttons */}
-      <View style={styles.buttonsContainer}>
+        {/* Selection Buttons */}
+        <View style={styles.buttonsContainer}>
         <TouchableOpacity
           style={styles.optionButton}
           onPress={handleUserRegistration}
@@ -58,7 +64,19 @@ export default function RegistrationTypeScreen() {
             Register your gym to manage members
           </Text>
         </TouchableOpacity>
-      </View>
+
+        <TouchableOpacity
+          style={styles.optionButton}
+          onPress={handleCoachRegistration}
+        >
+          <Text style={styles.optionIcon}>👨‍🏫</Text>
+          <Text style={styles.optionTitle}>Register as Coach</Text>
+          <Text style={styles.optionDescription}>
+            Join as a coach to guide and train members
+          </Text>
+        </TouchableOpacity>
+        </View>
+      </ScrollView>
 
       {/* Already have account link */}
       <View style={styles.footerSection}>
@@ -76,11 +94,18 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#f5f5f5',
     paddingHorizontal: 20,
-    paddingVertical: 40,
+    paddingVertical: 20,
+  },
+  scrollViewContainer: {
+    flex: 1,
+  },
+  scrollViewContent: {
+    paddingBottom: 20,
   },
   backButton: {
     paddingVertical: 10,
     maxWidth: 100,
+    marginTop: 15,
   },
   backButtonText: {
     fontSize: 16,
@@ -89,8 +114,8 @@ const styles = StyleSheet.create({
   },
   headerSection: {
     alignItems: 'center',
-    marginBottom: 40,
-    marginTop: 20,
+    marginBottom: 25,
+    marginTop: 10,
   },
   logo: {
     fontSize: 60,
@@ -107,8 +132,6 @@ const styles = StyleSheet.create({
     color: '#666',
   },
   buttonsContainer: {
-    flex: 1,
-    justifyContent: 'center',
     gap: 20,
   },
   optionButton: {

@@ -25,7 +25,7 @@ export default function LoginScreen() {
   const [showPassword, setShowPassword] = useState(false);
   const [isCheckingRole, setIsCheckingRole] = useState(false);
 
-  const detectUserRole = async (userEmail: string): Promise<'user' | 'gym' | null> => {
+  const detectUserRole = async (userEmail: string): Promise<'user' | 'gym' | 'coach' | 'admin' | null> => {
     try {
       // Try to get gym role first
       const gymRoleResponse = await fetch(API_ENDPOINTS.GYM_ROLE, {
@@ -41,7 +41,35 @@ export default function LoginScreen() {
         return gymData.role as 'gym';
       }
 
-      // If gym not found, try user role
+      // If gym not found, try admin role
+      const adminRoleResponse = await fetch(API_ENDPOINTS.ADMIN_ROLE, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ adminEmail: userEmail }),
+      });
+
+      if (adminRoleResponse.ok) {
+        const adminData = await adminRoleResponse.json();
+        return adminData.role as 'admin';
+      }
+
+      // If gym and admin not found, try coach role
+      const coachRoleResponse = await fetch(API_ENDPOINTS.COACH_ROLE, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ coachEmail: userEmail }),
+      });
+
+      if (coachRoleResponse.ok) {
+        const coachData = await coachRoleResponse.json();
+        return coachData.role as 'coach';
+      }
+
+      // If gym, admin and coach not found, try user role
       const userRoleResponse = await fetch(API_ENDPOINTS.USER_ROLE, {
         method: 'POST',
         headers: {
@@ -113,7 +141,7 @@ export default function LoginScreen() {
         {/* Email Input */}
         <TextInput
           style={styles.input}
-          placeholder="Email (User or Gym)"
+          placeholder="Email "
           placeholderTextColor="#999"
           value={email}
           onChangeText={setEmail}

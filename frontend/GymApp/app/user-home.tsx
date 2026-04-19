@@ -408,7 +408,7 @@ export default function UserHomeScreen() {
           >
             <Text style={styles.compactImageButtonText}>Change Profile</Text>
           </TouchableOpacity>
-          <Text style={styles.greeting}>Hi {userDetails?.name}!</Text>
+          <Text style={styles.greeting} numberOfLines={2}>Hi {userDetails?.name}!</Text>
           <Text style={styles.subtitle}>Welcome to gym fitness</Text>
         </View>
 
@@ -684,6 +684,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: '#333',
     marginBottom: 5,
+    textAlign: 'center',
   },
   subtitle: {
     fontSize: 14,

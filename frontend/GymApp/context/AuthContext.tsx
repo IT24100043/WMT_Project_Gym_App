@@ -7,7 +7,11 @@ export interface User {
   _id?: string;
   name?: string;
   userEmail?: string;
-  role: 'user' | 'gym';
+  coachName?: string;
+  coachEmail?: string;
+  adminName?: string;
+  adminEmail?: string;
+  role: 'user' | 'gym' | 'coach' | 'admin';
   GymName?: string;
   email?: string;
 }
@@ -15,7 +19,7 @@ export interface User {
 interface AuthContextType {
   user: User | null;
   isLoading: boolean;
-  login: (email: string, password: string, role: 'user' | 'gym') => Promise<void>;
+  login: (email: string, password: string, role: 'user' | 'gym' | 'coach' | 'admin') => Promise<void>;
   logout: () => Promise<void>;
   isAuthenticated: boolean;
 }
@@ -63,13 +67,17 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     }
   };
 
-  const login = async (email: string, password: string, role: 'user' | 'gym') => {
+  const login = async (email: string, password: string, role: 'user' | 'gym' | 'coach' | 'admin') => {
     try {
       setIsLoading(true);
       console.log('Login attempt with role:', role);
       const endpoint = role === 'user' 
         ? API_ENDPOINTS.USER_LOGIN 
-        : API_ENDPOINTS.GYM_LOGIN;
+        : role === 'gym'
+        ? API_ENDPOINTS.GYM_LOGIN
+        : role === 'coach'
+        ? API_ENDPOINTS.COACH_LOGIN
+        : API_ENDPOINTS.ADMIN_LOGIN;
 
       console.log('Calling endpoint:', endpoint);
       const response = await fetch(endpoint, {
@@ -78,7 +86,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          [role === 'user' ? 'userEmail' : 'email']: email,
+          [role === 'user' ? 'userEmail' : role === 'coach' ? 'coachEmail' : role === 'admin' ? 'adminEmail' : 'email']: email,
           password: password,
         }),
       });
@@ -92,9 +100,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       }
 
       const userData = { 
-        id: role === 'user' ? data.user._id : data.gym._id,
-        ...( role === 'user' ? data.user : data.gym ),
-        role: role as 'user' | 'gym'
+        id: role === 'user' ? data.user._id : role === 'coach' ? data.coach._id : role === 'admin' ? data.admin._id : data.gym._id,
+        ...( role === 'user' ? data.user : role === 'coach' ? data.coach : role === 'admin' ? data.admin : data.gym ),
+        role: role as 'user' | 'gym' | 'coach' | 'admin'
       };
 
       console.log('Setting user with role:', userData.role);

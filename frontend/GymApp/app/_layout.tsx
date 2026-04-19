@@ -32,6 +32,12 @@ function RootLayoutNav() {
       } else if (user.role === 'gym') {
         console.log('→ Navigating to /gym-home');
         router.replace('/gym-home');
+      } else if (user.role === 'coach') {
+        console.log('→ Navigating to /coach-home');
+        router.replace('/coach-home');
+      } else if (user.role === 'admin') {
+        console.log('→ Navigating to /admin-home');
+        router.replace('/admin-home');
       } else {
         console.log('→ Unknown role, navigating to /login');
         router.replace('/login');
@@ -71,6 +77,18 @@ function RootLayoutNav() {
         />
         <Stack.Screen 
           name="gym-home" 
+          options={{ 
+            headerShown: false,
+          }} 
+        />
+        <Stack.Screen 
+          name="coach-home" 
+          options={{ 
+            headerShown: false,
+          }} 
+        />
+        <Stack.Screen 
+          name="admin-home" 
           options={{ 
             headerShown: false,
           }} 

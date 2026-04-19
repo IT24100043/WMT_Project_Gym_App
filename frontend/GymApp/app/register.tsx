@@ -11,13 +11,18 @@ export default function RegisterScreen() {
   const params = useLocalSearchParams();
   const [uploading, setUploading] = useState(false);
   const [imageUri, setImageUri] = useState<string | null>(null);
-  const [registrationType, setRegistrationType] = useState<'gym' | 'user' | null>(
-    (params.type as 'gym' | 'user') || null
+  const [registrationType, setRegistrationType] = useState<'gym' | 'user' | 'coach' | 'admin' | null>(
+    (params.type as 'gym' | 'user' | 'coach' | 'admin') || null
   );
+  const source = params.from as string || 'registration-type';
   const [showGymPassword, setShowGymPassword] = useState(false);
   const [showGymConfirmPassword, setShowGymConfirmPassword] = useState(false);
   const [showUserPassword, setShowUserPassword] = useState(false);
   const [showUserConfirmPassword, setShowUserConfirmPassword] = useState(false);
+  const [showCoachPassword, setShowCoachPassword] = useState(false);
+  const [showCoachConfirmPassword, setShowCoachConfirmPassword] = useState(false);
+  const [showAdminPassword, setShowAdminPassword] = useState(false);
+  const [showAdminConfirmPassword, setShowAdminConfirmPassword] = useState(false);
 
   // Gym Registration Form Data
   const [gymFormData, setGymFormData] = useState({
@@ -46,6 +51,33 @@ export default function RegisterScreen() {
     confirmPassword: '',
     dpUrl: '',
     role: 'user'
+  });
+
+  // Coach Registration Form Data
+  const [coachFormData, setCoachFormData] = useState({
+    coachName: '',
+    coachAge: '',
+    coachNICcardNumber: '',
+    coachId: '',
+    coachContactNumber: '',
+    coachEmail: '',
+    password: '',
+    confirmPassword: '',
+    dpUrl: '',
+    role: 'coach'
+  });
+
+  // Admin Registration Form Data
+  const [adminFormData, setAdminFormData] = useState({
+    adminName: '',
+    adminAge: '',
+    adminNICcardNumber: '',
+    adminContactNumber: '',
+    adminEmail: '',
+    password: '',
+    confirmPassword: '',
+    dpUrl: '',
+    role: 'admin'
   });
 
   // Function to pick an image from gallery
@@ -93,6 +125,8 @@ export default function RegisterScreen() {
         setGymFormData((prev) => ({ ...prev, logoUrl: file.secure_url }));
       } else if (registrationType === 'user') {
         setUserFormData((prev) => ({ ...prev, dpUrl: file.secure_url }));
+      } else if (registrationType === 'admin') {
+        setAdminFormData((prev) => ({ ...prev, dpUrl: file.secure_url }));
       }
     } catch (err) {
       Alert.alert("Error", "Image upload failed: " + (err as any).message);
@@ -127,6 +161,29 @@ export default function RegisterScreen() {
       dpUrl: '',
       role: 'user'
     });
+    setCoachFormData({
+      coachName: '',
+      coachAge: '',
+      coachNICcardNumber: '',
+      coachId: '',
+      coachContactNumber: '',
+      coachEmail: '',
+      password: '',
+      confirmPassword: '',
+      dpUrl: '',
+      role: 'coach'
+    });
+    setAdminFormData({
+      adminName: '',
+      adminAge: '',
+      adminNICcardNumber: '',
+      adminContactNumber: '',
+      adminEmail: '',
+      password: '',
+      confirmPassword: '',
+      dpUrl: '',
+      role: 'admin'
+    });
     setImageUri(null);
   };
 
@@ -139,6 +196,10 @@ export default function RegisterScreen() {
   const handleRegister = async () => {
     if (registrationType === 'gym') {
       await handleGymRegister();
+    } else if (registrationType === 'coach') {
+      await handleCoachRegister();
+    } else if (registrationType === 'admin') {
+      await handleAdminRegister();
     } else {
       await handleUserRegister();
     }
@@ -223,6 +284,82 @@ export default function RegisterScreen() {
     }
   };
 
+  const handleCoachRegister = async () => {
+    // Validation
+    if (!coachFormData.coachName || !coachFormData.coachAge || !coachFormData.coachNICcardNumber || 
+        !coachFormData.coachId || !coachFormData.coachContactNumber || !coachFormData.coachEmail || !coachFormData.password) {
+      return Alert.alert("Error", "Please fill all fields");
+    }
+
+    // Contact number validation
+    if (!validateContactNumber(coachFormData.coachContactNumber)) {
+      return Alert.alert("Error", "Contact number must contain exactly 10 digits");
+    }
+
+    // Password validation
+    if (coachFormData.password !== coachFormData.confirmPassword) {
+      return Alert.alert("Error", "Passwords do not match");
+    }
+
+    if (coachFormData.password.length < 6) {
+      return Alert.alert("Error", "Password must be at least 6 characters");
+    }
+
+    // Remove confirmPassword before sending to backend
+    const { confirmPassword, ...dataToSend } = coachFormData;
+
+    try {
+      console.log("Sending coach registration data:", dataToSend);
+      const response = await axios.post(API_ENDPOINTS.COACH_REGISTER, dataToSend);
+      if (response.status === 201) {
+        Alert.alert("Success", "Coach Registered Successfully!");
+        router.replace('/login');
+      }
+    } catch (error: any) {
+      console.log("Coach registration error:", error);
+      const errorMsg = error.response?.data?.message || error.message || "Registration Failed";
+      Alert.alert("Error", errorMsg);
+    }
+  };
+
+  const handleAdminRegister = async () => {
+    // Validation
+    if (!adminFormData.adminName || !adminFormData.adminAge || !adminFormData.adminNICcardNumber || 
+        !adminFormData.adminContactNumber || !adminFormData.adminEmail || !adminFormData.password) {
+      return Alert.alert("Error", "Please fill all fields");
+    }
+
+    // Contact number validation
+    if (!validateContactNumber(adminFormData.adminContactNumber)) {
+      return Alert.alert("Error", "Contact number must contain exactly 10 digits");
+    }
+
+    // Password validation
+    if (adminFormData.password !== adminFormData.confirmPassword) {
+      return Alert.alert("Error", "Passwords do not match");
+    }
+
+    if (adminFormData.password.length < 6) {
+      return Alert.alert("Error", "Password must be at least 6 characters");
+    }
+
+    // Remove confirmPassword before sending to backend
+    const { confirmPassword, ...dataToSend } = adminFormData;
+
+    try {
+      console.log("Sending admin registration data:", dataToSend);
+      const response = await axios.post(API_ENDPOINTS.ADMIN_REGISTER, dataToSend);
+      if (response.status === 201) {
+        Alert.alert("Success", "Admin Registered Successfully!");
+        router.replace('/login');
+      }
+    } catch (error: any) {
+      console.log("Admin registration error:", error);
+      const errorMsg = error.response?.data?.message || error.message || "Registration Failed";
+      Alert.alert("Error", errorMsg);
+    }
+  };
+
   return (
     registrationType === null ? (
       // Selection Screen
@@ -251,6 +388,28 @@ export default function RegisterScreen() {
           <Text style={styles.selectionButtonTitle}>🏋️ Register as Gym</Text>
           <Text style={styles.selectionButtonDescription}>Register your gym to manage members</Text>
         </TouchableOpacity>
+
+        <TouchableOpacity 
+          style={styles.selectionButton}
+          onPress={() => {
+            resetFormData();
+            setRegistrationType('coach');
+          }}
+        >
+          <Text style={styles.selectionButtonTitle}>👨‍🏫 Register as Coach</Text>
+          <Text style={styles.selectionButtonDescription}>Join as a coach to guide and train members</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity 
+          style={styles.selectionButton}
+          onPress={() => {
+            resetFormData();
+            setRegistrationType('admin');
+          }}
+        >
+          <Text style={styles.selectionButtonTitle}>👨‍💼 Register as Admin</Text>
+          <Text style={styles.selectionButtonDescription}>Join as an admin to manage the platform</Text>
+        </TouchableOpacity>
       </View>
     ) : (
       // Registration Form Screen
@@ -266,14 +425,18 @@ export default function RegisterScreen() {
           <TouchableOpacity 
             style={styles.backButton}
             onPress={() => {
-              router.replace('/login');
+              if (source === 'admin-home') {
+                router.back();
+              } else {
+                router.replace('/registration-type');
+              }
             }}
           >
             <Text style={styles.backButtonText}>← Back</Text>
           </TouchableOpacity>
 
           <Text style={styles.header}>
-            {registrationType === 'gym' ? 'Gym Registration' : 'User Registration'}
+            {registrationType === 'gym' ? 'Gym Registration' : registrationType === 'coach' ? 'Coach Registration' : registrationType === 'admin' ? 'Admin Registration' : 'User Registration'}
           </Text>
 
           {/* GYM REGISTRATION FORM */}
@@ -488,6 +651,203 @@ export default function RegisterScreen() {
             </>
           )}
 
+          {/* COACH REGISTRATION FORM */}
+          {registrationType === 'coach' && (
+            <>
+              {/* Profile Picture Upload Section */}
+              <TouchableOpacity style={styles.imagePicker} onPress={pickImage}>
+                {imageUri ? (
+                  <Image source={{ uri: imageUri }} style={styles.logoPreview} />
+                ) : (
+                  <Text style={styles.imagePickerText}>{uploading ? "Uploading..." : "Click to Upload Photo"}</Text>
+                )}
+              </TouchableOpacity>
+
+              {/* Coach Input Fields */}
+              <TextInput 
+                style={styles.input} 
+                placeholder="Full Name" 
+                onChangeText={(val) => setCoachFormData({...coachFormData, coachName: val})} 
+                value={coachFormData.coachName}
+                placeholderTextColor="#999"
+              />
+              <TextInput 
+                style={styles.input} 
+                placeholder="Age" 
+                keyboardType="numeric"
+                onChangeText={(val) => setCoachFormData({...coachFormData, coachAge: val})} 
+                value={coachFormData.coachAge}
+                placeholderTextColor="#999"
+              />
+              <TextInput 
+                style={styles.input} 
+                placeholder="NIC Card Number" 
+                onChangeText={(val) => setCoachFormData({...coachFormData, coachNICcardNumber: val})} 
+                value={coachFormData.coachNICcardNumber}
+                placeholderTextColor="#999"
+              />
+              <TextInput 
+                style={styles.input} 
+                placeholder="Coach ID" 
+                onChangeText={(val) => setCoachFormData({...coachFormData, coachId: val})} 
+                value={coachFormData.coachId}
+                placeholderTextColor="#999"
+              />
+              <TextInput 
+                style={styles.input} 
+                placeholder="Contact Number" 
+                keyboardType="phone-pad"
+                onChangeText={(val) => setCoachFormData({...coachFormData, coachContactNumber: val})} 
+                value={coachFormData.coachContactNumber}
+                placeholderTextColor="#999"
+              />
+              <TextInput 
+                style={styles.input} 
+                placeholder="Email" 
+                keyboardType="email-address" 
+                autoCapitalize="none"
+                onChangeText={(val) => setCoachFormData({...coachFormData, coachEmail: val})} 
+                value={coachFormData.coachEmail}
+                placeholderTextColor="#999"
+              />
+              <View style={styles.passwordContainer}>
+                <TextInput 
+                  style={styles.passwordInput} 
+                  placeholder="Password" 
+                  secureTextEntry={!showCoachPassword}
+                  onChangeText={(val) => setCoachFormData({...coachFormData, password: val})} 
+                  value={coachFormData.password}
+                  placeholderTextColor="#999"
+                />
+                <TouchableOpacity
+                  style={styles.passwordToggle}
+                  onPress={() => setShowCoachPassword(!showCoachPassword)}
+                >
+                  <MaterialCommunityIcons
+                    name={showCoachPassword ? 'eye' : 'eye-off'}
+                    size={24}
+                    color="#666"
+                  />
+                </TouchableOpacity>
+              </View>
+              <View style={styles.passwordContainer}>
+                <TextInput 
+                  style={styles.passwordInput} 
+                  placeholder="Confirm Password" 
+                  secureTextEntry={!showCoachConfirmPassword}
+                  onChangeText={(val) => setCoachFormData({...coachFormData, confirmPassword: val})} 
+                  value={coachFormData.confirmPassword}
+                  placeholderTextColor="#999"
+                />
+                <TouchableOpacity
+                  style={styles.passwordToggle}
+                  onPress={() => setShowCoachConfirmPassword(!showCoachConfirmPassword)}
+                >
+                  <MaterialCommunityIcons
+                    name={showCoachConfirmPassword ? 'eye' : 'eye-off'}
+                    size={24}
+                    color="#666"
+                  />
+                </TouchableOpacity>
+              </View>
+            </>
+          )}
+
+          {/* ADMIN REGISTRATION FORM */}
+          {registrationType === 'admin' && (
+            <>
+              {/* Profile Picture Upload Section */}
+              <TouchableOpacity style={styles.imagePicker} onPress={pickImage}>
+                {imageUri ? (
+                  <Image source={{ uri: imageUri }} style={styles.logoPreview} />
+                ) : (
+                  <Text style={styles.imagePickerText}>{uploading ? "Uploading..." : "Click to Upload Photo"}</Text>
+                )}
+              </TouchableOpacity>
+
+              {/* Admin Input Fields */}
+              <TextInput 
+                style={styles.input} 
+                placeholder="Full Name" 
+                onChangeText={(val) => setAdminFormData({...adminFormData, adminName: val})} 
+                value={adminFormData.adminName}
+                placeholderTextColor="#999"
+              />
+              <TextInput 
+                style={styles.input} 
+                placeholder="Age" 
+                keyboardType="numeric"
+                onChangeText={(val) => setAdminFormData({...adminFormData, adminAge: val})} 
+                value={adminFormData.adminAge}
+                placeholderTextColor="#999"
+              />
+              <TextInput 
+                style={styles.input} 
+                placeholder="NIC Card Number" 
+                onChangeText={(val) => setAdminFormData({...adminFormData, adminNICcardNumber: val})} 
+                value={adminFormData.adminNICcardNumber}
+                placeholderTextColor="#999"
+              />
+              <TextInput 
+                style={styles.input} 
+                placeholder="Contact Number" 
+                keyboardType="phone-pad"
+                onChangeText={(val) => setAdminFormData({...adminFormData, adminContactNumber: val})} 
+                value={adminFormData.adminContactNumber}
+                placeholderTextColor="#999"
+              />
+              <TextInput 
+                style={styles.input} 
+                placeholder="Email" 
+                keyboardType="email-address" 
+                autoCapitalize="none"
+                onChangeText={(val) => setAdminFormData({...adminFormData, adminEmail: val})} 
+                value={adminFormData.adminEmail}
+                placeholderTextColor="#999"
+              />
+              <View style={styles.passwordContainer}>
+                <TextInput 
+                  style={styles.passwordInput} 
+                  placeholder="Password" 
+                  secureTextEntry={!showAdminPassword}
+                  onChangeText={(val) => setAdminFormData({...adminFormData, password: val})} 
+                  value={adminFormData.password}
+                  placeholderTextColor="#999"
+                />
+                <TouchableOpacity
+                  style={styles.passwordToggle}
+                  onPress={() => setShowAdminPassword(!showAdminPassword)}
+                >
+                  <MaterialCommunityIcons
+                    name={showAdminPassword ? 'eye' : 'eye-off'}
+                    size={24}
+                    color="#666"
+                  />
+                </TouchableOpacity>
+              </View>
+              <View style={styles.passwordContainer}>
+                <TextInput 
+                  style={styles.passwordInput} 
+                  placeholder="Confirm Password" 
+                  secureTextEntry={!showAdminConfirmPassword}
+                  onChangeText={(val) => setAdminFormData({...adminFormData, confirmPassword: val})} 
+                  value={adminFormData.confirmPassword}
+                  placeholderTextColor="#999"
+                />
+                <TouchableOpacity
+                  style={styles.passwordToggle}
+                  onPress={() => setShowAdminConfirmPassword(!showAdminConfirmPassword)}
+                >
+                  <MaterialCommunityIcons
+                    name={showAdminConfirmPassword ? 'eye' : 'eye-off'}
+                    size={24}
+                    color="#666"
+                  />
+                </TouchableOpacity>
+              </View>
+            </>
+          )}
+
           <TouchableOpacity 
             style={[styles.button, { opacity: uploading ? 0.5 : 1 }]} 
             onPress={handleRegister}
@@ -554,6 +914,7 @@ const styles = StyleSheet.create({
   backButton: {
     paddingVertical: 10,
     marginBottom: 20,
+    marginTop: 15,
   },
   backButtonText: {
     fontSize: 16,

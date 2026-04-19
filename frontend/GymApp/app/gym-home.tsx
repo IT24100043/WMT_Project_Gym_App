@@ -729,7 +729,7 @@ export default function GymHomeScreen() {
       const result = await ImagePicker.launchImageLibraryAsync({
         mediaTypes: ImagePicker.MediaTypeOptions.Images,
         allowsEditing: true,
-        aspect: [4, 3],
+        aspect: [1, 1],
         quality: 1,
       });
 
@@ -932,7 +932,7 @@ export default function GymHomeScreen() {
           >
             <Text style={styles.compactImageButtonText}>Change Logo</Text>
           </TouchableOpacity>
-          <Text style={styles.greeting}>Hi {gymDetails?.GymName}!</Text>
+          <Text style={styles.greeting} numberOfLines={2}>Hi {gymDetails?.GymName}!</Text>
           <Text style={styles.subtitle}>Manage Your Gym Operations</Text>
         </View>
 
@@ -2004,6 +2004,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: '#333',
     marginBottom: 5,
+    textAlign: 'center',
   },
   subtitle: {
     fontSize: 14,
@@ -2268,6 +2269,7 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     color: '#333',
     marginBottom: 15,
+    textAlign: 'center',
   },
   gymPostButton: {
     backgroundColor: 'white',

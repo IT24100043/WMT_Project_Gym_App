@@ -43,6 +43,12 @@ app.use('/api/gyminfo', require('./routes/GymInfoRoutes'));
 // User Routes
 app.use('/api/users', require('./routes/UserRoutes'));
 
+// Coach Routes
+app.use('/api/coaches', require('./routes/CoachRoutes'));
+
+// Admin Routes
+app.use('/api/admins', require('./routes/AdminRoutes'));
+
 // Workout Routes
 app.use('/api/workouts', require('./routes/WorkoutRoutes'));
 

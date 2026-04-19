@@ -14,7 +14,7 @@ import { API_ENDPOINTS } from '@/constants/api';
 
 interface HamburgerMenuProps {
   onProfilePress: () => void;
-  pageType: 'gym' | 'user';
+  pageType: 'gym' | 'user' | 'coach' | 'admin';
 }
 
 export default function HamburgerMenu({
@@ -27,6 +27,31 @@ export default function HamburgerMenu({
   const handleGymsPress = () => {
     setMenuVisible(false);
     router.push('/all-gyms');
+  };
+
+  const handleCoachPress = () => {
+    setMenuVisible(false);
+    router.push('/coach-menu');
+  };
+
+  const handleSupplementPress = () => {
+    setMenuVisible(false);
+    router.push('/supplement-menu');
+  };
+
+  const handleWaterManagementPress = () => {
+    setMenuVisible(false);
+    router.push('/water-management');
+  };
+
+  const handleCalorieManagementPress = () => {
+    setMenuVisible(false);
+    router.push('/calorie-management');
+  };
+
+  const handleReviewsPress = () => {
+    setMenuVisible(false);
+    router.push('/reviews');
   };
 
   return (
@@ -120,6 +145,51 @@ export default function HamburgerMenu({
               >
                 <Text style={styles.menuIcon}>🤖</Text>
                 <Text style={styles.menuText}>Gemini AI Engine</Text>
+              </TouchableOpacity>
+
+              {/* Coach Option */}
+              <TouchableOpacity
+                style={styles.menuItem}
+                onPress={handleCoachPress}
+              >
+                <Text style={styles.menuIcon}>👨‍🏫</Text>
+                <Text style={styles.menuText}>Coach</Text>
+              </TouchableOpacity>
+
+              {/* Supplement Option */}
+              <TouchableOpacity
+                style={styles.menuItem}
+                onPress={handleSupplementPress}
+              >
+                <Text style={styles.menuIcon}>💊</Text>
+                <Text style={styles.menuText}>Supplement</Text>
+              </TouchableOpacity>
+
+              {/* Water Management Option */}
+              <TouchableOpacity
+                style={styles.menuItem}
+                onPress={handleWaterManagementPress}
+              >
+                <Text style={styles.menuIcon}>💧</Text>
+                <Text style={styles.menuText}>Water Management</Text>
+              </TouchableOpacity>
+
+              {/* Calorie Management Option */}
+              <TouchableOpacity
+                style={styles.menuItem}
+                onPress={handleCalorieManagementPress}
+              >
+                <Text style={styles.menuIcon}>🍎</Text>
+                <Text style={styles.menuText}>Calorie Management</Text>
+              </TouchableOpacity>
+
+              {/* Reviews Option */}
+              <TouchableOpacity
+                style={styles.menuItem}
+                onPress={handleReviewsPress}
+              >
+                <Text style={styles.menuIcon}>⭐</Text>
+                <Text style={styles.menuText}>Reviews</Text>
               </TouchableOpacity>
             </View>
           </TouchableOpacity>
