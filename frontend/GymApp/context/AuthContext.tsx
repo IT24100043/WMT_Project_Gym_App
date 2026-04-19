@@ -47,20 +47,12 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   const bootstrapAsync = async () => {
     try {
-      const storedUser = await AsyncStorage.getItem('user');
-      console.log('StoredUser retrieved:', storedUser ? 'Found' : 'Not found');
-      if (storedUser) {
-        const parsedUser = JSON.parse(storedUser);
-        // Normalize _id to id if id doesn't exist
-        if (!parsedUser.id && parsedUser._id) {
-          parsedUser.id = parsedUser._id;
-        }
-        console.log('Parsed user role:', parsedUser.role);
-        setUser(parsedUser);
-      }
+      // Always clear stored user on app startup to force re-login
+      await AsyncStorage.removeItem('user');
+      console.log('Cleared stored user on app startup');
+      setUser(null);
     } catch (e) {
-      console.warn('Failed to restore session from AsyncStorage', e);
-      // Continue without stored user - they'll need to login again
+      console.warn('Failed to clear session from AsyncStorage', e);
     } finally {
       console.log('Bootstrap complete, setting isLoading to false');
       setIsLoading(false);
