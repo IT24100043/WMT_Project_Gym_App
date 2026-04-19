@@ -125,6 +125,8 @@ export default function RegisterScreen() {
         setGymFormData((prev) => ({ ...prev, logoUrl: file.secure_url }));
       } else if (registrationType === 'user') {
         setUserFormData((prev) => ({ ...prev, dpUrl: file.secure_url }));
+      } else if (registrationType === 'coach') {
+        setCoachFormData((prev) => ({ ...prev, dpUrl: file.secure_url }));
       } else if (registrationType === 'admin') {
         setAdminFormData((prev) => ({ ...prev, dpUrl: file.secure_url }));
       }
