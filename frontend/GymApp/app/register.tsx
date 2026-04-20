@@ -849,9 +849,8 @@ export default function RegisterScreen() {
           )}
 
           <TouchableOpacity 
-            style={[styles.button, { opacity: uploading ? 0.5 : 1 }]} 
+            style={styles.button} 
             onPress={handleRegister}
-            disabled={uploading}
           >
             <Text style={styles.buttonText}>Register Now</Text>
           </TouchableOpacity>
