@@ -1,7 +1,7 @@
 // API Configuration
 // Change the IP address here to update all API endpoints throughout the app
 
-const IP = '192.168.1.5';
+const IP = '192.168.8.100';
 const PORT = '5000';
 
 export const API_BASE_URL = `http://${IP}:${PORT}`;
@@ -20,7 +20,7 @@ export const API_ENDPOINTS = {
   USER_ROLE: `${API_BASE_URL}/api/users/user-role`,
   COACH_ROLE: `${API_BASE_URL}/api/coaches/coach-role`,
   ADMIN_ROLE: `${API_BASE_URL}/api/admins/admin-role`,
-  
+
   // Registration endpoints
   GYM_REGISTER: `${API_BASE_URL}/api/gyms/gym-register`,
   USER_REGISTER: `${API_BASE_URL}/api/users/user-register`,
@@ -90,5 +90,15 @@ export const API_ENDPOINTS = {
   COACHING: (userId: string) => `${API_BASE_URL}/api/coaching/${userId}`,
   COACHING_APPLY: `${API_BASE_URL}/api/coaching/apply`,
   COACHING_DISMISS: `${API_BASE_URL}/api/coaching/dismiss`,
+
+  // Intake endpoints
+  INTAKE_STATUS: (userId: string, date: string) => `${API_BASE_URL}/api/intake/${userId}/${date}`,
+  INTAKE_ADD_WATER: `${API_BASE_URL}/api/intake/add-water`,
+  INTAKE_UPDATE_WATER: `${API_BASE_URL}/api/intake/update-water`,
+  INTAKE_DELETE_WATER: `${API_BASE_URL}/api/intake/delete-water`,
+  INTAKE_UPDATE_GOALS: `${API_BASE_URL}/api/intake/update-goals`,
+  INTAKE_ADD_FOOD: `${API_BASE_URL}/api/intake/add-food`,
+  INTAKE_UPDATE_FOOD: `${API_BASE_URL}/api/intake/update-food`,
+  INTAKE_DELETE_FOOD: `${API_BASE_URL}/api/intake/delete-food`,
 };
 
