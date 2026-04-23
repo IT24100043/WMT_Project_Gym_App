@@ -65,7 +65,8 @@ app.use('/api/progress', require('./routes/ProgressRoutes'));
 app.use('/api/coaching', require('./routes/CoachingRoutes'));
 
 app.use('/api/intake', require('./routes/intakeRoutes'));
-
+//feedback routes
+app.use('/api/feedback', require('./routes/FeedbackRoutes'));
 
 // Error Handling Middleware
 const { notFoundHandler, errorHandler } = require('./middleware/errorMiddleware');
