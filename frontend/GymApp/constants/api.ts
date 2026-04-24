@@ -1,7 +1,7 @@
 // API Configuration
 // Change the IP address here to update all API endpoints throughout the app
 
-const IP = '10.91.36.125';
+const IP = '192.168.1.5';
 const PORT = '5000';
 
 export const API_BASE_URL = `http://${IP}:${PORT}`;
@@ -100,5 +100,14 @@ export const API_ENDPOINTS = {
   INTAKE_ADD_FOOD: `${API_BASE_URL}/api/intake/add-food`,
   INTAKE_UPDATE_FOOD: `${API_BASE_URL}/api/intake/update-food`,
   INTAKE_DELETE_FOOD: `${API_BASE_URL}/api/intake/delete-food`,
+
+  // Supplement endpoints
+  SUPPLEMENTS_ADD: `${API_BASE_URL}/api/supplements/add`,
+  SUPPLEMENTS_GET_ALL: `${API_BASE_URL}/api/supplements/all`,
+  SUPPLEMENTS_UPDATE: (supplementId: string) => `${API_BASE_URL}/api/supplements/update/${supplementId}`,
+  SUPPLEMENTS_UPDATE_PRICE: (supplementId: string) => `${API_BASE_URL}/api/supplements/update-price/${supplementId}`,
+  SUPPLEMENTS_UPDATE_STOCK: (supplementId: string) => `${API_BASE_URL}/api/supplements/update-stock/${supplementId}`,
+  SUPPLEMENTS_UPDATE_AVAILABILITY: (supplementId: string) => `${API_BASE_URL}/api/supplements/update-availability/${supplementId}`,
+  SUPPLEMENTS_DELETE: (supplementId: string) => `${API_BASE_URL}/api/supplements/delete/${supplementId}`,
 };
 

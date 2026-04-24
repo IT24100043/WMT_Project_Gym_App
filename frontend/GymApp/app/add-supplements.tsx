@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, TextInput, StyleSheet, TouchableOpacity, ScrollView, Alert, Switch } from 'react-native';
 import axios from 'axios';
 import { useRouter } from 'expo-router';
+import { API_ENDPOINTS } from '../constants/api';
 
 interface SupplementForm {
     name: string;
@@ -23,9 +24,7 @@ const AddSupplementScreen = () => {
     });
     
     const [isAvailable, setIsAvailable] = useState<boolean>(true);
-
-    const IP_ADDRESS = '10.91.36.125';
-    const BASE_URL = `http://${IP_ADDRESS}:5000/api/supplements`;
+    const [loading, setLoading] = useState<boolean>(false);
 
     const handleSubmit = async () => {
         if (!formData.name || !formData.price || !formData.type) {
@@ -38,20 +37,28 @@ const AddSupplementScreen = () => {
             type: formData.type,
             price: Number(formData.price),
             description: formData.description,
-            stock: Number(formData.stock),
+            stock: Number(formData.stock) || 0,
             isAvailable: isAvailable
         };
 
         try {
-            await axios.post(`${BASE_URL}/add`, payload);
+            setLoading(true);
+            const response = await axios.post(API_ENDPOINTS.SUPPLEMENTS_ADD, payload, {
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
             
             Alert.alert("Success", "Supplement Added Successfully!", [
                 { text: "OK", onPress: () => router.replace('/admin-home') }
             ]);
             
         } catch (err: any) {
+            console.error("Error fetching supplements [AxiosError: Network Error]", err);
             console.error("Error details:", err.response?.data || err.message);
             Alert.alert("Error", "Failed to add supplement. Check your server connection.");
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -119,8 +126,8 @@ const AddSupplementScreen = () => {
                     onChangeText={(val) => setFormData({...formData, description: val})}
                 />
 
-                <TouchableOpacity style={styles.submitBtn} onPress={handleSubmit}>
-                    <Text style={styles.submitBtnText}>Add Supplement</Text>
+                <TouchableOpacity style={[styles.submitBtn, loading && styles.submitBtnDisabled]} onPress={handleSubmit} disabled={loading}>
+                    <Text style={styles.submitBtnText}>{loading ? 'Adding...' : 'Add Supplement'}</Text>
                 </TouchableOpacity>
             </View>
         </ScrollView>
@@ -150,6 +157,10 @@ const styles = StyleSheet.create({
         alignItems: 'center', 
         marginTop: 10,
         elevation: 2 
+    },
+    submitBtnDisabled: {
+        backgroundColor: '#cccccc',
+        opacity: 0.6
     },
     submitBtnText: { color: '#fff', fontSize: 18, fontWeight: 'bold' }
 });

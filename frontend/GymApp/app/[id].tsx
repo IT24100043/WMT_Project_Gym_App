@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, TextInput, StyleSheet, TouchableOpacity, ScrollView, Alert, Switch } from 'react-native';
 import axios from 'axios';
 import { useLocalSearchParams, useRouter, Stack } from 'expo-router';
+import { API_ENDPOINTS } from '@/constants/api';
 
 
 interface SupplementData {
@@ -27,51 +28,83 @@ const EditSupplement = () => {
     });
     
     const [isAvailable, setIsAvailable] = useState<boolean>(true);
-
-    const IP_ADDRESS = '10.91.36.125';
-    const BASE_URL = `http://${IP_ADDRESS}:5000/api/supplements`;
+    const [loading, setLoading] = useState<boolean>(false);
 
     useEffect(() => {
         if (id) {
-            axios.get(`${BASE_URL}/all`)
-                .then(res => {
-                    const item = res.data.find((s: any) => s._id === id);
-                    if (item) {
-                        setFormData({
-                            name: item.name,
-                            type: item.type,
-                            price: item.price.toString(),
-                            description: item.description,
-                            stock: item.stock.toString(),
-                        });
-                        setIsAvailable(item.isAvailable !== undefined ? item.isAvailable : true);
-                    }
-                })
-                .catch(err => console.log("Fetch Error:", err));
+            fetchSupplementDetails();
         }
     }, [id]);
 
-    const handleUpdate = async () => {
+    const fetchSupplementDetails = async () => {
         try {
-            await axios.put(`${BASE_URL}/update-price/${id}`, {
-                price: Number(formData.price)
-            });
+            const res = await axios.get(API_ENDPOINTS.SUPPLEMENTS_GET_ALL);
+            const item = res.data.find((s: any) => s._id === id);
+            if (item) {
+                setFormData({
+                    _id: item._id,
+                    name: item.name || '',
+                    type: item.type || '',
+                    price: item.price.toString(),
+                    description: item.description || '',
+                    stock: item.stock.toString(),
+                });
+                setIsAvailable(item.isAvailable !== undefined ? item.isAvailable : true);
+            } else {
+                Alert.alert("Error", "Supplement not found");
+                router.back();
+            }
+        } catch (err: any) {
+            console.error("Fetch Error:", err);
+            Alert.alert("Error", "Failed to load supplement details");
+        }
+    };
 
-            await axios.put(`${BASE_URL}/update-stock/${id}`, {
-                stock: Number(formData.stock)
-            });
+    const handleUpdate = async () => {
+        // Validation
+        if (!formData.name.trim()) {
+            Alert.alert("Validation", "Please enter supplement name");
+            return;
+        }
+        if (!formData.type.trim()) {
+            Alert.alert("Validation", "Please enter supplement type");
+            return;
+        }
+        if (!formData.price || Number(formData.price) <= 0) {
+            Alert.alert("Validation", "Please enter a valid price");
+            return;
+        }
+        if (!formData.description.trim()) {
+            Alert.alert("Validation", "Please enter supplement description");
+            return;
+        }
 
-            await axios.put(`${BASE_URL}/update-availability/${id}`, {
+        setLoading(true);
+        try {
+            const updatePayload = {
+                name: formData.name.trim(),
+                type: formData.type.trim(),
+                price: Number(formData.price),
+                description: formData.description.trim(),
+                stock: Number(formData.stock) || 0,
                 isAvailable: isAvailable
-            });
+            };
 
-            Alert.alert("Success", "Updated Successfully!", [
+            const response = await axios.put(
+                API_ENDPOINTS.SUPPLEMENTS_UPDATE(id!),
+                updatePayload
+            );
+
+            Alert.alert("Success", "Supplement updated successfully!", [
                 { text: "OK", onPress: () => router.replace('/supplement-menu') }
             ]);
 
         } catch (err: any) {
             console.error("Update Error Details:", err.response?.data || err.message);
-            Alert.alert("Error", "Update failed.");
+            const errorMessage = err.response?.data?.error || err.message || "Network error";
+            Alert.alert("Error", `Failed to update: ${errorMessage}`);
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -79,19 +112,32 @@ const EditSupplement = () => {
         <ScrollView style={styles.container}>
             <Stack.Screen options={{ title: 'Edit Supplement' }} />
             <View style={styles.form}>
-                <Text style={styles.label}>Name</Text>
+                <Text style={styles.label}>Name *</Text>
                 <TextInput 
-                    style={[styles.input, styles.disabledInput]} 
+                    style={styles.input}
                     value={formData.name} 
-                    editable={false} 
+                    onChangeText={(val: string) => setFormData({...formData, name: val})}
+                    placeholder="Enter supplement name"
+                    editable={!loading}
                 />
                 
-                <Text style={styles.label}>Price (Rs.)</Text>
+                <Text style={styles.label}>Type *</Text>
+                <TextInput 
+                    style={styles.input}
+                    value={formData.type}
+                    onChangeText={(val: string) => setFormData({...formData, type: val})}
+                    placeholder="Enter supplement type"
+                    editable={!loading}
+                />
+
+                <Text style={styles.label}>Price (Rs.) *</Text>
                 <TextInput 
                     style={styles.input} 
                     keyboardType="numeric" 
                     value={formData.price?.toString()} 
-                    onChangeText={(val: string) => setFormData({...formData, price: val})} 
+                    onChangeText={(val: string) => setFormData({...formData, price: val})}
+                    placeholder="Enter price"
+                    editable={!loading}
                 />
 
                 <Text style={styles.label}>Stock Quantity</Text>
@@ -99,34 +145,43 @@ const EditSupplement = () => {
                     style={styles.input} 
                     keyboardType="numeric" 
                     value={formData.stock?.toString()} 
-                    onChangeText={(val: string) => setFormData({...formData, stock: val})} 
+                    onChangeText={(val: string) => setFormData({...formData, stock: val})}
+                    placeholder="Enter stock quantity"
+                    editable={!loading}
                 />
 
-                <Text style={styles.label}>Description</Text>
+                <Text style={styles.label}>Description *</Text>
                 <TextInput 
-                    style={[styles.input, styles.disabledInput, { height: 80 }]} 
+                    style={[styles.input, { height: 100 }]} 
                     multiline 
-                    value={formData.description} 
-                    editable={false} 
+                    value={formData.description}
+                    onChangeText={(val: string) => setFormData({...formData, description: val})}
+                    placeholder="Enter supplement description"
+                    editable={!loading}
                 />
 
                 <View style={styles.switchContainer}>
                     <Text style={styles.label}>Stock Status</Text>
-                    <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 5 }}>
+                    <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 10 }}>
                         <Switch
                             value={isAvailable}
                             onValueChange={(value: boolean) => setIsAvailable(value)}
                             trackColor={{ false: "#767577", true: "#81b0ff" }}
                             thumbColor={isAvailable ? "#007bff" : "#f4f3f4"}
+                            disabled={loading}
                         />
-                        <Text style={{ marginLeft: 10, fontWeight: 'bold', color: isAvailable ? 'green' : 'red' }}>
+                        <Text style={{ marginLeft: 15, fontWeight: 'bold', color: isAvailable ? '#28a745' : '#e74c3c', fontSize: 16 }}>
                             {isAvailable ? 'In Stock' : 'Out of Stock'}
                         </Text>
                     </View>
                 </View>
 
-                <TouchableOpacity style={styles.submitBtn} onPress={handleUpdate}>
-                    <Text style={styles.submitBtnText}>Save Changes</Text>
+                <TouchableOpacity 
+                    style={[styles.submitBtn, loading && styles.submitBtnDisabled]} 
+                    onPress={handleUpdate}
+                    disabled={loading}
+                >
+                    <Text style={styles.submitBtnText}>{loading ? 'Updating...' : 'Save Changes'}</Text>
                 </TouchableOpacity>
             </View>
         </ScrollView>
@@ -134,14 +189,59 @@ const EditSupplement = () => {
 };
 
 const styles = StyleSheet.create({
-    container: { flex: 1, backgroundColor: '#fff', padding: 20 },
-    form: { marginTop: 10 },
-    label: { fontWeight: 'bold', marginBottom: 5 },
-    input: { borderWidth: 1, borderColor: '#ddd', padding: 10, borderRadius: 8, marginBottom: 15, color: '#333' },
-    disabledInput: { backgroundColor: '#f0f0f0', color: '#7f8c8d' },
-    switchContainer: { marginBottom: 20, padding: 10, backgroundColor: '#f9f9f9', borderRadius: 8 },
-    submitBtn: { backgroundColor: '#28a745', padding: 15, borderRadius: 8, alignItems: 'center', marginTop: 10 },
-    submitBtnText: { color: '#fff', fontSize: 18, fontWeight: 'bold' }
+    container: { 
+        flex: 1, 
+        backgroundColor: '#f8f9fa', 
+        padding: 20 
+    },
+    form: { 
+        marginTop: 10,
+        backgroundColor: '#fff',
+        borderRadius: 12,
+        padding: 15,
+        elevation: 2
+    },
+    label: { 
+        fontWeight: 'bold', 
+        marginBottom: 8,
+        color: '#2c3e50',
+        fontSize: 14
+    },
+    input: { 
+        borderWidth: 1, 
+        borderColor: '#ddd', 
+        padding: 12, 
+        borderRadius: 8, 
+        marginBottom: 15, 
+        color: '#333',
+        fontSize: 14,
+        backgroundColor: '#fff'
+    },
+    switchContainer: { 
+        marginBottom: 20, 
+        padding: 15, 
+        backgroundColor: '#f0f8ff', 
+        borderRadius: 8,
+        borderLeftWidth: 4,
+        borderLeftColor: '#007bff'
+    },
+    submitBtn: { 
+        backgroundColor: '#28a745', 
+        padding: 15, 
+        borderRadius: 8, 
+        alignItems: 'center', 
+        marginTop: 10,
+        elevation: 2
+    },
+    submitBtnDisabled: {
+        backgroundColor: '#95a5a6',
+        opacity: 0.6
+    },
+    submitBtnText: { 
+        color: '#fff', 
+        fontSize: 16, 
+        fontWeight: 'bold' 
+    }
 });
 
 export default EditSupplement;

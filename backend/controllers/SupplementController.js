@@ -14,7 +14,14 @@ exports.getAllSupplements = async (req, res) => {
 exports.addSupplement = async (req, res) => {
     try {
         const { name, type, price, description, stock, isAvailable } = req.body; 
-        const newSupplement = new Supplement({ name, type, price, description, stock, });
+        const newSupplement = new Supplement({ 
+            name, 
+            type, 
+            price, 
+            description, 
+            stock: stock || 0,
+            isAvailable: isAvailable !== undefined ? isAvailable : true
+        });
         await newSupplement.save();
         res.status(201).json(newSupplement);
     } catch (err) {
@@ -52,6 +59,31 @@ exports.updateAvailability = async (req, res) => {
         res.status(200).json(updatedSupplement);
     } catch (err) {
         res.status(400).json({ error: "Availability update failed: " + err.message });
+    }
+};
+
+// Update Supplement (Comprehensive update)
+exports.updateSupplement = async (req, res) => {
+    try {
+        const { name, type, price, description, stock, isAvailable } = req.body;
+        const updateData = {};
+        
+        if (name !== undefined) updateData.name = name;
+        if (type !== undefined) updateData.type = type;
+        if (price !== undefined) updateData.price = price;
+        if (description !== undefined) updateData.description = description;
+        if (stock !== undefined) updateData.stock = stock;
+        if (isAvailable !== undefined) updateData.isAvailable = isAvailable === 'true' || isAvailable === true;
+        
+        const updatedSupplement = await Supplement.findByIdAndUpdate(req.params.id, updateData, { new: true });
+        
+        if (!updatedSupplement) {
+            return res.status(404).json({ error: "Supplement not found" });
+        }
+        
+        res.status(200).json(updatedSupplement);
+    } catch (err) {
+        res.status(400).json({ error: "Supplement update failed: " + err.message });
     }
 };
 

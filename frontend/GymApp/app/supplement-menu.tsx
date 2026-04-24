@@ -4,12 +4,15 @@ import axios from 'axios';
 import { Trash2, Edit } from 'lucide-react-native';
 import { useRouter, useFocusEffect } from 'expo-router';
 import { useAuth } from '@/hooks/use-auth';
+import { API_ENDPOINTS } from '../constants/api';
 
 interface Supplement {
     _id: string;
     name: string;
     type: string;
+    description: string;
     price: number | string;
+    stock?: number;
     isAvailable?: boolean;
 }
 
@@ -20,13 +23,10 @@ const SupplementScreen = () => {
     
     const isAdmin = user?.role === 'admin';
 
-    const IP_ADDRESS = '10.91.36.125';
-    const BASE_URL = `http://${IP_ADDRESS}:5000/api/supplements`;
-
     const fetchSupplements = async () => {
         try {
-            console.log("Refreshing list...");
-            const res = await axios.get(`${BASE_URL}/all`); 
+            console.log("Refreshing supplements list...");
+            const res = await axios.get(API_ENDPOINTS.SUPPLEMENTS_GET_ALL); 
             setSupplements(res.data);
         } catch (err) {
             console.error("Error fetching supplements", err);
@@ -44,7 +44,7 @@ const SupplementScreen = () => {
             { text: "Cancel", style: "cancel" },
             { text: "Delete", style: "destructive", onPress: async () => {
                 try {
-                    await axios.delete(`${BASE_URL}/delete/${id}`);
+                    await axios.delete(API_ENDPOINTS.SUPPLEMENTS_DELETE(id));
                     fetchSupplements();
                 } catch (err) {
                     Alert.alert("Error", "Could not delete.");
@@ -56,32 +56,50 @@ const SupplementScreen = () => {
     const renderItem = ({ item }: { item: Supplement }) => (
         <View style={styles.card}>
             <View style={styles.cardBody}>
-                {/* Supplement Info Section */}
-                <View style={styles.infoRow}>
-                    <View>
-                        <Text style={styles.title}>{item.name}</Text>
-                        <Text style={styles.type}>{item.type}</Text>
+                {/* Supplement Header: Name (Type) */}
+                <View style={styles.headerSection}>
+                    <Text style={styles.title}>
+                        {item.name} 
+                        <Text style={styles.typeTag}> ({item.type})</Text>
+                    </Text>
+                </View>
+
+                {/* Description */}
+                {item.description && (
+                    <View style={styles.descriptionSection}>
+                        <Text style={styles.descriptionText} numberOfLines={2}>
+                            {item.description}
+                        </Text>
                     </View>
-                    <Text style={styles.price}>Rs. {item.price}</Text>
+                )}
+
+                {/* Price and Stock Status Row */}
+                <View style={styles.infoRow}>
+                    <View style={styles.priceSection}>
+                        <Text style={styles.priceLabel}>Price</Text>
+                        <Text style={styles.price}>Rs. {item.price}</Text>
+                    </View>
+                    
+                    <View style={styles.stockSection}>
+                        <Text style={styles.stockLabel}>Stock Status</Text>
+                        <Text style={[
+                            styles.stockStatus,
+                            { color: item.isAvailable === false ? '#e74c3c' : '#27ae60' }
+                        ]}>
+                            {item.isAvailable === false ? '● Out of Stock' : '● In Stock'}
+                        </Text>
+                    </View>
                 </View>
                 
-                <Text style={{ 
-                    color: item.isAvailable === false ? '#e74c3c' : '#2ecc71', 
-                    fontWeight: 'bold',
-                    marginTop: 5 
-                }}>
-                    {item.isAvailable === false ? '● Out of Stock' : '● In Stock'}
-                </Text>
-                
+                {/* Admin Action Buttons - Only visible for Admins */}
                 {isAdmin && (
                     <View style={styles.buttonGroup}>
-                        {/* Edit and Delete Buttons */}
                         <TouchableOpacity 
                             style={styles.editBtn} 
                             onPress={() => router.push(`/${item._id}`)}
                         >
                             <Edit size={18} color="#f39c12" />
-                            <Text style={styles.btnTextEdit}> Edit</Text>
+                            <Text style={styles.btnTextEdit}>Edit</Text>
                         </TouchableOpacity>
 
                         <TouchableOpacity 
@@ -89,7 +107,7 @@ const SupplementScreen = () => {
                             onPress={() => handleDelete(item._id)}
                         >
                             <Trash2 size={18} color="#e74c3c" />
-                            <Text style={styles.btnTextDelete}> Delete</Text>
+                            <Text style={styles.btnTextDelete}>Delete</Text>
                         </TouchableOpacity>
                     </View>
                 )}
@@ -117,7 +135,11 @@ const SupplementScreen = () => {
 };
 
 const styles = StyleSheet.create({
-    container: { flex: 1, backgroundColor: '#f8f9fa', padding: 15 },
+    container: { 
+        flex: 1, 
+        backgroundColor: '#f8f9fa', 
+        padding: 15 
+    },
     headerRow: { 
         flexDirection: 'row', 
         justifyContent: 'space-between', 
@@ -125,40 +147,126 @@ const styles = StyleSheet.create({
         marginTop: 40,
         marginBottom: 15 
     },
-    header: { fontSize: 22, fontWeight: 'bold' },
-    addMainBtn: { 
-        backgroundColor: '#007bff', 
-        paddingVertical: 8, 
-        paddingHorizontal: 15, 
-        borderRadius: 8,
-        elevation: 2
+    header: { 
+        fontSize: 22, 
+        fontWeight: 'bold',
+        color: '#2c3e50'
     },
-    addMainBtnText: { color: '#fff', fontWeight: 'bold' },
     card: { 
         backgroundColor: '#fff', 
         borderRadius: 12, 
         marginBottom: 12, 
-        elevation: 2,
+        elevation: 3,
         borderWidth: 1,
-        borderColor: '#eee'
+        borderColor: '#e8e8e8',
+        overflow: 'hidden'
     },
-    cardBody: { padding: 15 },
-    infoRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start' },
-    title: { fontSize: 18, fontWeight: 'bold', color: '#2c3e50' },
-    type: { color: '#7f8c8d', fontSize: 14, marginTop: 2 },
-    price: { fontSize: 16, color: '#007bff', fontWeight: 'bold' },
+    cardBody: { 
+        padding: 15 
+    },
+    headerSection: {
+        marginBottom: 10
+    },
+    title: { 
+        fontSize: 18, 
+        fontWeight: 'bold', 
+        color: '#2c3e50',
+        lineHeight: 24
+    },
+    typeTag: {
+        fontSize: 14,
+        fontWeight: '600',
+        color: '#7f8c8d'
+    },
+    descriptionSection: {
+        marginBottom: 12,
+        paddingVertical: 8,
+        borderBottomWidth: 1,
+        borderBottomColor: '#f0f0f0'
+    },
+    descriptionText: {
+        fontSize: 13,
+        color: '#555555',
+        lineHeight: 18,
+        fontStyle: 'italic'
+    },
+    infoRow: { 
+        flexDirection: 'row', 
+        justifyContent: 'space-between', 
+        alignItems: 'center',
+        marginBottom: 12,
+        paddingBottom: 12,
+        borderBottomWidth: 1,
+        borderBottomColor: '#f0f0f0'
+    },
+    priceSection: {
+        flex: 1
+    },
+    priceLabel: {
+        fontSize: 11,
+        color: '#95a5a6',
+        fontWeight: '600',
+        textTransform: 'uppercase',
+        marginBottom: 3
+    },
+    price: { 
+        fontSize: 18, 
+        color: '#007bff', 
+        fontWeight: 'bold' 
+    },
+    stockSection: {
+        flex: 1,
+        alignItems: 'flex-end'
+    },
+    stockLabel: {
+        fontSize: 11,
+        color: '#95a5a6',
+        fontWeight: '600',
+        textTransform: 'uppercase',
+        marginBottom: 3
+    },
+    stockStatus: {
+        fontSize: 13,
+        fontWeight: 'bold'
+    },
     buttonGroup: { 
         flexDirection: 'row', 
         justifyContent: 'flex-end', 
-        marginTop: 15,
-        borderTopWidth: 1,
-        borderTopColor: '#f5f5f5',
+        gap: 10,
         paddingTop: 10
     },
-    editBtn: { flexDirection: 'row', alignItems: 'center', padding: 5, marginRight: 20 },
-    deleteBtn: { flexDirection: 'row', alignItems: 'center', padding: 5 },
-    btnTextEdit: { color: '#f39c12', fontWeight: 'bold', marginLeft: 5 },
-    btnTextDelete: { color: '#e74c3c', fontWeight: 'bold', marginLeft: 5 }
+    editBtn: { 
+        flexDirection: 'row', 
+        alignItems: 'center', 
+        paddingVertical: 8,
+        paddingHorizontal: 12,
+        backgroundColor: '#fef5e7',
+        borderRadius: 6,
+        borderWidth: 1,
+        borderColor: '#f39c12'
+    },
+    deleteBtn: { 
+        flexDirection: 'row', 
+        alignItems: 'center', 
+        paddingVertical: 8,
+        paddingHorizontal: 12,
+        backgroundColor: '#fadbd8',
+        borderRadius: 6,
+        borderWidth: 1,
+        borderColor: '#e74c3c'
+    },
+    btnTextEdit: { 
+        color: '#f39c12', 
+        fontWeight: 'bold',
+        marginLeft: 6,
+        fontSize: 13
+    },
+    btnTextDelete: { 
+        color: '#e74c3c', 
+        fontWeight: 'bold',
+        marginLeft: 6,
+        fontSize: 13
+    }
 });
 
 export default SupplementScreen;
