@@ -64,8 +64,13 @@ app.use('/api/progress', require('./routes/ProgressRoutes'));
 // Smart Coaching Engine Routes
 app.use('/api/coaching', require('./routes/CoachingRoutes'));
 
+<<<<<<< HEAD
 app.use('/api/intake', require('./routes/intakeRoutes'));
 
+=======
+// Supplement Routes
+app.use('/api/supplements', require('./routes/SupplementRoutes'));
+>>>>>>> origin/supplements-management
 
 // Error Handling Middleware
 const { notFoundHandler, errorHandler } = require('./middleware/errorMiddleware');
