@@ -66,10 +66,15 @@ app.use('/api/coaching', require('./routes/CoachingRoutes'));
 
 // Intake Tracking Routes
 app.use('/api/intake', require('./routes/intakeRoutes'));
+<<<<<<< HEAD
 
 // Supplement Routes
 app.use('/api/supplements', require('./routes/SupplementRoutes'));
 
+=======
+//feedback routes
+app.use('/api/feedback', require('./routes/FeedbackRoutes'));
+>>>>>>> origin/feature/review-management
 
 // Error Handling Middleware
 const { notFoundHandler, errorHandler } = require('./middleware/errorMiddleware');
