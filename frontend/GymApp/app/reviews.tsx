@@ -218,7 +218,8 @@ export default function ReviewsScreen() {
   };
 
   const handleDelete = (item: FeedbackItem) => {
-    const allowed = item.userId === currentUserId;
+    const isOwner = item.userId === currentUserId;
+    const allowed = isOwner || isAdmin;
 
     if (!allowed) {
       Alert.alert('Unauthorized', 'You are not allowed to delete this review.');
@@ -328,7 +329,7 @@ export default function ReviewsScreen() {
 
   const renderReviewItem = ({ item }: { item: FeedbackItem }) => {
     const canEdit = item.userId === currentUserId;
-    const canDelete = item.userId === currentUserId;
+    const canDelete = item.userId === currentUserId || isAdmin;
     const reviewerLabel = reviewerLabels[item.userId] || 'member@private';
     const userLiked = item.likes?.includes(currentUserId) || false;
     const userDisliked = item.dislikes?.includes(currentUserId) || false;

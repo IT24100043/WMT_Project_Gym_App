@@ -1,4 +1,5 @@
 const Feedback = require('../models/feedback');
+const User = require('../models/User');
 const mongoose = require('mongoose');
 
 const memoryFeedbacks = [];
@@ -138,7 +139,7 @@ exports.updateFeedback = async (req, res) => {
 };
 
 // 4. DELETE: Admin can delete any, User can only delete their own
-// @route   POST /api/feedback/delete/:id (or DELETE)
+// @route   DELETE /api/feedback/delete/:id
 exports.deleteFeedback = async (req, res) => {
     try {
         const { userId } = req.body;
@@ -165,8 +166,18 @@ exports.deleteFeedback = async (req, res) => {
             return res.status(404).json({ message: "Review not found" });
         }
 
+        // Check if user is the owner
+        const isOwner = feedback.userId === userId;
+        
+        // Check if user is an admin
+        let isAdmin = false;
+        if (!isOwner) {
+            const user = await User.findById(userId);
+            isAdmin = user && user.role === 'admin';
+        }
+
         // Permission Logic: Admin OR Owner
-        if (feedback.userId === userId) {
+        if (isOwner || isAdmin) {
             await Feedback.findByIdAndDelete(feedbackId);
             return res.status(200).json({ message: "Review deleted successfully" });
         } else {
