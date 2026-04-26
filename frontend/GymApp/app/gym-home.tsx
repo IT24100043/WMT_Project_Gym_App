@@ -57,7 +57,7 @@ export default function GymHomeScreen() {
   const [passwordModalVisible, setPasswordModalVisible] = useState(false);
   const [contactModalVisible, setContactModalVisible] = useState(false);
   const [deleteModalVisible, setDeleteModalVisible] = useState(false);
-  
+
   // Post management modals
   const [updateDescriptionModal, setUpdateDescriptionModal] = useState(false);
   const [updateOpenHoursModal, setUpdateOpenHoursModal] = useState(false);
@@ -70,14 +70,14 @@ export default function GymHomeScreen() {
   const [deletePackageModal, setDeletePackageModal] = useState(false);
   const [deletePostModal, setDeletePostModal] = useState(false);
   const [changeImageModal, setChangeImageModal] = useState(false);
-  
+
   // Image loading state
   const [imageLoading, setImageLoading] = useState(false);
   const [selectedImageUri, setSelectedImageUri] = useState<string | null>(null);
-  
+
   // Current post being edited
   const [currentPostId, setCurrentPostId] = useState<string | null>(null);
-  
+
   // Form data for post actions
   const [postUpdateData, setPostUpdateData] = useState({
     description: '',
@@ -194,7 +194,7 @@ export default function GymHomeScreen() {
 
       const response = await fetch(url);
       const text = await response.text();
-      
+
       // Don't log if it's the expected "no gym information" response
       if (!text.includes('No gym information found')) {
         console.log('Fetching gym posts from:', url);
@@ -317,7 +317,7 @@ export default function GymHomeScreen() {
       'Delete Gym Account',
       'This action cannot be undone. Are you sure you want to delete your gym account?',
       [
-        { text: 'Cancel', onPress: () => {} },
+        { text: 'Cancel', onPress: () => { } },
         {
           text: 'Delete',
           onPress: () => {
@@ -368,7 +368,7 @@ export default function GymHomeScreen() {
 
   const handleLogout = async () => {
     Alert.alert('Logout', 'Are you sure you want to logout?', [
-      { text: 'Cancel', onPress: () => {} },
+      { text: 'Cancel', onPress: () => { } },
       {
         text: 'Logout',
         onPress: async () => {
@@ -746,7 +746,7 @@ export default function GymHomeScreen() {
     try {
       const formData = new FormData();
       const filename = imageUri.split('/').pop() || 'gym-image.jpg';
-      
+
       formData.append('file', {
         uri: imageUri,
         type: 'image/jpeg',
@@ -763,7 +763,7 @@ export default function GymHomeScreen() {
 
       const responseText = await response.text();
       console.log('Cloudinary response:', responseText);
-      
+
       let data;
       try {
         data = JSON.parse(responseText);
@@ -771,7 +771,7 @@ export default function GymHomeScreen() {
         console.error('Failed to parse response:', responseText);
         throw new Error('Invalid response from Cloudinary');
       }
-      
+
       if (!response.ok) {
         console.error('Cloudinary error:', data);
         throw new Error(data.error?.message || `Upload failed: ${response.status}`);
@@ -832,7 +832,7 @@ export default function GymHomeScreen() {
 
         const responseText = await response.text();
         let data;
-        
+
         try {
           data = JSON.parse(responseText);
         } catch (e) {
@@ -867,7 +867,7 @@ export default function GymHomeScreen() {
 
         const responseText = await response.text();
         let data;
-        
+
         try {
           data = JSON.parse(responseText);
         } catch (e) {
@@ -944,1041 +944,1043 @@ export default function GymHomeScreen() {
           </View>
           <View style={styles.divider} />
 
-        <View style={styles.detailRow}>
-          <Text style={styles.detailLabel}>Email</Text>
-          <Text style={styles.detailValue}>{gymDetails?.email}</Text>
+          <View style={styles.detailRow}>
+            <Text style={styles.detailLabel}>Email</Text>
+            <Text style={styles.detailValue}>{gymDetails?.email}</Text>
+          </View>
+          <View style={styles.divider} />
+
+          <View style={styles.detailRow}>
+            <Text style={styles.detailLabel}>Owner Name</Text>
+            <Text style={styles.detailValue}>{gymDetails?.OwnerName}</Text>
+          </View>
+          <View style={styles.divider} />
+
+          <View style={styles.detailRow}>
+            <Text style={styles.detailLabel}>Contact Number</Text>
+            <Text style={styles.detailValue}>{gymDetails?.ownerContactNumber}</Text>
+          </View>
+          <View style={styles.divider} />
+
+          <View style={styles.detailRow}>
+            <Text style={styles.detailLabel}>Gym Type</Text>
+            <Text style={styles.detailValue}>{gymDetails?.gymType}</Text>
+          </View>
         </View>
-        <View style={styles.divider} />
 
-        <View style={styles.detailRow}>
-          <Text style={styles.detailLabel}>Owner Name</Text>
-          <Text style={styles.detailValue}>{gymDetails?.OwnerName}</Text>
-        </View>
-        <View style={styles.divider} />
-
-        <View style={styles.detailRow}>
-          <Text style={styles.detailLabel}>Contact Number</Text>
-          <Text style={styles.detailValue}>{gymDetails?.ownerContactNumber}</Text>
-        </View>
-        <View style={styles.divider} />
-
-        <View style={styles.detailRow}>
-          <Text style={styles.detailLabel}>Gym Type</Text>
-          <Text style={styles.detailValue}>{gymDetails?.gymType}</Text>
-        </View>
-      </View>
-
-      {/* Action Buttons */}
-      <View style={styles.actionsSection}>
-        <TouchableOpacity
-          style={[styles.actionButton, styles.secondaryAction]}
-          onPress={() => setContactModalVisible(true)}
-        >
-          <Text style={styles.secondaryActionText}>📞 Update Contact</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          style={[styles.actionButton, styles.secondaryAction]}
-          onPress={() => setPasswordModalVisible(true)}
-        >
-          <Text style={styles.secondaryActionText}>🔐 Change Password</Text>
-        </TouchableOpacity>
-      </View>
-
-      {/* Gym Post Section */}
-      {gymPosts.length === 0 && (
-        <View style={styles.gymPostSection}>
-          <Text style={styles.gymPostHeading}>Gym Post</Text>
+        {/* Action Buttons */}
+        <View style={styles.actionsSection}>
           <TouchableOpacity
-            style={[styles.actionButton, styles.gymPostButton]}
-            onPress={() => {
-              router.push('/gym-post');
-            }}
+            style={[styles.actionButton, styles.secondaryAction]}
+            onPress={() => setContactModalVisible(true)}
           >
-            <Text style={styles.gymPostButtonText}>📝 Create Gym Post</Text>
+            <Text style={styles.secondaryActionText}>📞 Update Contact</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={[styles.actionButton, styles.secondaryAction]}
+            onPress={() => setPasswordModalVisible(true)}
+          >
+            <Text style={styles.secondaryActionText}>🔐 Change Password</Text>
           </TouchableOpacity>
         </View>
-      )}
 
-      {/* Gym Posts List */}
-      {gymPosts.length > 0 && (
-        <View style={styles.gymPostsListSection}>
-          {gymPosts.map((post) => (
-            <View key={post._id} style={styles.postCard}>
-              {post.gymImg && (
-                <Image
-                  source={{ uri: post.gymImg }}
-                  style={styles.postImage}
-                />
-              )}
-              <View style={styles.postContent}>
-                {/* Gym Name */}
-                <Text style={styles.postGymName}>
-                  {(post.gymId as any)?.GymName || 'Gym'}
-                </Text>
+        {/* Gym Post Section */}
+        {gymPosts.length === 0 && (
+          <View style={styles.gymPostSection}>
+            <Text style={styles.gymPostHeading}>Gym Post</Text>
+            <TouchableOpacity
+              style={[styles.actionButton, styles.gymPostButton]}
+              onPress={() => {
+                router.push('/gym-post');
+              }}
+            >
+              <Text style={styles.gymPostButtonText}>📝 Create Gym Post</Text>
+            </TouchableOpacity>
+          </View>
+        )}
 
-                {/* City */}
-                <Text style={styles.postCity}>
-                  <Text style={styles.label}>City: </Text>
-                  {post.city}
-                </Text>
-
-                {/* Description */}
-                <Text style={styles.postDescription}>
-                  {post.gymInfotmation}
-                </Text>
-
-                {/* Hours and Contact */}
-                <View style={styles.postInfoRow}>
-                  <Text style={styles.postInfo}>
-                    <Text style={styles.label}>Open Hours: </Text>
-                    {post.openHours}
-                  </Text>
-                  <Text style={styles.postInfo}>
-                    <Text style={styles.label}>Close Hours: </Text>
-                    {post.closeHours}
-                  </Text>
-                  <Text style={styles.postInfoContact}>
-                    <Text style={styles.label}>Contact Number: </Text>
-                    {post.gymContactNumber}
-                  </Text>
-                </View>
-
-                {/* Facilities */}
-                {post.gymFasilities && post.gymFasilities.length > 0 && (
-                  <View style={styles.facilitiesSection}>
-                    <Text style={styles.sectionTitle}>Facilities:</Text>
-                    {post.gymFasilities.map((fac: any, idx: number) => (
-                      <View key={idx} style={styles.facilityCard}>
-                        <Text style={styles.facilityCardItem}>
-                          ✓ {fac.fasility}
-                        </Text>
-                      </View>
-                    ))}
-                  </View>
+        {/* Gym Posts List */}
+        {gymPosts.length > 0 && (
+          <View style={styles.gymPostsListSection}>
+            {gymPosts.map((post) => (
+              <View key={post._id} style={styles.postCard}>
+                {post.gymImg && (
+                  <Image
+                    source={{ uri: post.gymImg }}
+                    style={styles.postImage}
+                  />
                 )}
+                <View style={styles.postContent}>
+                  {/* Gym Name */}
+                  <Text style={styles.postGymName}>
+                    {(post.gymId as any)?.GymName || 'Gym'}
+                  </Text>
 
-                {/* Packages */}
-                {post.packages && post.packages.length > 0 && (
-                  <View style={styles.packagesSection}>
-                    <Text style={styles.sectionTitle}>Available Packages:</Text>
-                    {post.packages.map((pkg: any, idx: number) => (
-                      <View key={idx} style={styles.packageItem}>
-                        <Text style={styles.packageName}>{pkg.packageName}</Text>
-                        <Text style={styles.packagePrice}>
-                          <Text style={styles.label}>Price: </Text>
-                          Rs. {pkg.packagePrice}
-                        </Text>
-                        <Text style={styles.packageDuration}>
-                          <Text style={styles.label}>Duration: </Text>
-                          {pkg.packageDuration}
-                        </Text>
-                        {pkg.features && pkg.features.length > 0 && (
-                          <View style={styles.packageFeatures}>
-                            <Text style={styles.label}>Features: </Text>
-                            {pkg.features.map((feature: string, fIdx: number) => (
-                              <Text key={fIdx} style={styles.featureItem}>
-                                ✓ {feature}
-                              </Text>
-                            ))}
-                          </View>
-                        )}
-                      </View>
-                    ))}
-                  </View>
-                )}
+                  {/* City */}
+                  <Text style={styles.postCity}>
+                    <Text style={styles.label}>City: </Text>
+                    {post.city}
+                  </Text>
 
-                {/* Action Buttons */}
-                <View style={styles.postActionsSection}>
-                  {/* Row 1: Update Description */}
-                  <TouchableOpacity
-                    style={[styles.postActionButton, styles.fullWidth]}
-                    onPress={() => {
-                      setCurrentPostId(post._id);
-                      setPostUpdateData({ ...postUpdateData, description: post.gymInfotmation });
-                      setUpdateDescriptionModal(true);
-                    }}
-                  >
-                    <Text style={styles.postActionButtonText}>📝 Update Description</Text>
-                  </TouchableOpacity>
+                  {/* Description */}
+                  <Text style={styles.postDescription}>
+                    {post.gymInfotmation}
+                  </Text>
 
-                  {/* Row 1.5: Change Image */}
-                  <TouchableOpacity
-                    style={[styles.postActionButton, styles.fullWidth]}
-                    onPress={() => {
-                      setCurrentPostId(post._id);
-                      setSelectedImageUri(null);
-                      setChangeImageModal(true);
-                    }}
-                  >
-                    <Text style={styles.postActionButtonText}>🖼️ Change Image</Text>
-                  </TouchableOpacity>
-
-                  {/* Row 2: Update Hours */}
-                  <View style={styles.doubleButtonRow}>
-                    <TouchableOpacity
-                      style={[styles.postActionButton, styles.halfWidth]}
-                      onPress={() => {
-                        setCurrentPostId(post._id);
-                        const parsed = parseTimeString(post.openHours);
-                        setUpdateOpenHourHour(parsed.hour);
-                        setUpdateOpenHourMinute(parsed.minute);
-                        setUpdateOpenHourPeriod(parsed.period);
-                        setUpdateOpenHoursModal(true);
-                      }}
-                    >
-                      <Text style={styles.postActionButtonText}>🕐 Open Hours</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity
-                      style={[styles.postActionButton, styles.halfWidth, styles.marginLeft]}
-                      onPress={() => {
-                        setCurrentPostId(post._id);
-                        const parsed = parseTimeString(post.closeHours);
-                        setUpdateCloseHourHour(parsed.hour);
-                        setUpdateCloseHourMinute(parsed.minute);
-                        setUpdateCloseHourPeriod(parsed.period);
-                        setUpdateCloseHoursModal(true);
-                      }}
-                    >
-                      <Text style={styles.postActionButtonText}>🕘 Close Hours</Text>
-                    </TouchableOpacity>
-                  </View>
-
-                  {/* Row 3: Update Contact & City */}
-                  <View style={styles.doubleButtonRow}>
-                    <TouchableOpacity
-                      style={[styles.postActionButton, styles.halfWidth]}
-                      onPress={() => {
-                        setCurrentPostId(post._id);
-                        setPostUpdateData({ ...postUpdateData, contactNumber: post.gymContactNumber });
-                        setUpdateContactModal(true);
-                      }}
-                    >
-                      <Text style={styles.postActionButtonText}>📞 Contact</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity
-                      style={[styles.postActionButton, styles.halfWidth, styles.marginLeft]}
-                      onPress={() => {
-                        setCurrentPostId(post._id);
-                        setPostUpdateData({ ...postUpdateData, city: post.city });
-                        setUpdateCityModal(true);
-                      }}
-                    >
-                      <Text style={styles.postActionButtonText}>🏙️ City</Text>
-                    </TouchableOpacity>
-                  </View>
-
-                  {/* Row 4: Facilities */}
-                  <View style={styles.doubleButtonRow}>
-                    <TouchableOpacity
-                      style={[styles.postActionButton, styles.halfWidth]}
-                      onPress={() => {
-                        setCurrentPostId(post._id);
-                        setPostUpdateData({ ...postUpdateData, facilityName: '' });
-                        setAddFacilityModal(true);
-                      }}
-                    >
-                      <Text style={styles.postActionButtonText}>➕ Add Facility</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity
-                      style={[styles.postActionButton, styles.halfWidth, styles.marginLeft, styles.dangerBg]}
-                      onPress={() => {
-                        setCurrentPostId(post._id);
-                        setPostUpdateData({ ...postUpdateData, facilityId: '' });
-                        setDeleteFacilityModal(true);
-                      }}
-                    >
-                      <Text style={styles.dangerButtonText}>🗑️ Delete Facility</Text>
-                    </TouchableOpacity>
-                  </View>
-
-                  {/* Row 5: Packages */}
-                  <View style={styles.doubleButtonRow}>
-                    <TouchableOpacity
-                      style={[styles.postActionButton, styles.halfWidth]}
-                      onPress={() => {
-                        setCurrentPostId(post._id);
-                        setPostUpdateData({
-                          ...postUpdateData,
-                          packageName: '',
-                          packagePrice: '',
-                          packageDuration: '',
-                          packageFeatures: [''],
-                        });
-                        setAddPackageModal(true);
-                      }}
-                    >
-                      <Text style={styles.postActionButtonText}>➕ Add Package</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity
-                      style={[styles.postActionButton, styles.halfWidth, styles.marginLeft, styles.dangerBg]}
-                      onPress={() => {
-                        setCurrentPostId(post._id);
-                        setPostUpdateData({ ...postUpdateData, packageId: '' });
-                        setDeletePackageModal(true);
-                      }}
-                    >
-                      <Text style={styles.dangerButtonText}>🗑️ Delete Package</Text>
-                    </TouchableOpacity>
-                  </View>
-
-                  {/* Row 6: Delete Post */}
-                  <TouchableOpacity
-                    style={[styles.postActionButton, styles.fullWidth, styles.dangerBg]}
-                    onPress={() => {
-                      setCurrentPostId(post._id);
-                      setDeletePostModal(true);
-                    }}
-                  >
-                    <Text style={styles.dangerButtonText}>🗑️ Delete Post</Text>
-                  </TouchableOpacity>
-                </View>
-              </View>
-            </View>
-          ))}
-        </View>
-      )}
-
-      <TouchableOpacity
-        style={styles.deleteButton}
-        onPress={handleDeleteGym}
-      >
-        <Text style={styles.deleteButtonText}>🗑️ Delete Account</Text>
-      </TouchableOpacity>
-
-      {/* Logout Button */}
-      <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
-        <Text style={styles.logoutButtonText}>Logout</Text>
-      </TouchableOpacity>
-
-      <View style={styles.bottomSpacer} />
-
-      {/* Update Contact Modal */}
-      <Modal
-        visible={contactModalVisible}
-        transparent={true}
-        animationType="slide"
-      >
-        <View style={styles.modalOverlay}>
-          <View style={styles.modalContent}>
-            <Text style={styles.modalTitle}>Update Contact Number</Text>
-
-            <TextInput
-              style={styles.input}
-              value={contactForm.newContactNumber}
-              onChangeText={(text) =>
-                setContactForm({ newContactNumber: text })
-              }
-              placeholder="Enter new contact number"
-              keyboardType="phone-pad"
-            />
-
-            <View style={styles.buttonGroup}>
-              <TouchableOpacity
-                style={[styles.button, styles.saveButton]}
-                onPress={handleUpdateContact}
-              >
-                <Text style={styles.buttonText}>Update</Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={[styles.button, styles.cancelButton]}
-                onPress={() => {
-                  setContactModalVisible(false);
-                  setContactForm({ newContactNumber: '' });
-                }}
-              >
-                <Text style={styles.cancelButtonText}>Cancel</Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-        </View>
-      </Modal>
-
-      {/* Update Password Modal */}
-      <Modal
-        visible={passwordModalVisible}
-        transparent={true}
-        animationType="slide"
-      >
-        <View style={styles.modalOverlay}>
-          <View style={styles.modalContent}>
-            <Text style={styles.modalTitle}>Change Password</Text>
-
-            <TextInput
-              style={styles.input}
-              value={passwordForm.oldPassword}
-              onChangeText={(text) =>
-                setPasswordForm({ ...passwordForm, oldPassword: text })
-              }
-              placeholder="Enter current password"
-              secureTextEntry
-            />
-
-            <TextInput
-              style={styles.input}
-              value={passwordForm.newPassword}
-              onChangeText={(text) =>
-                setPasswordForm({ ...passwordForm, newPassword: text })
-              }
-              placeholder="Enter new password"
-              secureTextEntry
-            />
-
-            <TextInput
-              style={styles.input}
-              value={passwordForm.confirmPassword}
-              onChangeText={(text) =>
-                setPasswordForm({ ...passwordForm, confirmPassword: text })
-              }
-              placeholder="Confirm new password"
-              secureTextEntry
-            />
-
-            <View style={styles.buttonGroup}>
-              <TouchableOpacity
-                style={[styles.button, styles.saveButton]}
-                onPress={handleUpdatePassword}
-              >
-                <Text style={styles.buttonText}>Update Password</Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={[styles.button, styles.cancelButton]}
-                onPress={() => {
-                  setPasswordModalVisible(false);
-                  setPasswordForm({
-                    oldPassword: '',
-                    newPassword: '',
-                    confirmPassword: '',
-                  });
-                }}
-              >
-                <Text style={styles.cancelButtonText}>Cancel</Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-        </View>
-      </Modal>
-
-      {/* Delete Account Modal */}
-      <Modal
-        visible={deleteModalVisible}
-        transparent={true}
-        animationType="slide"
-      >
-        <View style={styles.modalOverlay}>
-          <View style={styles.modalContent}>
-            <Text style={styles.modalTitle}>Delete Gym Account</Text>
-            <Text style={styles.modalDescription}>
-              Enter your password to confirm account deletion:
-            </Text>
-
-            <TextInput
-              style={styles.input}
-              value={deleteForm.password}
-              onChangeText={(text) =>
-                setDeleteForm({ password: text })
-              }
-              placeholder="Enter your password"
-              secureTextEntry
-            />
-
-            <View style={styles.buttonGroup}>
-              <TouchableOpacity
-                style={[styles.button, styles.saveButton]}
-                onPress={performDelete}
-              >
-                <Text style={styles.buttonText}>Delete Account</Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={[styles.button, styles.cancelButton]}
-                onPress={() => {
-                  setDeleteModalVisible(false);
-                  setDeleteForm({ password: '' });
-                }}
-              >
-                <Text style={styles.cancelButtonText}>Cancel</Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-        </View>
-      </Modal>
-
-      {/* Update Description Modal */}
-      <Modal visible={updateDescriptionModal} transparent={true} animationType="slide">
-        <View style={styles.modalOverlay}>
-          <View style={styles.modalContent}>
-            <Text style={styles.modalTitle}>Update Description</Text>
-            <TextInput
-              style={[styles.input, styles.multilineInput]}
-              placeholder="Enter description"
-              value={postUpdateData.description}
-              onChangeText={(text) =>
-                setPostUpdateData({ ...postUpdateData, description: text })
-              }
-              multiline
-            />
-            <View style={styles.buttonGroup}>
-              <TouchableOpacity
-                style={[styles.button, styles.saveButton]}
-                onPress={handleUpdateDescription}
-              >
-                <Text style={styles.buttonText}>Update</Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={[styles.button, styles.cancelButton]}
-                onPress={() => setUpdateDescriptionModal(false)}
-              >
-                <Text style={styles.cancelButtonText}>Cancel</Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-        </View>
-      </Modal>
-
-      {/* Update Open Hours Modal */}
-      <Modal visible={updateOpenHoursModal} transparent={true} animationType="slide">
-        <View style={styles.modalOverlay}>
-          <View style={styles.modalContent}>
-            <Text style={styles.modalTitle}>Update Open Hours</Text>
-            <View style={styles.timeInputRow}>
-              <View style={styles.timeInputContainer}>
-                <Text style={styles.timeInputLabel}>Hour</Text>
-                <TextInput
-                  style={[styles.input, styles.timeInput]}
-                  placeholder="1-12"
-                  value={updateOpenHourHour}
-                  onChangeText={(text) => {
-                    const num = parseInt(text, 10);
-                    if (text === '' || (num >= 1 && num <= 12)) {
-                      setUpdateOpenHourHour(text);
-                    }
-                  }}
-                  keyboardType="number-pad"
-                  maxLength={2}
-                />
-              </View>
-
-              <View style={styles.timeInputContainer}>
-                <Text style={styles.timeInputLabel}>Min</Text>
-                <TextInput
-                  style={[styles.input, styles.timeInput]}
-                  placeholder="0-59"
-                  value={updateOpenHourMinute}
-                  onChangeText={(text) => {
-                    const num = parseInt(text, 10);
-                    if (text === '' || (num >= 0 && num <= 59)) {
-                      setUpdateOpenHourMinute(text);
-                    }
-                  }}
-                  keyboardType="number-pad"
-                  maxLength={2}
-                />
-              </View>
-
-              <View style={styles.timeInputContainer}>
-                <Text style={styles.timeInputLabel}>Period</Text>
-                <View style={styles.periodSelector}>
-                  <TouchableOpacity
-                    style={[
-                      styles.periodButton,
-                      updateOpenHourPeriod === 'AM' && styles.periodButtonActive,
-                    ]}
-                    onPress={() => setUpdateOpenHourPeriod('AM')}
-                  >
-                    <Text
-                      style={[
-                        styles.periodButtonText,
-                        updateOpenHourPeriod === 'AM' && styles.periodButtonTextActive,
-                      ]}
-                    >
-                      AM
+                  {/* Hours and Contact */}
+                  <View style={styles.postInfoRow}>
+                    <Text style={styles.postInfo}>
+                      <Text style={styles.label}>Open Hours: </Text>
+                      {post.openHours}
                     </Text>
-                  </TouchableOpacity>
-                  <TouchableOpacity
-                    style={[
-                      styles.periodButton,
-                      updateOpenHourPeriod === 'PM' && styles.periodButtonActive,
-                    ]}
-                    onPress={() => setUpdateOpenHourPeriod('PM')}
-                  >
-                    <Text
-                      style={[
-                        styles.periodButtonText,
-                        updateOpenHourPeriod === 'PM' && styles.periodButtonTextActive,
-                      ]}
-                    >
-                      PM
+                    <Text style={styles.postInfo}>
+                      <Text style={styles.label}>Close Hours: </Text>
+                      {post.closeHours}
                     </Text>
-                  </TouchableOpacity>
-                </View>
-              </View>
-            </View>
-            <View style={styles.buttonGroup}>
-              <TouchableOpacity
-                style={[styles.button, styles.saveButton]}
-                onPress={handleUpdateOpenHours}
-              >
-                <Text style={styles.buttonText}>Update</Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={[styles.button, styles.cancelButton]}
-                onPress={() => {
-                  setUpdateOpenHoursModal(false);
-                  setUpdateOpenHourHour('');
-                  setUpdateOpenHourMinute('');
-                  setUpdateOpenHourPeriod('AM');
-                }}
-              >
-                <Text style={styles.cancelButtonText}>Cancel</Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-        </View>
-      </Modal>
-
-      {/* Update Close Hours Modal */}
-      <Modal visible={updateCloseHoursModal} transparent={true} animationType="slide">
-        <View style={styles.modalOverlay}>
-          <View style={styles.modalContent}>
-            <Text style={styles.modalTitle}>Update Close Hours</Text>
-            <View style={styles.timeInputRow}>
-              <View style={styles.timeInputContainer}>
-                <Text style={styles.timeInputLabel}>Hour</Text>
-                <TextInput
-                  style={[styles.input, styles.timeInput]}
-                  placeholder="1-12"
-                  value={updateCloseHourHour}
-                  onChangeText={(text) => {
-                    const num = parseInt(text, 10);
-                    if (text === '' || (num >= 1 && num <= 12)) {
-                      setUpdateCloseHourHour(text);
-                    }
-                  }}
-                  keyboardType="number-pad"
-                  maxLength={2}
-                />
-              </View>
-
-              <View style={styles.timeInputContainer}>
-                <Text style={styles.timeInputLabel}>Min</Text>
-                <TextInput
-                  style={[styles.input, styles.timeInput]}
-                  placeholder="0-59"
-                  value={updateCloseHourMinute}
-                  onChangeText={(text) => {
-                    const num = parseInt(text, 10);
-                    if (text === '' || (num >= 0 && num <= 59)) {
-                      setUpdateCloseHourMinute(text);
-                    }
-                  }}
-                  keyboardType="number-pad"
-                  maxLength={2}
-                />
-              </View>
-
-              <View style={styles.timeInputContainer}>
-                <Text style={styles.timeInputLabel}>Period</Text>
-                <View style={styles.periodSelector}>
-                  <TouchableOpacity
-                    style={[
-                      styles.periodButton,
-                      updateCloseHourPeriod === 'AM' && styles.periodButtonActive,
-                    ]}
-                    onPress={() => setUpdateCloseHourPeriod('AM')}
-                  >
-                    <Text
-                      style={[
-                        styles.periodButtonText,
-                        updateCloseHourPeriod === 'AM' && styles.periodButtonTextActive,
-                      ]}
-                    >
-                      AM
+                    <Text style={styles.postInfoContact}>
+                      <Text style={styles.label}>Contact Number: </Text>
+                      {post.gymContactNumber}
                     </Text>
-                  </TouchableOpacity>
-                  <TouchableOpacity
-                    style={[
-                      styles.periodButton,
-                      updateCloseHourPeriod === 'PM' && styles.periodButtonActive,
-                    ]}
-                    onPress={() => setUpdateCloseHourPeriod('PM')}
-                  >
-                    <Text
-                      style={[
-                        styles.periodButtonText,
-                        updateCloseHourPeriod === 'PM' && styles.periodButtonTextActive,
-                      ]}
+                  </View>
+
+                  {/* Facilities */}
+                  {post.gymFasilities && post.gymFasilities.length > 0 && (
+                    <View style={styles.facilitiesSection}>
+                      <Text style={styles.sectionTitle}>Facilities:</Text>
+                      {post.gymFasilities.map((fac: any, idx: number) => (
+                        <View key={idx} style={styles.facilityCard}>
+                          <Text style={styles.facilityCardItem}>
+                            ✓ {fac.fasility}
+                          </Text>
+                        </View>
+                      ))}
+                    </View>
+                  )}
+
+                  {/* Packages */}
+                  {post.packages && post.packages.length > 0 && (
+                    <View style={styles.packagesSection}>
+                      <Text style={styles.sectionTitle}>Available Packages:</Text>
+                      {post.packages.map((pkg: any, idx: number) => (
+                        <View key={idx} style={styles.packageItem}>
+                          <Text style={styles.packageName}>{pkg.packageName}</Text>
+                          <Text style={styles.packagePrice}>
+                            <Text style={styles.label}>Price: </Text>
+                            Rs. {pkg.packagePrice}
+                          </Text>
+                          <Text style={styles.packageDuration}>
+                            <Text style={styles.label}>Duration: </Text>
+                            {pkg.packageDuration}
+                          </Text>
+                          {pkg.features && pkg.features.length > 0 && (
+                            <View style={styles.packageFeatures}>
+                              <Text style={styles.label}>Features: </Text>
+                              {pkg.features.map((feature: string, fIdx: number) => (
+                                <Text key={fIdx} style={styles.featureItem}>
+                                  ✓ {feature}
+                                </Text>
+                              ))}
+                            </View>
+                          )}
+                        </View>
+                      ))}
+                    </View>
+                  )}
+
+                  {/* Action Buttons */}
+                  <View style={styles.postActionsSection}>
+                    {/* Row 1: Update Description */}
+                    <TouchableOpacity
+                      style={[styles.postActionButton, styles.fullWidth]}
+                      onPress={() => {
+                        setCurrentPostId(post._id);
+                        setPostUpdateData({ ...postUpdateData, description: post.gymInfotmation });
+                        setUpdateDescriptionModal(true);
+                      }}
                     >
-                      PM
-                    </Text>
-                  </TouchableOpacity>
-                </View>
-              </View>
-            </View>
-            <View style={styles.buttonGroup}>
-              <TouchableOpacity
-                style={[styles.button, styles.saveButton]}
-                onPress={handleUpdateCloseHours}
-              >
-                <Text style={styles.buttonText}>Update</Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={[styles.button, styles.cancelButton]}
-                onPress={() => {
-                  setUpdateCloseHoursModal(false);
-                  setUpdateCloseHourHour('');
-                  setUpdateCloseHourMinute('');
-                  setUpdateCloseHourPeriod('PM');
-                }}
-              >
-                <Text style={styles.cancelButtonText}>Cancel</Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-        </View>
-      </Modal>
+                      <Text style={styles.postActionButtonText}>📝 Update Description</Text>
+                    </TouchableOpacity>
 
-      {/* Update Contact Number Modal */}
-      <Modal visible={updateContactModal} transparent={true} animationType="slide">
-        <View style={styles.modalOverlay}>
-          <View style={styles.modalContent}>
-            <Text style={styles.modalTitle}>Update Contact Number</Text>
-            <TextInput
-              style={styles.input}
-              placeholder="e.g., 0701234567"
-              value={postUpdateData.contactNumber}
-              onChangeText={(text) =>
-                setPostUpdateData({ ...postUpdateData, contactNumber: text })
-              }
-              keyboardType="phone-pad"
-            />
-            <View style={styles.buttonGroup}>
-              <TouchableOpacity
-                style={[styles.button, styles.saveButton]}
-                onPress={handleUpdateContactNumber}
-              >
-                <Text style={styles.buttonText}>Update</Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={[styles.button, styles.cancelButton]}
-                onPress={() => setUpdateContactModal(false)}
-              >
-                <Text style={styles.cancelButtonText}>Cancel</Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-        </View>
-      </Modal>
+                    {/* Row 1.5: Change Image */}
+                    <TouchableOpacity
+                      style={[styles.postActionButton, styles.fullWidth]}
+                      onPress={() => {
+                        setCurrentPostId(post._id);
+                        setSelectedImageUri(null);
+                        setChangeImageModal(true);
+                      }}
+                    >
+                      <Text style={styles.postActionButtonText}>🖼️ Change Image</Text>
+                    </TouchableOpacity>
 
-      {/* Update City Modal */}
-      <Modal visible={updateCityModal} transparent={true} animationType="slide">
-        <View style={styles.modalOverlay}>
-          <View style={styles.modalContent}>
-            <Text style={styles.modalTitle}>Update City</Text>
-            <TextInput
-              style={styles.input}
-              placeholder="e.g., Colombo"
-              value={postUpdateData.city}
-              onChangeText={(text) =>
-                setPostUpdateData({ ...postUpdateData, city: text })
-              }
-            />
-            <View style={styles.buttonGroup}>
-              <TouchableOpacity
-                style={[styles.button, styles.saveButton]}
-                onPress={handleUpdateCity}
-              >
-                <Text style={styles.buttonText}>Update</Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={[styles.button, styles.cancelButton]}
-                onPress={() => setUpdateCityModal(false)}
-              >
-                <Text style={styles.cancelButtonText}>Cancel</Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-        </View>
-      </Modal>
-
-      {/* Add Facility Modal */}
-      <Modal visible={addFacilityModal} transparent={true} animationType="slide">
-        <View style={styles.modalOverlay}>
-          <View style={styles.modalContent}>
-            <Text style={styles.modalTitle}>Add Facility</Text>
-            <TextInput
-              style={styles.input}
-              placeholder="e.g., Dumbbells, Treadmills"
-              value={postUpdateData.facilityName}
-              onChangeText={(text) =>
-                setPostUpdateData({ ...postUpdateData, facilityName: text })
-              }
-            />
-            <View style={styles.buttonGroup}>
-              <TouchableOpacity
-                style={[styles.button, styles.saveButton]}
-                onPress={handleAddFacility}
-              >
-                <Text style={styles.buttonText}>Add</Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={[styles.button, styles.cancelButton]}
-                onPress={() => setAddFacilityModal(false)}
-              >
-                <Text style={styles.cancelButtonText}>Cancel</Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-        </View>
-      </Modal>
-
-      {/* Delete Facility Modal */}
-      <Modal visible={deleteFacilityModal} transparent={true} animationType="slide">
-        <View style={styles.modalOverlay}>
-          <View style={styles.modalContent}>
-            <Text style={styles.modalTitle}>Delete Facility</Text>
-            {gymPosts.find(p => p._id === currentPostId)?.gymFasilities.length ? (
-              <>
-                <Text style={styles.modalDescription}>Select a facility to delete:</Text>
-                <ScrollView style={styles.facilityList}>
-                  {gymPosts
-                    .find(p => p._id === currentPostId)
-                    ?.gymFasilities.map((fac: any, idx: number) => (
+                    {/* Row 2: Update Hours */}
+                    <View style={styles.doubleButtonRow}>
                       <TouchableOpacity
-                        key={idx}
-                        style={[
-                          styles.facilityOption,
-                          postUpdateData.facilityId === fac._id && styles.selectedFacility,
-                        ]}
-                        onPress={() =>
-                          setPostUpdateData({ ...postUpdateData, facilityId: fac._id })
-                        }
+                        style={[styles.postActionButton, styles.halfWidth]}
+                        onPress={() => {
+                          setCurrentPostId(post._id);
+                          const parsed = parseTimeString(post.openHours);
+                          setUpdateOpenHourHour(parsed.hour);
+                          setUpdateOpenHourMinute(parsed.minute);
+                          setUpdateOpenHourPeriod(parsed.period);
+                          setUpdateOpenHoursModal(true);
+                        }}
                       >
-                        <Text style={styles.facilityOptionText}>{fac.fasility}</Text>
+                        <Text style={styles.postActionButtonText}>🕐 Open Hours</Text>
                       </TouchableOpacity>
-                    ))}
-                </ScrollView>
-              </>
-            ) : (
-              <Text style={styles.modalDescription}>No facilities available</Text>
-            )}
-            <View style={styles.buttonGroup}>
-              <TouchableOpacity
-                style={[styles.button, styles.saveButton]}
-                onPress={handleDeleteFacility}
-              >
-                <Text style={styles.buttonText}>Delete</Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={[styles.button, styles.cancelButton]}
-                onPress={() => setDeleteFacilityModal(false)}
-              >
-                <Text style={styles.cancelButtonText}>Cancel</Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-        </View>
-      </Modal>
+                      <TouchableOpacity
+                        style={[styles.postActionButton, styles.halfWidth, styles.marginLeft]}
+                        onPress={() => {
+                          setCurrentPostId(post._id);
+                          const parsed = parseTimeString(post.closeHours);
+                          setUpdateCloseHourHour(parsed.hour);
+                          setUpdateCloseHourMinute(parsed.minute);
+                          setUpdateCloseHourPeriod(parsed.period);
+                          setUpdateCloseHoursModal(true);
+                        }}
+                      >
+                        <Text style={styles.postActionButtonText}>🕘 Close Hours</Text>
+                      </TouchableOpacity>
+                    </View>
 
-      {/* Add Package Modal */}
-      <Modal visible={addPackageModal} transparent={true} animationType="slide">
-        <View style={styles.modalOverlay}>
-          <ScrollView style={styles.modalContent}>
-            <Text style={styles.modalTitle}>Add Package</Text>
-            <TextInput
-              style={styles.input}
-              placeholder="Package Name"
-              value={postUpdateData.packageName}
-              onChangeText={(text) =>
-                setPostUpdateData({ ...postUpdateData, packageName: text })
-              }
-            />
-            <TextInput
-              style={styles.input}
-              placeholder="Price"
-              value={postUpdateData.packagePrice}
-              onChangeText={(text) =>
-                setPostUpdateData({ ...postUpdateData, packagePrice: text })
-              }
-              keyboardType="decimal-pad"
-            />
-            <TextInput
-              style={styles.input}
-              placeholder="Duration e.g., 1 Month"
-              value={postUpdateData.packageDuration}
-              onChangeText={(text) =>
-                setPostUpdateData({ ...postUpdateData, packageDuration: text })
-              }
-            />
-            <Text style={styles.subLabel}>Features</Text>
-            {postUpdateData.packageFeatures.map((feature, featureIndex) => (
-              <View key={featureIndex} style={styles.itemRow}>
-                <TextInput
-                  style={[styles.input, styles.flexInput]}
-                  placeholder="e.g., Gym Access"
-                  value={feature}
-                  onChangeText={(text) =>
-                    handleUpdatePackageFeature(featureIndex, text)
-                  }
-                />
-                {postUpdateData.packageFeatures.length > 1 && (
-                  <TouchableOpacity
-                    style={styles.removeButton}
-                    onPress={() =>
-                      handleRemovePackageFeature(featureIndex)
-                    }
-                  >
-                    <Text style={styles.removeButtonText}>Remove</Text>
-                  </TouchableOpacity>
-                )}
+                    {/* Row 3: Update Contact & City */}
+                    <View style={styles.doubleButtonRow}>
+                      <TouchableOpacity
+                        style={[styles.postActionButton, styles.halfWidth]}
+                        onPress={() => {
+                          setCurrentPostId(post._id);
+                          setPostUpdateData({ ...postUpdateData, contactNumber: post.gymContactNumber });
+                          setUpdateContactModal(true);
+                        }}
+                      >
+                        <Text style={styles.postActionButtonText}>📞 Contact</Text>
+                      </TouchableOpacity>
+                      <TouchableOpacity
+                        style={[styles.postActionButton, styles.halfWidth, styles.marginLeft]}
+                        onPress={() => {
+                          setCurrentPostId(post._id);
+                          setPostUpdateData({ ...postUpdateData, city: post.city });
+                          setUpdateCityModal(true);
+                        }}
+                      >
+                        <Text style={styles.postActionButtonText}>🏙️ City</Text>
+                      </TouchableOpacity>
+                    </View>
+
+                    {/* Row 4: Facilities */}
+                    <View style={styles.doubleButtonRow}>
+                      <TouchableOpacity
+                        style={[styles.postActionButton, styles.halfWidth]}
+                        onPress={() => {
+                          setCurrentPostId(post._id);
+                          setPostUpdateData({ ...postUpdateData, facilityName: '' });
+                          setAddFacilityModal(true);
+                        }}
+                      >
+                        <Text style={styles.postActionButtonText}>➕ Add Facility</Text>
+                      </TouchableOpacity>
+                      <TouchableOpacity
+                        style={[styles.postActionButton, styles.halfWidth, styles.marginLeft, styles.dangerBg]}
+                        onPress={() => {
+                          setCurrentPostId(post._id);
+                          setPostUpdateData({ ...postUpdateData, facilityId: '' });
+                          setDeleteFacilityModal(true);
+                        }}
+                      >
+                        <Text style={styles.dangerButtonText}>🗑️ Delete Facility</Text>
+                      </TouchableOpacity>
+                    </View>
+
+                    {/* Row 5: Packages */}
+                    <View style={styles.doubleButtonRow}>
+                      <TouchableOpacity
+                        style={[styles.postActionButton, styles.halfWidth]}
+                        onPress={() => {
+                          setCurrentPostId(post._id);
+                          setPostUpdateData({
+                            ...postUpdateData,
+                            packageName: '',
+                            packagePrice: '',
+                            packageDuration: '',
+                            packageFeatures: [''],
+                          });
+                          setAddPackageModal(true);
+                        }}
+                      >
+                        <Text style={styles.postActionButtonText}>➕ Add Package</Text>
+                      </TouchableOpacity>
+                      <TouchableOpacity
+                        style={[styles.postActionButton, styles.halfWidth, styles.marginLeft, styles.dangerBg]}
+                        onPress={() => {
+                          setCurrentPostId(post._id);
+                          setPostUpdateData({ ...postUpdateData, packageId: '' });
+                          setDeletePackageModal(true);
+                        }}
+                      >
+                        <Text style={styles.dangerButtonText}>🗑️ Delete Package</Text>
+                      </TouchableOpacity>
+                    </View>
+
+                    {/* Row 6: Delete Post */}
+                    <TouchableOpacity
+                      style={[styles.postActionButton, styles.fullWidth, styles.dangerBg]}
+                      onPress={() => {
+                        setCurrentPostId(post._id);
+                        setDeletePostModal(true);
+                      }}
+                    >
+                      <Text style={styles.dangerButtonText}>🗑️ Delete Post</Text>
+                    </TouchableOpacity>
+                  </View>
+                </View>
               </View>
             ))}
-            <TouchableOpacity
-              style={styles.addFeatureButton}
-              onPress={handleAddPackageFeature}
-            >
-              <Text style={styles.addButtonText}>+ Add Feature</Text>
-            </TouchableOpacity>
-            <View style={styles.buttonGroup}>
-              <TouchableOpacity
-                style={[styles.button, styles.saveButton]}
-                onPress={handleAddPackage}
-              >
-                <Text style={styles.buttonText}>Add</Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={[styles.button, styles.cancelButton]}
-                onPress={() => setAddPackageModal(false)}
-              >
-                <Text style={styles.cancelButtonText}>Cancel</Text>
-              </TouchableOpacity>
-            </View>
-          </ScrollView>
-        </View>
-      </Modal>
+          </View>
+        )}
 
-      {/* Delete Package Modal */}
-      <Modal visible={deletePackageModal} transparent={true} animationType="slide">
-        <View style={styles.modalOverlay}>
-          <View style={styles.modalContent}>
-            <Text style={styles.modalTitle}>Delete Package</Text>
-            {gymPosts.find(p => p._id === currentPostId)?.packages.length ? (
-              <>
-                <Text style={styles.modalDescription}>Select a package to delete:</Text>
-                <ScrollView style={styles.facilityList}>
-                  {gymPosts
-                    .find(p => p._id === currentPostId)
-                    ?.packages.map((pkg: any, idx: number) => (
-                      <TouchableOpacity
-                        key={idx}
+        <TouchableOpacity
+          style={styles.deleteButton}
+          onPress={handleDeleteGym}
+        >
+          <Text style={styles.deleteButtonText}>🗑️ Delete Account</Text>
+        </TouchableOpacity>
+
+        {/* Logout Button */}
+        <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
+          <Text style={styles.logoutButtonText}>Logout</Text>
+        </TouchableOpacity>
+
+        <View style={styles.bottomSpacer} />
+
+        {/* Update Contact Modal */}
+        <Modal
+          visible={contactModalVisible}
+          transparent={true}
+          animationType="slide"
+        >
+          <View style={styles.modalOverlay}>
+            <View style={styles.modalContent}>
+              <Text style={styles.modalTitle}>Update Contact Number</Text>
+
+              <TextInput
+                style={styles.input}
+                value={contactForm.newContactNumber}
+                onChangeText={(text) =>
+                  setContactForm({ newContactNumber: text })
+                }
+                placeholder="Enter new contact number"
+                keyboardType="phone-pad"
+              />
+
+              <View style={styles.buttonGroup}>
+                <TouchableOpacity
+                  style={[styles.button, styles.saveButton]}
+                  onPress={handleUpdateContact}
+                >
+                  <Text style={styles.buttonText}>Update</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={[styles.button, styles.cancelButton]}
+                  onPress={() => {
+                    setContactModalVisible(false);
+                    setContactForm({ newContactNumber: '' });
+                  }}
+                >
+                  <Text style={styles.cancelButtonText}>Cancel</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          </View>
+        </Modal>
+
+        {/* Update Password Modal */}
+        <Modal
+          visible={passwordModalVisible}
+          transparent={true}
+          animationType="slide"
+        >
+          <View style={styles.modalOverlay}>
+            <View style={styles.modalContent}>
+              <Text style={styles.modalTitle}>Change Password</Text>
+
+              <TextInput
+                style={styles.input}
+                value={passwordForm.oldPassword}
+                onChangeText={(text) =>
+                  setPasswordForm({ ...passwordForm, oldPassword: text })
+                }
+                placeholder="Enter current password"
+                secureTextEntry
+              />
+
+              <TextInput
+                style={styles.input}
+                value={passwordForm.newPassword}
+                onChangeText={(text) =>
+                  setPasswordForm({ ...passwordForm, newPassword: text })
+                }
+                placeholder="Enter new password"
+                secureTextEntry
+              />
+
+              <TextInput
+                style={styles.input}
+                value={passwordForm.confirmPassword}
+                onChangeText={(text) =>
+                  setPasswordForm({ ...passwordForm, confirmPassword: text })
+                }
+                placeholder="Confirm new password"
+                secureTextEntry
+              />
+
+              <View style={styles.buttonGroup}>
+                <TouchableOpacity
+                  style={[styles.button, styles.saveButton]}
+                  onPress={handleUpdatePassword}
+                >
+                  <Text style={styles.buttonText}>Update Password</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={[styles.button, styles.cancelButton]}
+                  onPress={() => {
+                    setPasswordModalVisible(false);
+                    setPasswordForm({
+                      oldPassword: '',
+                      newPassword: '',
+                      confirmPassword: '',
+                    });
+                  }}
+                >
+                  <Text style={styles.cancelButtonText}>Cancel</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          </View>
+        </Modal>
+
+        {/* Delete Account Modal */}
+        <Modal
+          visible={deleteModalVisible}
+          transparent={true}
+          animationType="slide"
+        >
+          <View style={styles.modalOverlay}>
+            <View style={styles.modalContent}>
+              <Text style={styles.modalTitle}>Delete Gym Account</Text>
+              <Text style={styles.modalDescription}>
+                Enter your password to confirm account deletion:
+              </Text>
+
+              <TextInput
+                style={styles.input}
+                value={deleteForm.password}
+                onChangeText={(text) =>
+                  setDeleteForm({ password: text })
+                }
+                placeholder="Enter your password"
+                secureTextEntry
+              />
+
+              <View style={styles.buttonGroup}>
+                <TouchableOpacity
+                  style={[styles.button, styles.saveButton]}
+                  onPress={performDelete}
+                >
+                  <Text style={styles.buttonText}>Delete Account</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={[styles.button, styles.cancelButton]}
+                  onPress={() => {
+                    setDeleteModalVisible(false);
+                    setDeleteForm({ password: '' });
+                  }}
+                >
+                  <Text style={styles.cancelButtonText}>Cancel</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          </View>
+        </Modal>
+
+        {/* Update Description Modal */}
+        <Modal visible={updateDescriptionModal} transparent={true} animationType="slide">
+          <View style={styles.modalOverlay}>
+            <View style={styles.modalContent}>
+              <Text style={styles.modalTitle}>Update Description</Text>
+              <TextInput
+                style={[styles.input, styles.multilineInput]}
+                placeholder="Enter description"
+                value={postUpdateData.description}
+                onChangeText={(text) =>
+                  setPostUpdateData({ ...postUpdateData, description: text })
+                }
+                multiline
+              />
+              <View style={styles.buttonGroup}>
+                <TouchableOpacity
+                  style={[styles.button, styles.saveButton]}
+                  onPress={handleUpdateDescription}
+                >
+                  <Text style={styles.buttonText}>Update</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={[styles.button, styles.cancelButton]}
+                  onPress={() => setUpdateDescriptionModal(false)}
+                >
+                  <Text style={styles.cancelButtonText}>Cancel</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          </View>
+        </Modal>
+
+        {/* Update Open Hours Modal */}
+        <Modal visible={updateOpenHoursModal} transparent={true} animationType="slide">
+          <View style={styles.modalOverlay}>
+            <View style={styles.modalContent}>
+              <Text style={styles.modalTitle}>Update Open Hours</Text>
+              <View style={styles.timeInputRow}>
+                <View style={styles.timeInputContainer}>
+                  <Text style={styles.timeInputLabel}>Hour</Text>
+                  <TextInput
+                    style={[styles.input, styles.timeInput]}
+                    placeholder="1-12"
+                    value={updateOpenHourHour}
+                    onChangeText={(text) => {
+                      const num = parseInt(text, 10);
+                      if (text === '' || (num >= 1 && num <= 12)) {
+                        setUpdateOpenHourHour(text);
+                      }
+                    }}
+                    keyboardType="number-pad"
+                    maxLength={2}
+                  />
+                </View>
+
+                <View style={styles.timeInputContainer}>
+                  <Text style={styles.timeInputLabel}>Min</Text>
+                  <TextInput
+                    style={[styles.input, styles.timeInput]}
+                    placeholder="0-59"
+                    value={updateOpenHourMinute}
+                    onChangeText={(text) => {
+                      const num = parseInt(text, 10);
+                      if (text === '' || (num >= 0 && num <= 59)) {
+                        setUpdateOpenHourMinute(text);
+                      }
+                    }}
+                    keyboardType="number-pad"
+                    maxLength={2}
+                  />
+                </View>
+
+                <View style={styles.timeInputContainer}>
+                  <Text style={styles.timeInputLabel}>Period</Text>
+                  <View style={styles.periodSelector}>
+                    <TouchableOpacity
+                      style={[
+                        styles.periodButton,
+                        updateOpenHourPeriod === 'AM' && styles.periodButtonActive,
+                      ]}
+                      onPress={() => setUpdateOpenHourPeriod('AM')}
+                    >
+                      <Text
                         style={[
-                          styles.facilityOption,
-                          postUpdateData.packageId === pkg._id && styles.selectedFacility,
+                          styles.periodButtonText,
+                          updateOpenHourPeriod === 'AM' && styles.periodButtonTextActive,
                         ]}
+                      >
+                        AM
+                      </Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                      style={[
+                        styles.periodButton,
+                        updateOpenHourPeriod === 'PM' && styles.periodButtonActive,
+                      ]}
+                      onPress={() => setUpdateOpenHourPeriod('PM')}
+                    >
+                      <Text
+                        style={[
+                          styles.periodButtonText,
+                          updateOpenHourPeriod === 'PM' && styles.periodButtonTextActive,
+                        ]}
+                      >
+                        PM
+                      </Text>
+                    </TouchableOpacity>
+                  </View>
+                </View>
+              </View>
+              <View style={styles.buttonGroup}>
+                <TouchableOpacity
+                  style={[styles.button, styles.saveButton]}
+                  onPress={handleUpdateOpenHours}
+                >
+                  <Text style={styles.buttonText}>Update</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={[styles.button, styles.cancelButton]}
+                  onPress={() => {
+                    setUpdateOpenHoursModal(false);
+                    setUpdateOpenHourHour('');
+                    setUpdateOpenHourMinute('');
+                    setUpdateOpenHourPeriod('AM');
+                  }}
+                >
+                  <Text style={styles.cancelButtonText}>Cancel</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          </View>
+        </Modal>
+
+        {/* Update Close Hours Modal */}
+        <Modal visible={updateCloseHoursModal} transparent={true} animationType="slide">
+          <View style={styles.modalOverlay}>
+            <View style={styles.modalContent}>
+              <Text style={styles.modalTitle}>Update Close Hours</Text>
+              <View style={styles.timeInputRow}>
+                <View style={styles.timeInputContainer}>
+                  <Text style={styles.timeInputLabel}>Hour</Text>
+                  <TextInput
+                    style={[styles.input, styles.timeInput]}
+                    placeholder="1-12"
+                    value={updateCloseHourHour}
+                    onChangeText={(text) => {
+                      const num = parseInt(text, 10);
+                      if (text === '' || (num >= 1 && num <= 12)) {
+                        setUpdateCloseHourHour(text);
+                      }
+                    }}
+                    keyboardType="number-pad"
+                    maxLength={2}
+                  />
+                </View>
+
+                <View style={styles.timeInputContainer}>
+                  <Text style={styles.timeInputLabel}>Min</Text>
+                  <TextInput
+                    style={[styles.input, styles.timeInput]}
+                    placeholder="0-59"
+                    value={updateCloseHourMinute}
+                    onChangeText={(text) => {
+                      const num = parseInt(text, 10);
+                      if (text === '' || (num >= 0 && num <= 59)) {
+                        setUpdateCloseHourMinute(text);
+                      }
+                    }}
+                    keyboardType="number-pad"
+                    maxLength={2}
+                  />
+                </View>
+
+                <View style={styles.timeInputContainer}>
+                  <Text style={styles.timeInputLabel}>Period</Text>
+                  <View style={styles.periodSelector}>
+                    <TouchableOpacity
+                      style={[
+                        styles.periodButton,
+                        updateCloseHourPeriod === 'AM' && styles.periodButtonActive,
+                      ]}
+                      onPress={() => setUpdateCloseHourPeriod('AM')}
+                    >
+                      <Text
+                        style={[
+                          styles.periodButtonText,
+                          updateCloseHourPeriod === 'AM' && styles.periodButtonTextActive,
+                        ]}
+                      >
+                        AM
+                      </Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                      style={[
+                        styles.periodButton,
+                        updateCloseHourPeriod === 'PM' && styles.periodButtonActive,
+                      ]}
+                      onPress={() => setUpdateCloseHourPeriod('PM')}
+                    >
+                      <Text
+                        style={[
+                          styles.periodButtonText,
+                          updateCloseHourPeriod === 'PM' && styles.periodButtonTextActive,
+                        ]}
+                      >
+                        PM
+                      </Text>
+                    </TouchableOpacity>
+                  </View>
+                </View>
+              </View>
+              <View style={styles.buttonGroup}>
+                <TouchableOpacity
+                  style={[styles.button, styles.saveButton]}
+                  onPress={handleUpdateCloseHours}
+                >
+                  <Text style={styles.buttonText}>Update</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={[styles.button, styles.cancelButton]}
+                  onPress={() => {
+                    setUpdateCloseHoursModal(false);
+                    setUpdateCloseHourHour('');
+                    setUpdateCloseHourMinute('');
+                    setUpdateCloseHourPeriod('PM');
+                  }}
+                >
+                  <Text style={styles.cancelButtonText}>Cancel</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          </View>
+        </Modal>
+
+        {/* Update Contact Number Modal */}
+        <Modal visible={updateContactModal} transparent={true} animationType="slide">
+          <View style={styles.modalOverlay}>
+            <View style={styles.modalContent}>
+              <Text style={styles.modalTitle}>Update Contact Number</Text>
+              <TextInput
+                style={styles.input}
+                placeholder="e.g., 0701234567"
+                value={postUpdateData.contactNumber}
+                onChangeText={(text) =>
+                  setPostUpdateData({ ...postUpdateData, contactNumber: text })
+                }
+                keyboardType="phone-pad"
+              />
+              <View style={styles.buttonGroup}>
+                <TouchableOpacity
+                  style={[styles.button, styles.saveButton]}
+                  onPress={handleUpdateContactNumber}
+                >
+                  <Text style={styles.buttonText}>Update</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={[styles.button, styles.cancelButton]}
+                  onPress={() => setUpdateContactModal(false)}
+                >
+                  <Text style={styles.cancelButtonText}>Cancel</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          </View>
+        </Modal>
+
+        {/* Update City Modal */}
+        <Modal visible={updateCityModal} transparent={true} animationType="slide">
+          <View style={styles.modalOverlay}>
+            <View style={styles.modalContent}>
+              <Text style={styles.modalTitle}>Update City</Text>
+              <TextInput
+                style={styles.input}
+                placeholder="e.g., Colombo"
+                value={postUpdateData.city}
+                onChangeText={(text) =>
+                  setPostUpdateData({ ...postUpdateData, city: text })
+                }
+              />
+              <View style={styles.buttonGroup}>
+                <TouchableOpacity
+                  style={[styles.button, styles.saveButton]}
+                  onPress={handleUpdateCity}
+                >
+                  <Text style={styles.buttonText}>Update</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={[styles.button, styles.cancelButton]}
+                  onPress={() => setUpdateCityModal(false)}
+                >
+                  <Text style={styles.cancelButtonText}>Cancel</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          </View>
+        </Modal>
+
+        {/* Add Facility Modal */}
+        <Modal visible={addFacilityModal} transparent={true} animationType="slide">
+          <View style={styles.modalOverlay}>
+            <View style={styles.modalContent}>
+              <Text style={styles.modalTitle}>Add Facility</Text>
+              <TextInput
+                style={styles.input}
+                placeholder="e.g., Dumbbells, Treadmills"
+                value={postUpdateData.facilityName}
+                onChangeText={(text) =>
+                  setPostUpdateData({ ...postUpdateData, facilityName: text })
+                }
+              />
+              <View style={styles.buttonGroup}>
+                <TouchableOpacity
+                  style={[styles.button, styles.saveButton]}
+                  onPress={handleAddFacility}
+                >
+                  <Text style={styles.buttonText}>Add</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={[styles.button, styles.cancelButton]}
+                  onPress={() => setAddFacilityModal(false)}
+                >
+                  <Text style={styles.cancelButtonText}>Cancel</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          </View>
+        </Modal>
+
+        {/* Delete Facility Modal */}
+        <Modal visible={deleteFacilityModal} transparent={true} animationType="slide">
+          <View style={styles.modalOverlay}>
+            <View style={styles.modalContent}>
+              <Text style={styles.modalTitle}>Delete Facility</Text>
+              {gymPosts.find(p => p._id === currentPostId)?.gymFasilities.length ? (
+                <>
+                  <Text style={styles.modalDescription}>Select a facility to delete:</Text>
+                  <ScrollView style={styles.facilityList}>
+                    {gymPosts
+                      .find(p => p._id === currentPostId)
+                      ?.gymFasilities.map((fac: any, idx: number) => (
+                        <TouchableOpacity
+                          key={idx}
+                          style={[
+                            styles.facilityOption,
+                            postUpdateData.facilityId === fac._id && styles.selectedFacility,
+                          ]}
+                          onPress={() =>
+                            setPostUpdateData({ ...postUpdateData, facilityId: fac._id })
+                          }
+                        >
+                          <Text style={styles.facilityOptionText}>{fac.fasility}</Text>
+                        </TouchableOpacity>
+                      ))}
+                  </ScrollView>
+                </>
+              ) : (
+                <Text style={styles.modalDescription}>No facilities available</Text>
+              )}
+              <View style={styles.buttonGroup}>
+                <TouchableOpacity
+                  style={[styles.button, styles.saveButton]}
+                  onPress={handleDeleteFacility}
+                >
+                  <Text style={styles.buttonText}>Delete</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={[styles.button, styles.cancelButton]}
+                  onPress={() => setDeleteFacilityModal(false)}
+                >
+                  <Text style={styles.cancelButtonText}>Cancel</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          </View>
+        </Modal>
+
+        {/* Add Package Modal */}
+        <Modal visible={addPackageModal} transparent={true} animationType="slide">
+          <View style={styles.modalOverlay}>
+            <View style={styles.modalContent}>
+              <Text style={styles.modalTitle}>Add Package</Text>
+              <ScrollView style={{ maxHeight: 400 }} showsVerticalScrollIndicator={false}>
+                <TextInput
+                  style={styles.input}
+                  placeholder="Package Name"
+                  value={postUpdateData.packageName}
+                  onChangeText={(text) =>
+                    setPostUpdateData({ ...postUpdateData, packageName: text })
+                  }
+                />
+                <TextInput
+                  style={styles.input}
+                  placeholder="Price"
+                  value={postUpdateData.packagePrice}
+                  onChangeText={(text) =>
+                    setPostUpdateData({ ...postUpdateData, packagePrice: text })
+                  }
+                  keyboardType="decimal-pad"
+                />
+                <TextInput
+                  style={styles.input}
+                  placeholder="Duration e.g., 1 Month"
+                  value={postUpdateData.packageDuration}
+                  onChangeText={(text) =>
+                    setPostUpdateData({ ...postUpdateData, packageDuration: text })
+                  }
+                />
+                <Text style={styles.subLabel}>Features</Text>
+                {postUpdateData.packageFeatures.map((feature, featureIndex) => (
+                  <View key={featureIndex} style={styles.itemRow}>
+                    <TextInput
+                      style={[styles.input, styles.flexInput]}
+                      placeholder="e.g., Gym Access"
+                      value={feature}
+                      onChangeText={(text) =>
+                        handleUpdatePackageFeature(featureIndex, text)
+                      }
+                    />
+                    {postUpdateData.packageFeatures.length > 1 && (
+                      <TouchableOpacity
+                        style={styles.removeButton}
                         onPress={() =>
-                          setPostUpdateData({ ...postUpdateData, packageId: pkg._id })
+                          handleRemovePackageFeature(featureIndex)
                         }
                       >
-                        <Text style={styles.facilityOptionText}>
-                          {pkg.packageName} - Rs. {pkg.packagePrice}
-                        </Text>
+                        <Text style={styles.removeButtonText}>Remove</Text>
                       </TouchableOpacity>
-                    ))}
-                </ScrollView>
-              </>
-            ) : (
-              <Text style={styles.modalDescription}>No packages available</Text>
-            )}
-            <View style={styles.buttonGroup}>
-              <TouchableOpacity
-                style={[styles.button, styles.saveButton]}
-                onPress={handleDeletePackage}
-              >
-                <Text style={styles.buttonText}>Delete</Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={[styles.button, styles.cancelButton]}
-                onPress={() => setDeletePackageModal(false)}
-              >
-                <Text style={styles.cancelButtonText}>Cancel</Text>
-              </TouchableOpacity>
+                    )}
+                  </View>
+                ))}
+                <TouchableOpacity
+                  style={styles.addFeatureButton}
+                  onPress={handleAddPackageFeature}
+                >
+                  <Text style={styles.addButtonText}>+ Add Feature</Text>
+                </TouchableOpacity>
+              </ScrollView>
+              <View style={styles.buttonGroup}>
+                <TouchableOpacity
+                  style={[styles.button, styles.saveButton]}
+                  onPress={handleAddPackage}
+                >
+                  <Text style={styles.buttonText}>Add</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={[styles.button, styles.cancelButton]}
+                  onPress={() => setAddPackageModal(false)}
+                >
+                  <Text style={styles.cancelButtonText}>Cancel</Text>
+                </TouchableOpacity>
+              </View>
             </View>
           </View>
-        </View>
-      </Modal>
+        </Modal>
 
-      {/* Delete Post Modal */}
-      <Modal visible={deletePostModal} transparent={true} animationType="slide">
-        <View style={styles.modalOverlay}>
-          <View style={styles.modalContent}>
-            <Text style={styles.modalTitle}>Delete Post</Text>
-            <Text style={styles.modalDescription}>
-              Are you sure you want to delete this post? This action cannot be undone.
-            </Text>
-            <View style={styles.buttonGroup}>
-              <TouchableOpacity
-                style={[styles.button, styles.saveButton]}
-                onPress={handleDeletePost}
-              >
-                <Text style={styles.buttonText}>Delete Post</Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={[styles.button, styles.cancelButton]}
-                onPress={() => setDeletePostModal(false)}
-              >
-                <Text style={styles.cancelButtonText}>Cancel</Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-        </View>
-      </Modal>
-
-      {/* Change Image Modal */}
-      <Modal visible={changeImageModal} transparent={true} animationType="slide">
-        <View style={styles.modalOverlay}>
-          <View style={styles.modalContent}>
-            <Text style={styles.modalTitle}>
-              {currentPostId ? 'Change Gym Image' : 'Change Gym Logo'}
-            </Text>
-            
-            <TouchableOpacity
-              style={styles.imagePickerBox}
-              onPress={pickImageForChange}
-              disabled={imageLoading}
-            >
-              {selectedImageUri ? (
-                <Image
-                  source={{ uri: selectedImageUri }}
-                  style={styles.imagePreview}
-                />
+        {/* Delete Package Modal */}
+        <Modal visible={deletePackageModal} transparent={true} animationType="slide">
+          <View style={styles.modalOverlay}>
+            <View style={styles.modalContent}>
+              <Text style={styles.modalTitle}>Delete Package</Text>
+              {gymPosts.find(p => p._id === currentPostId)?.packages.length ? (
+                <>
+                  <Text style={styles.modalDescription}>Select a package to delete:</Text>
+                  <ScrollView style={styles.facilityList}>
+                    {gymPosts
+                      .find(p => p._id === currentPostId)
+                      ?.packages.map((pkg: any, idx: number) => (
+                        <TouchableOpacity
+                          key={idx}
+                          style={[
+                            styles.facilityOption,
+                            postUpdateData.packageId === pkg._id && styles.selectedFacility,
+                          ]}
+                          onPress={() =>
+                            setPostUpdateData({ ...postUpdateData, packageId: pkg._id })
+                          }
+                        >
+                          <Text style={styles.facilityOptionText}>
+                            {pkg.packageName} - Rs. {pkg.packagePrice}
+                          </Text>
+                        </TouchableOpacity>
+                      ))}
+                  </ScrollView>
+                </>
               ) : (
-                <Text style={styles.imagePickerPlaceholder}>📸 Click to select image</Text>
+                <Text style={styles.modalDescription}>No packages available</Text>
               )}
-            </TouchableOpacity>
+              <View style={styles.buttonGroup}>
+                <TouchableOpacity
+                  style={[styles.button, styles.saveButton]}
+                  onPress={handleDeletePackage}
+                >
+                  <Text style={styles.buttonText}>Delete</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={[styles.button, styles.cancelButton]}
+                  onPress={() => setDeletePackageModal(false)}
+                >
+                  <Text style={styles.cancelButtonText}>Cancel</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          </View>
+        </Modal>
 
-            <View style={styles.buttonGroup}>
+        {/* Delete Post Modal */}
+        <Modal visible={deletePostModal} transparent={true} animationType="slide">
+          <View style={styles.modalOverlay}>
+            <View style={styles.modalContent}>
+              <Text style={styles.modalTitle}>Delete Post</Text>
+              <Text style={styles.modalDescription}>
+                Are you sure you want to delete this post? This action cannot be undone.
+              </Text>
+              <View style={styles.buttonGroup}>
+                <TouchableOpacity
+                  style={[styles.button, styles.saveButton]}
+                  onPress={handleDeletePost}
+                >
+                  <Text style={styles.buttonText}>Delete Post</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={[styles.button, styles.cancelButton]}
+                  onPress={() => setDeletePostModal(false)}
+                >
+                  <Text style={styles.cancelButtonText}>Cancel</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          </View>
+        </Modal>
+
+        {/* Change Image Modal */}
+        <Modal visible={changeImageModal} transparent={true} animationType="slide">
+          <View style={styles.modalOverlay}>
+            <View style={styles.modalContent}>
+              <Text style={styles.modalTitle}>
+                {currentPostId ? 'Change Gym Image' : 'Change Gym Logo'}
+              </Text>
+
               <TouchableOpacity
-                style={[styles.button, styles.saveButton]}
-                onPress={handleUpdateImage}
-                disabled={!selectedImageUri || imageLoading}
-              >
-                <Text style={styles.buttonText}>
-                  {imageLoading ? 'Uploading...' : 'Update Image'}
-                </Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={[styles.button, styles.cancelButton]}
-                onPress={() => {
-                  setChangeImageModal(false);
-                  setSelectedImageUri(null);
-                }}
+                style={styles.imagePickerBox}
+                onPress={pickImageForChange}
                 disabled={imageLoading}
               >
-                <Text style={styles.cancelButtonText}>Cancel</Text>
+                {selectedImageUri ? (
+                  <Image
+                    source={{ uri: selectedImageUri }}
+                    style={styles.imagePreview}
+                  />
+                ) : (
+                  <Text style={styles.imagePickerPlaceholder}>📸 Click to select image</Text>
+                )}
               </TouchableOpacity>
+
+              <View style={styles.buttonGroup}>
+                <TouchableOpacity
+                  style={[styles.button, styles.saveButton]}
+                  onPress={handleUpdateImage}
+                  disabled={!selectedImageUri || imageLoading}
+                >
+                  <Text style={styles.buttonText}>
+                    {imageLoading ? 'Uploading...' : 'Update Image'}
+                  </Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={[styles.button, styles.cancelButton]}
+                  onPress={() => {
+                    setChangeImageModal(false);
+                    setSelectedImageUri(null);
+                  }}
+                  disabled={imageLoading}
+                >
+                  <Text style={styles.cancelButtonText}>Cancel</Text>
+                </TouchableOpacity>
+              </View>
             </View>
           </View>
-        </View>
-      </Modal>
+        </Modal>
       </ScrollView>
     </View>
   );

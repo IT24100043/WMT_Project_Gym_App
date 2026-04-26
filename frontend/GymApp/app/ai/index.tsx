@@ -16,7 +16,7 @@ import { AuthContext } from '@/context/AuthContext';
 import { API_ENDPOINTS } from '@/constants/api';
 
 // NOTE: Update this if using different backend URL (e.g., 192.168.1.5:5000)
-const API_URL = API_ENDPOINTS.AI_GENERATE_PLAN;
+const API_URL = API_ENDPOINTS.AI_GENERATE_ROUTINE;
 
 export default function AiFormScreen() {
   const router = useRouter();
@@ -96,7 +96,7 @@ export default function AiFormScreen() {
 
   // Submit Handler
   const handleGeneratePlan = async () => {
-    if (!validateForm()) return;
+    if (!validateForm() || !imageUri) return;
 
     try {
       setLoading(true);

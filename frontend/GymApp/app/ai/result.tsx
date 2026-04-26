@@ -11,13 +11,14 @@ export default function AIResultScreen() {
   const router = useRouter();
   const { user } = useContext(AuthContext);
   const { planData } = useLocalSearchParams();
-  const [result, setResult] = useState(null);
+  const [result, setResult] = useState<any>(null);
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
     if (planData) {
       try {
-        const parsed = JSON.parse(planData);
+        const payload = Array.isArray(planData) ? planData[0] : planData;
+        const parsed = JSON.parse(payload);
         setResult(parsed);
       } catch (err) {
         console.error("Failed to parse plan payload", err);
@@ -43,7 +44,7 @@ export default function AIResultScreen() {
       // or map correctly over the ai generated strings securely.
       const exercisesList = (recommendation?.exercises?.length > 0) ? recommendation.exercises : ['Generated AI Exercise Routine'];
 
-      const parsedExercises = exercisesList.map(str => ({
+      const parsedExercises = exercisesList.map((str: any) => ({
         exerciseName: typeof str === 'string' ? str : 'Coach AI Routine',
         type: 'reps',
         sets: 3, // Safe beginner default parsing map
@@ -75,7 +76,7 @@ export default function AIResultScreen() {
         const errData = await res.json();
         Alert.alert('Error', errData.message || 'Failed saving plan to DB.');
       }
-    } catch (e) {
+    } catch (e: any) {
       Alert.alert('Network Error', e.message);
     } finally {
         setSaving(false);
@@ -112,7 +113,7 @@ export default function AIResultScreen() {
 
         <Text style={styles.sectionHeader}>Prescribed Routine:</Text>
         <View style={styles.exercisesBox}>
-            {recommendation?.exercises?.map((exercise, index) => (
+            {recommendation?.exercises?.map((exercise: any, index: number) => (
                <Text key={index} style={styles.exerciseItem}>• {exercise}</Text>
             ))}
         </View>

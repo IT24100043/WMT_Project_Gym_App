@@ -70,8 +70,11 @@ app.use('/api/intake', require('./routes/intakeRoutes'));
 // Supplement Routes
 app.use('/api/supplements', require('./routes/SupplementRoutes'));
 
-//feedback routes
+// feedback routes
 app.use('/api/feedback', require('./routes/FeedbackRoutes'));
+
+// Coach Post Routes
+app.use('/api/coachposts', require('./routes/CoachpostRoutes'));
 
 // Error Handling Middleware
 const { notFoundHandler, errorHandler } = require('./middleware/errorMiddleware');

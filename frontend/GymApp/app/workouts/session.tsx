@@ -7,7 +7,7 @@ import { API_ENDPOINTS } from '@/constants/api';
 const WORKOUTS_API = API_ENDPOINTS.WORKOUTS;
 const SESSIONS_API = API_ENDPOINTS.SESSION_FINISH;
 
-const NumberStepper = ({ value, label, onChange }) => {
+const NumberStepper = ({ value, label, onChange }: { value: string, label: string, onChange: (v: string) => void }) => {
   const [localText, setLocalText] = useState(value);
 
   useEffect(() => { setLocalText(value); }, [value]);
@@ -28,7 +28,7 @@ const NumberStepper = ({ value, label, onChange }) => {
     onChange(v);
   };
 
-  const handleTextChange = (text) => {
+  const handleTextChange = (text: string) => {
     const cleanText = text.replace(/[^0-9]/g, '');
     setLocalText(cleanText);
     onChange(cleanText === '' ? '0' : cleanText);
@@ -66,7 +66,7 @@ export default function CarouselSessionScreen() {
   const [submitting, setSubmitting] = useState(false);
   
   const [routineTitle, setRoutineTitle] = useState('');
-  const [exercises, setExercises] = useState([]);
+  const [exercises, setExercises] = useState<any[]>([]);
   const [currentIndex, setCurrentIndex] = useState(-1);
 
   useEffect(() => {
@@ -81,13 +81,13 @@ export default function CarouselSessionScreen() {
       if (res.ok) {
         setRoutineTitle(data.workout.title);
         
-        const targetDay = data.workout.days.find(d => d.dayName === dayName);
+        const targetDay = data.workout.days.find((d: any) => d.dayName === dayName);
         if (!targetDay || targetDay.dayType !== 'workout') {
              Alert.alert('Error', 'Invalid Session Configuration');
              return;
         }
 
-        const mappedExercises = targetDay.exercises.map((ex, idx) => ({
+        const mappedExercises = targetDay.exercises.map((ex: any, idx: number) => ({
             id: ex._id || Date.now().toString() + idx,
             exerciseName: ex.exerciseName,
             type: ex.type,
@@ -109,14 +109,14 @@ export default function CarouselSessionScreen() {
         setCurrentIndex(0);
 
       }
-    } catch (error) {
+    } catch (error: any) {
       Alert.alert('Network Error', error.message);
     } finally {
       setLoading(false);
     }
   };
 
-  const updateActual = (field, value) => {
+  const updateActual = (field: string, value: string) => {
       const cloned = [...exercises];
       cloned[currentIndex][field] = value;
       cloned[currentIndex].skipped = false; // Retain tracking context smoothly natively
@@ -179,7 +179,7 @@ export default function CarouselSessionScreen() {
         const data = await res.json();
         Alert.alert('Submission Error', data.message || 'Failed to map history natively.');
       }
-    } catch (error) {
+    } catch (error: any) {
       Alert.alert('Network Error', error.message);
     } finally {
       setSubmitting(false);
@@ -201,7 +201,7 @@ export default function CarouselSessionScreen() {
              <Text style={styles.summaryTitle}>Mission Accomplished! 🏆</Text>
              <Text style={styles.summarySubtitle}>Review your actual metrics before pushing.</Text>
              
-             {exercises.map((ex, idx) => (
+             {exercises.map((ex: any, idx: number) => (
                 <View key={idx} style={[styles.summaryCard, ex.skipped && { borderColor: '#fca5a5', backgroundColor: '#fef2f2' }]}>
                     <Text style={styles.summaryExName}>{ex.exerciseName} {ex.skipped && '(Skipped)'}</Text>
                     <View style={styles.summaryGrid}>
@@ -271,14 +271,14 @@ export default function CarouselSessionScreen() {
                 <View style={styles.stepperGrid}>
                     {activeEx.type === 'reps' ? (
                         <View style={{flexDirection: 'row', gap: 15}}>
-                            <NumberStepper label="Sets Completed" value={activeEx.actualSets} onChange={(val) => updateActual('actualSets', val)} />
-                            <NumberStepper label="Reps Achieved" value={activeEx.actualReps} onChange={(val) => updateActual('actualReps', val)} />
+                            <NumberStepper label="Sets Completed" value={activeEx.actualSets} onChange={(val: string) => updateActual('actualSets', val)} />
+                            <NumberStepper label="Reps Achieved" value={activeEx.actualReps} onChange={(val: string) => updateActual('actualReps', val)} />
                         </View>
                     ) : (
-                        <NumberStepper label="Total Duration (Sec)" value={activeEx.actualDuration} onChange={(val) => updateActual('actualDuration', val)} />
+                        <NumberStepper label="Total Duration (Sec)" value={activeEx.actualDuration} onChange={(val: string) => updateActual('actualDuration', val)} />
                     )}
                     <View style={{height: 15}}/>
-                    <NumberStepper label="Actual Weight (kg)" value={activeEx.actualWeight} onChange={(val) => updateActual('actualWeight', val)} />
+                    <NumberStepper label="Actual Weight (kg)" value={activeEx.actualWeight} onChange={(val: string) => updateActual('actualWeight', val)} />
                 </View>
             </View>
 

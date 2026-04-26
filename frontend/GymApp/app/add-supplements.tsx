@@ -16,13 +16,13 @@ const AddSupplementScreen = () => {
     const router = useRouter();
 
     const [formData, setFormData] = useState<SupplementForm>({
-        name: '', 
-        type: '', 
-        price: '', 
-        description: '', 
+        name: '',
+        type: '',
+        price: '',
+        description: '',
         stock: ''
     });
-    
+
     const [isAvailable, setIsAvailable] = useState<boolean>(true);
     const [loading, setLoading] = useState<boolean>(false);
 
@@ -48,11 +48,11 @@ const AddSupplementScreen = () => {
                     'Content-Type': 'application/json'
                 }
             });
-            
+
             Alert.alert("Success", "Supplement Added Successfully!", [
                 { text: "OK", onPress: () => router.replace('/admin-home') }
             ]);
-            
+
         } catch (err: any) {
             console.error("Error fetching supplements [AxiosError: Network Error]", err);
             console.error("Error details:", err.response?.data || err.message);
@@ -63,45 +63,45 @@ const AddSupplementScreen = () => {
     };
 
     return (
-        <ScrollView style={styles.container}>
+        <ScrollView style={styles.container} keyboardShouldPersistTaps="handled">
             <Text style={styles.header}>Add New Supplement</Text>
 
             <View style={styles.form}>
                 <Text style={styles.label}>Supplement Name *</Text>
-                <TextInput 
-                    style={styles.input} 
-                    placeholder="e.g. Whey Protein" 
+                <TextInput
+                    style={styles.input}
+                    placeholder="e.g. Whey Protein"
                     value={formData.name}
-                    onChangeText={(val) => setFormData({...formData, name: val})}
+                    onChangeText={(val) => setFormData({ ...formData, name: val })}
                 />
 
                 <Text style={styles.label}>Category *</Text>
-                <TextInput 
-                    style={styles.input} 
-                    placeholder="e.g. Protein, Energy" 
+                <TextInput
+                    style={styles.input}
+                    placeholder="e.g. Protein, Energy"
                     value={formData.type}
-                    onChangeText={(val) => setFormData({...formData, type: val})}
+                    onChangeText={(val) => setFormData({ ...formData, type: val })}
                 />
 
                 <View style={styles.row}>
                     <View style={{ flex: 1, marginRight: 10 }}>
                         <Text style={styles.label}>Price (Rs.) *</Text>
-                        <TextInput 
-                            style={styles.input} 
-                            keyboardType="numeric" 
-                            placeholder="0.00" 
+                        <TextInput
+                            style={styles.input}
+                            keyboardType="numeric"
+                            placeholder="0.00"
                             value={formData.price}
-                            onChangeText={(val) => setFormData({...formData, price: val})}
+                            onChangeText={(val) => setFormData({ ...formData, price: val })}
                         />
                     </View>
                     <View style={{ flex: 1 }}>
                         <Text style={styles.label}>Stock</Text>
-                        <TextInput 
-                            style={styles.input} 
-                            keyboardType="numeric" 
-                            placeholder="Qty" 
+                        <TextInput
+                            style={styles.input}
+                            keyboardType="numeric"
+                            placeholder="Qty"
                             value={formData.stock}
-                            onChangeText={(val) => setFormData({...formData, stock: val})}
+                            onChangeText={(val) => setFormData({ ...formData, stock: val })}
                         />
                     </View>
                 </View>
@@ -117,18 +117,19 @@ const AddSupplementScreen = () => {
                 </View>
 
                 <Text style={styles.label}>Description</Text>
-                <TextInput 
-                    style={[styles.input, { height: 100 }]} 
-                    multiline 
-                    placeholder="Provide a brief description..." 
+                <TextInput
+                    style={[styles.input, { height: 100 }]}
+                    multiline
+                    placeholder="Provide a brief description..."
                     textAlignVertical="top"
                     value={formData.description}
-                    onChangeText={(val) => setFormData({...formData, description: val})}
+                    onChangeText={(val) => setFormData({ ...formData, description: val })}
                 />
 
                 <TouchableOpacity style={[styles.submitBtn, loading && styles.submitBtnDisabled]} onPress={handleSubmit} disabled={loading}>
                     <Text style={styles.submitBtnText}>{loading ? 'Adding...' : 'Add Supplement'}</Text>
                 </TouchableOpacity>
+                <View style={{ height: 300 }} />
             </View>
         </ScrollView>
     );
@@ -141,22 +142,22 @@ const styles = StyleSheet.create({
     label: { fontWeight: 'bold', marginBottom: 5, color: '#555' },
     input: { borderWidth: 1, borderColor: '#ddd', padding: 12, borderRadius: 8, marginBottom: 15, color: '#333' },
     row: { flexDirection: 'row', justifyContent: 'space-between' },
-    switchRow: { 
-        flexDirection: 'row', 
-        alignItems: 'center', 
-        justifyContent: 'space-between', 
-        marginBottom: 15, 
-        padding: 10, 
-        backgroundColor: '#f9f9f9', 
-        borderRadius: 8 
+    switchRow: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        marginBottom: 15,
+        padding: 10,
+        backgroundColor: '#f9f9f9',
+        borderRadius: 8
     },
-    submitBtn: { 
-        backgroundColor: '#007bff', 
-        padding: 15, 
-        borderRadius: 8, 
-        alignItems: 'center', 
+    submitBtn: {
+        backgroundColor: '#007bff',
+        padding: 15,
+        borderRadius: 8,
+        alignItems: 'center',
         marginTop: 10,
-        elevation: 2 
+        elevation: 2
     },
     submitBtnDisabled: {
         backgroundColor: '#cccccc',

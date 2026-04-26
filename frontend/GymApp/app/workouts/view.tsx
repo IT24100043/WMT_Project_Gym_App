@@ -14,8 +14,8 @@ export default function RoutineViewScreen() {
 
   const [loading, setLoading] = useState(true);
   const [loggingRest, setLoggingRest] = useState(false);
-  const [routine, setRoutine] = useState(null);
-  const [expandedDay, setExpandedDay] = useState(null);
+  const [routine, setRoutine] = useState<any>(null);
+  const [expandedDay, setExpandedDay] = useState<string | null>(null);
 
   useEffect(() => {
     if (id) fetchRoutine();
@@ -31,14 +31,14 @@ export default function RoutineViewScreen() {
         Alert.alert('Error', data.message || 'Failed to fetch routine');
         router.back();
       }
-    } catch (error) {
+    } catch (error: any) {
       Alert.alert('Network Error', error.message);
     } finally {
       setLoading(false);
     }
   };
 
-  const handleMarkRestDay = async (dayName) => {
+  const handleMarkRestDay = async (dayName: string) => {
     try {
       setLoggingRest(true);
       const payload = {
@@ -61,7 +61,7 @@ export default function RoutineViewScreen() {
         const data = await res.json();
         Alert.alert('Error', data.message || 'Failed to log rest day.');
       }
-    } catch (error) {
+    } catch (error: any) {
        Alert.alert('Network Error', error.message);
     } finally {
       setLoggingRest(false);
@@ -96,7 +96,7 @@ export default function RoutineViewScreen() {
 
       <Text style={styles.sectionHeader}>📅 Execution Plan</Text>
 
-      {routine.days.map(day => (
+      {routine.days.map((day: any) => (
          <View key={day.dayName} style={styles.dayCard}>
             <TouchableOpacity style={styles.dayHeader} onPress={() => setExpandedDay(expandedDay === day.dayName ? null : day.dayName)}>
                <View>

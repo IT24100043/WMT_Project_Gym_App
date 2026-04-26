@@ -12,6 +12,8 @@ import {
   Platform,
   Modal,
 } from 'react-native';
+import { useRouter } from 'expo-router';
+import HamburgerMenu from '@/components/HamburgerMenu';
 import { AuthContext } from '@/context/AuthContext';
 import { API_ENDPOINTS } from '@/constants/api';
 import { Droplet, Plus, Trash2, Edit2, Trophy, Target } from 'lucide-react-native';
@@ -23,24 +25,29 @@ interface WaterEntry {
 
 export default function WaterManagementScreen() {
   const { user } = useContext(AuthContext);
+  const router = useRouter();
   const [loading, setLoading] = useState(true);
-  
+
   const [totalWater, setTotalWater] = useState(0);
   const [waterGoal, setWaterGoal] = useState(3000); // default if not set
   const [isWaterGoalMet, setIsWaterGoalMet] = useState(false);
   const [waterEntries, setWaterEntries] = useState<WaterEntry[]>([]);
-  
+
   const [customAmount, setCustomAmount] = useState('');
-  
+
   // Modals state
   const [isEditModalVisible, setIsEditModalVisible] = useState(false);
   const [editingEntry, setEditingEntry] = useState<WaterEntry | null>(null);
   const [editingAmount, setEditingAmount] = useState('');
-  
+
   const [isGoalModalVisible, setIsGoalModalVisible] = useState(false);
   const [newGoalAmount, setNewGoalAmount] = useState('');
 
   const today = new Date().toISOString().split('T')[0];
+
+  const handleProfilePress = () => {
+    router.back();
+  };
 
   useEffect(() => {
     if (user?.id) {
@@ -53,7 +60,7 @@ export default function WaterManagementScreen() {
       setLoading(true);
       const response = await fetch(API_ENDPOINTS.INTAKE_STATUS(user!.id, today));
       const data = await response.json();
-      
+
       if (response.ok) {
         setTotalWater(data.totalWater || 0);
         setWaterGoal(data.waterGoal || 3000);
@@ -81,7 +88,7 @@ export default function WaterManagementScreen() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ userId: user!.id, date: today, amount: amountToAdd }),
       });
-      
+
       if (response.ok) {
         setCustomAmount('');
         fetchDailyStatus();
@@ -108,11 +115,11 @@ export default function WaterManagementScreen() {
       const response = await fetch(API_ENDPOINTS.INTAKE_UPDATE_WATER, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ 
-          userId: user!.id, 
-          date: today, 
-          entryId: editingEntry!._id, 
-          amount 
+        body: JSON.stringify({
+          userId: user!.id,
+          date: today,
+          entryId: editingEntry!._id,
+          amount
         }),
       });
 
@@ -132,8 +139,8 @@ export default function WaterManagementScreen() {
   const handleDeleteWater = async (entryId: string) => {
     Alert.alert('Delete Entry', 'Are you sure you want to remove this entry?', [
       { text: 'Cancel', style: 'cancel' },
-      { 
-        text: 'Delete', 
+      {
+        text: 'Delete',
         style: 'destructive',
         onPress: async () => {
           try {
@@ -170,10 +177,10 @@ export default function WaterManagementScreen() {
       const response = await fetch(API_ENDPOINTS.INTAKE_UPDATE_GOALS, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ 
-          userId: user!.id, 
-          date: today, 
-          waterGoal: goal 
+        body: JSON.stringify({
+          userId: user!.id,
+          date: today,
+          waterGoal: goal
           // Not sending calorieGoal so it doesn't get overwritten, wait, backend expects both? 
           // The backend uses $set: { waterGoal, calorieGoal }. If calorieGoal isn't passed, it might set to null!
           // We need to fetch the current calorieGoal or avoid changing it. Let's do a patch.
@@ -202,14 +209,14 @@ export default function WaterManagementScreen() {
       const response = await fetch(API_ENDPOINTS.INTAKE_UPDATE_GOALS, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ 
-          userId: user!.id, 
-          date: today, 
+        body: JSON.stringify({
+          userId: user!.id,
+          date: today,
           waterGoal: goal,
           calorieGoal: currentCalorieGoal
         }),
       });
-      
+
       if (response.ok) {
         setIsGoalModalVisible(false);
         fetchDailyStatus();
@@ -225,7 +232,7 @@ export default function WaterManagementScreen() {
 
   const renderProgress = () => {
     const progressPerc = Math.min(100, Math.max(0, (totalWater / waterGoal) * 100));
-    
+
     return (
       <View style={styles.progressContainer}>
         {/* Simple Bottle/Bar representation */}
@@ -234,13 +241,13 @@ export default function WaterManagementScreen() {
             <View style={[styles.bottleFill, { height: `${progressPerc}%` }]} />
           </View>
         </View>
-        
+
         <View style={styles.progressTextContainer}>
           <Text style={styles.progressValue}>{totalWater} / {waterGoal} ml</Text>
           <Text style={styles.progressPercentage}>{progressPerc.toFixed(1)}%</Text>
         </View>
 
-        <TouchableOpacity 
+        <TouchableOpacity
           style={styles.changeGoalBtn}
           onPress={() => {
             setNewGoalAmount(waterGoal.toString());
@@ -262,7 +269,7 @@ export default function WaterManagementScreen() {
         <Text style={styles.entryAmount}>{item.amount} ml</Text>
       </View>
       <View style={styles.entryActions}>
-        <TouchableOpacity 
+        <TouchableOpacity
           style={styles.iconBtn}
           onPress={() => {
             setEditingEntry(item);
@@ -272,7 +279,7 @@ export default function WaterManagementScreen() {
         >
           <Edit2 size={20} color="#666" />
         </TouchableOpacity>
-        <TouchableOpacity 
+        <TouchableOpacity
           style={styles.iconBtn}
           onPress={() => handleDeleteWater(item._id)}
         >
@@ -291,16 +298,23 @@ export default function WaterManagementScreen() {
   }
 
   return (
-    <KeyboardAvoidingView 
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+    <KeyboardAvoidingView
+      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
       style={styles.container}
     >
+      <HamburgerMenu
+        pageType="user"
+        onProfilePress={handleProfilePress}
+      />
       <FlatList
         data={waterEntries.slice().reverse()} // show newest first
         keyExtractor={(item) => item._id}
         ListHeaderComponent={(
           <>
-            <Text style={styles.headerTitle}>Water Tracker</Text>
+            <View style={styles.header}>
+              <Text style={styles.headerTitle}>Water</Text>
+              <Text style={styles.headerTitle}>Management</Text>
+            </View>
 
             {isWaterGoalMet && (
               <View style={styles.goalMetBanner}>
@@ -315,7 +329,7 @@ export default function WaterManagementScreen() {
             <View style={styles.addSection}>
               <Text style={styles.sectionTitle}>Add Water</Text>
               <View style={styles.quickAddRow}>
-                <TouchableOpacity 
+                <TouchableOpacity
                   style={styles.quickAddBtn}
                   onPress={() => handleAddWater(250)}
                   disabled={loading}
@@ -324,7 +338,7 @@ export default function WaterManagementScreen() {
                   <Text style={styles.quickAddBtnText}>+ 250ml</Text>
                 </TouchableOpacity>
 
-                <TouchableOpacity 
+                <TouchableOpacity
                   style={styles.quickAddBtn}
                   onPress={() => handleAddWater(500)}
                   disabled={loading}
@@ -342,7 +356,7 @@ export default function WaterManagementScreen() {
                   value={customAmount}
                   onChangeText={setCustomAmount}
                 />
-                <TouchableOpacity 
+                <TouchableOpacity
                   style={styles.customAddBtn}
                   onPress={() => handleAddWater(parseInt(customAmount || '0'))}
                   disabled={loading}
@@ -380,14 +394,14 @@ export default function WaterManagementScreen() {
               autoFocus
             />
             <View style={styles.modalActions}>
-              <TouchableOpacity 
-                style={styles.modalBtnCancel} 
+              <TouchableOpacity
+                style={styles.modalBtnCancel}
                 onPress={() => setIsEditModalVisible(false)}
               >
                 <Text style={styles.modalBtnCancelText}>Cancel</Text>
               </TouchableOpacity>
-              <TouchableOpacity 
-                style={styles.modalBtnSave} 
+              <TouchableOpacity
+                style={styles.modalBtnSave}
                 onPress={handleUpdateWater}
               >
                 <Text style={styles.modalBtnSaveText}>Save</Text>
@@ -414,14 +428,14 @@ export default function WaterManagementScreen() {
               autoFocus
             />
             <View style={styles.modalActions}>
-              <TouchableOpacity 
-                style={styles.modalBtnCancel} 
+              <TouchableOpacity
+                style={styles.modalBtnCancel}
                 onPress={() => setIsGoalModalVisible(false)}
               >
                 <Text style={styles.modalBtnCancelText}>Cancel</Text>
               </TouchableOpacity>
-              <TouchableOpacity 
-                style={styles.modalBtnSave} 
+              <TouchableOpacity
+                style={styles.modalBtnSave}
                 onPress={handleGoalUpdateWithCurrentCalories}
               >
                 <Text style={styles.modalBtnSaveText}>Save</Text>
@@ -448,11 +462,17 @@ const styles = StyleSheet.create({
     padding: 20,
     paddingBottom: 40,
   },
+  header: {
+    paddingHorizontal: 20,
+    paddingVertical: 15,
+    paddingTop: 60,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
   headerTitle: {
-    fontSize: 28,
+    fontSize: 36,
     fontWeight: 'bold',
-    color: '#111827',
-    marginBottom: 20,
+    color: '#333',
     textAlign: 'center',
   },
   goalMetBanner: {

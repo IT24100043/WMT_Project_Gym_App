@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, ScrollView, TextInput, TouchableOpacity, Activi
 import { useRouter } from 'expo-router';
 import { AuthContext } from '@/context/AuthContext';
 import { API_ENDPOINTS } from '@/constants/api';
+import HamburgerMenu from '@/components/HamburgerMenu';
 
 const AI_API = API_ENDPOINTS.AI_GENERATE_ROUTINE;
 const WORKOUT_API = API_ENDPOINTS.WORKOUTS;
@@ -22,6 +23,10 @@ const targetAreas = ['Full Body', 'Upper Body', 'Lower Body', 'Core'];
 export default function GenerateRoutineScreen() {
     const router = useRouter();
     const { user } = useContext(AuthContext);
+
+    const handleProfilePress = () => {
+        router.back();
+    };
 
     const [form, setForm] = useState({
         age: '22',
@@ -173,15 +178,15 @@ export default function GenerateRoutineScreen() {
     );
 
     return (
-        <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
-            <View style={styles.headerRow}>
-                 <TouchableOpacity style={styles.backBtn} onPress={() => router.back()}>
-                     <Text style={styles.backBtnText}>{"← Back"}</Text>
-                 </TouchableOpacity>
-                 <View style={styles.badgeWrap}><Text style={styles.badgeStr}>ML AI ENGINE</Text></View>
-            </View>
-
-            <Text style={styles.title}>AI Architect</Text>
+        <View style={{ flex: 1, backgroundColor: '#f5f5f5' }}>
+            <HamburgerMenu
+                pageType="user"
+                onProfilePress={handleProfilePress}
+            />
+            <ScrollView style={styles.container} contentContainerStyle={{ paddingBottom: 40 }} showsVerticalScrollIndicator={false}>
+                <View style={styles.header}>
+                    <Text style={styles.pageTitle}>Gemini AI Engine</Text>
+                </View>
             <Text style={styles.subtitle}>We'll map your physiological goals into an optimized progression matrix automatically.</Text>
             
             {!routine && !loading && (
@@ -281,23 +286,20 @@ export default function GenerateRoutineScreen() {
                              )}
                          </View>
                      ))}
-                     <View style={{height: 70}}/>
+                     <View style={{height: 20}}/>
                 </View>
             )}
         </ScrollView>
+        </View>
     );
 }
 
 const styles = StyleSheet.create({
-    container: { flex: 1, backgroundColor: '#f0f3f5', padding: 20, paddingTop: 40 },
-    headerRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 25 },
-    backBtn: { paddingRight: 15 },
-    backBtnText: { fontSize: 16, color: '#6366f1', fontWeight: 'bold' },
-    badgeWrap: { backgroundColor: '#e0e7ff', paddingHorizontal: 12, paddingVertical: 4, borderRadius: 20 },
-    badgeStr: { fontSize: 11, fontWeight: '800', color: '#4338ca', letterSpacing: 0.5 },
+    container: { flex: 1, paddingHorizontal: 20 },
+    header: { paddingHorizontal: 20, paddingVertical: 15, paddingTop: 60, justifyContent: 'center', alignItems: 'center' },
+    pageTitle: { fontSize: 36, fontWeight: 'bold', color: '#333', textAlign: 'center' },
 
-    title: { fontSize: 32, fontWeight: '900', color: '#1f2937' },
-    subtitle: { fontSize: 15, color: '#6b7280', marginTop: 8, lineHeight: 22, fontStyle: 'italic', marginBottom: 25 },
+    subtitle: { fontSize: 15, color: '#6b7280', marginTop: 8, lineHeight: 22, fontStyle: 'italic', marginBottom: 25, textAlign: 'center' },
 
     configBox: { backgroundColor: '#fff', padding: 20, borderRadius: 16, shadowColor: '#000', shadowOffset: {width:0, height:2}, shadowOpacity: 0.05, shadowRadius: 5, elevation: 2 },
     section: { marginBottom: 14 },

@@ -5,16 +5,18 @@ import {
   FlatList,
   Pressable,
   RefreshControl,
+  ScrollView,
   StyleSheet,
   Text,
   TextInput,
   TouchableOpacity,
   View,
 } from 'react-native';
-import { useFocusEffect } from 'expo-router';
+import { useFocusEffect, useRouter } from 'expo-router';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import { API_BASE_URL, API_ENDPOINTS } from '@/constants/api';
 import { AuthContext } from '@/context/AuthContext';
+import HamburgerMenu from '@/components/HamburgerMenu';
 
 type FeedbackItem = {
   _id: string;
@@ -36,6 +38,7 @@ const FEEDBACK_ENDPOINTS = {
 };
 
 export default function ReviewsScreen() {
+  const router = useRouter();
   const { user } = useContext(AuthContext);
   const [reviews, setReviews] = useState<FeedbackItem[]>([]);
   const [rating, setRating] = useState<number>(0);
@@ -48,6 +51,10 @@ export default function ReviewsScreen() {
 
   const currentUserId = user?.id || user?._id || '';
   const isAdmin = user?.role === 'admin';
+
+  const handleProfilePress = () => {
+    router.back();
+  };
 
   const currentUserEmailOrName =
     user?.userEmail ||
@@ -404,18 +411,21 @@ export default function ReviewsScreen() {
   };
 
   return (
-    <View style={styles.container}>
-      <FlatList
-        data={reviews}
-        keyExtractor={(item) => item._id}
-        renderItem={renderReviewItem}
-        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={() => fetchReviews(true)} />}
-        ListHeaderComponent={
-          <View style={styles.formCard}>
-            <Text style={styles.title}>App Reviews</Text>
-            <Text style={styles.subtitle}>{screenTitle}</Text>
+    <View style={{ flex: 1 }}>
+      {/* Hamburger Menu */}
+      <HamburgerMenu
+        pageType="user"
+        onProfilePress={handleProfilePress}
+      />
 
-            <Text style={styles.label}>Rating (Required)</Text>
+      <ScrollView style={styles.container}>
+        {/* Header */}
+        <View style={styles.header}>
+          <Text style={styles.title}>Reviews</Text>
+        </View>
+
+        <View style={styles.formCard}>
+          <Text style={styles.label}>Rating (Required)</Text>
             {renderStars(rating, setRating)}
 
             <Text style={styles.label}>Comment (Required)</Text>
@@ -440,22 +450,27 @@ export default function ReviewsScreen() {
               )}
             </View>
 
-            {submitting && <ActivityIndicator size="small" color="#1d4ed8" style={styles.loader} />}
+          {submitting && <ActivityIndicator size="small" color="#1d4ed8" style={styles.loader} />}
+        </View>
+
+        {/* Reviews List */}
+        {loading ? (
+          <ActivityIndicator size="large" color="#1d4ed8" style={styles.centerLoader} />
+        ) : reviews && reviews.length > 0 ? (
+          <View style={styles.reviewsList}>
+            {reviews.map((item) => (
+              <View key={item._id}>
+                {renderReviewItem({ item })}
+              </View>
+            ))}
           </View>
-        }
-        ListEmptyComponent={
-          loading ? (
-            <ActivityIndicator size="large" color="#1d4ed8" style={styles.centerLoader} />
-          ) : (
-            <View style={styles.emptyWrap}>
-              <Text style={styles.emptyTitle}>No Reviews Yet</Text>
-              <Text style={styles.emptyText}>Be the first to share your gym experience.</Text>
-            </View>
-          )
-        }
-        contentContainerStyle={styles.listContent}
-        showsVerticalScrollIndicator={false}
-      />
+        ) : (
+          <View style={styles.emptyWrap}>
+            <Text style={styles.emptyTitle}>No Reviews Yet</Text>
+            <Text style={styles.emptyText}>Be the first to share your gym experience.</Text>
+          </View>
+        )}
+      </ScrollView>
     </View>
   );
 }
@@ -463,18 +478,31 @@ export default function ReviewsScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f3f4f6',
+    backgroundColor: '#ffffff',
   },
-  listContent: {
-    padding: 16,
-    paddingBottom: 30,
-    flexGrow: 1,
+  header: {
+    paddingHorizontal: 20,
+    paddingVertical: 15,
+    paddingTop: 60,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  title: {
+    fontSize: 36,
+    fontWeight: 'bold',
+    color: '#333',
+    textAlign: 'center',
+  },
+  reviewsList: {
+    paddingHorizontal: 20,
+    marginBottom: 20,
   },
   formCard: {
     backgroundColor: '#ffffff',
     borderRadius: 16,
     padding: 16,
     marginBottom: 16,
+    marginHorizontal: 20,
     borderWidth: 1,
     borderColor: '#e5e7eb',
     shadowColor: '#000',
@@ -482,17 +510,6 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.06,
     shadowRadius: 6,
     elevation: 2,
-  },
-  title: {
-    fontSize: 26,
-    fontWeight: '800',
-    color: '#111827',
-    marginBottom: 4,
-  },
-  subtitle: {
-    fontSize: 14,
-    color: '#475569',
-    marginBottom: 14,
   },
   label: {
     fontSize: 14,
@@ -566,11 +583,17 @@ const styles = StyleSheet.create({
   },
   reviewCard: {
     backgroundColor: '#ffffff',
-    borderRadius: 14,
+    borderRadius: 12,
     padding: 14,
-    marginBottom: 12,
+    marginBottom: 15,
     borderWidth: 1,
     borderColor: '#e5e7eb',
+    overflow: 'hidden',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.06,
+    shadowRadius: 4,
+    elevation: 2,
   },
   reviewHead: {
     flexDirection: 'row',
@@ -663,6 +686,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderWidth: 1,
     borderColor: '#e5e7eb',
+    marginHorizontal: 20,
+    marginVertical: 20,
   },
   emptyTitle: {
     fontSize: 18,

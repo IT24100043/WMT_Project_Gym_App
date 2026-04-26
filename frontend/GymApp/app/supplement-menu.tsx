@@ -5,6 +5,7 @@ import { Trash2, Edit } from 'lucide-react-native';
 import { useRouter, useFocusEffect } from 'expo-router';
 import { useAuth } from '@/hooks/use-auth';
 import { API_ENDPOINTS } from '../constants/api';
+import HamburgerMenu from '@/components/HamburgerMenu';
 
 interface Supplement {
     _id: string;
@@ -22,6 +23,10 @@ const SupplementScreen = () => {
     const { user } = useAuth();
     
     const isAdmin = user?.role === 'admin';
+
+    const handleProfilePress = () => {
+        router.back();
+    };
 
     const fetchSupplements = async () => {
         try {
@@ -116,11 +121,16 @@ const SupplementScreen = () => {
     );
 
     return (
-        <View style={styles.container}>
-            <View style={styles.headerRow}>
-                <Text style={styles.header}>Available Supplements</Text>
-            </View>
-            
+        <View style={{ flex: 1, backgroundColor: '#f5f5f5' }}>
+            <HamburgerMenu
+                pageType="user"
+                onProfilePress={handleProfilePress}
+            />
+            <View style={styles.container}>
+                <View style={styles.headerContainer}>
+                    <Text style={styles.pageTitle}>Supplements</Text>
+                </View>
+                
             <FlatList
                 data={supplements}
                 keyExtractor={(item) => item._id}
@@ -130,6 +140,7 @@ const SupplementScreen = () => {
                 refreshing={false}
                 ListEmptyComponent={<Text style={{ textAlign: 'center', marginTop: 20 }}>No supplements found.</Text>}
             />
+            </View>
         </View>
     );
 };
@@ -137,20 +148,19 @@ const SupplementScreen = () => {
 const styles = StyleSheet.create({
     container: { 
         flex: 1, 
-        backgroundColor: '#f8f9fa', 
-        padding: 15 
+        paddingHorizontal: 20 
     },
-    headerRow: { 
-        flexDirection: 'row', 
-        justifyContent: 'space-between', 
+    headerContainer: {
+        paddingVertical: 15,
+        paddingTop: 60,
+        justifyContent: 'center',
         alignItems: 'center',
-        marginTop: 40,
-        marginBottom: 15 
     },
-    header: { 
-        fontSize: 22, 
+    pageTitle: {
+        fontSize: 36,
         fontWeight: 'bold',
-        color: '#2c3e50'
+        color: '#333',
+        textAlign: 'center',
     },
     card: { 
         backgroundColor: '#fff', 

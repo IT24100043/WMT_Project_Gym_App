@@ -6,7 +6,7 @@ import { API_ENDPOINTS } from '@/constants/api';
 
 const API_URL = API_ENDPOINTS.WORKOUTS;
 
-const PillSelector = ({ options, selected, onSelect }) => (
+const PillSelector = ({ options, selected, onSelect }: { options: string[], selected: string, onSelect: (val: string) => void }) => (
   <View style={styles.pillContainer}>
     {options.map(opt => (
       <TouchableOpacity 
@@ -20,7 +20,7 @@ const PillSelector = ({ options, selected, onSelect }) => (
   </View>
 );
 
-const NumberStepper = ({ value, label, onChange }) => {
+const NumberStepper = ({ value, label, onChange }: { value: string, label: string, onChange: (v: string) => void }) => {
   const [localText, setLocalText] = useState(value);
 
   useEffect(() => { setLocalText(value); }, [value]);
@@ -41,7 +41,7 @@ const NumberStepper = ({ value, label, onChange }) => {
     onChange(v);
   };
 
-  const handleTextChange = (text) => {
+  const handleTextChange = (text: string) => {
     const cleanText = text.replace(/[^0-9]/g, '');
     setLocalText(cleanText);
     onChange(cleanText === '' ? '0' : cleanText);
@@ -90,9 +90,9 @@ export default function AddWorkoutScreen() {
       exercises: name === 'Monday' ? [{ id: Date.now().toString(), exerciseName: '', type: 'reps', sets: '0', reps: '0', duration: '0', durationUnit: 'seconds', defaultWeight: '0' }] : []
   }));
   const [days, setDays] = useState(initialDays);
-  const [expandedDay, setExpandedDay] = useState('Monday');
+  const [expandedDay, setExpandedDay] = useState<string | null>('Monday');
 
-  const updateDay = (dayName, field, value) => {
+  const updateDay = (dayName: string, field: string, value: string) => {
     setDays(days.map(d => {
         if (d.dayName === dayName) {
             const updated = { ...d, [field]: value };
@@ -106,7 +106,7 @@ export default function AddWorkoutScreen() {
     }));
   };
 
-  const addExercise = (dayName) => {
+  const addExercise = (dayName: string) => {
     setDays(days.map(d => {
         if (d.dayName === dayName) {
             return {
@@ -118,7 +118,7 @@ export default function AddWorkoutScreen() {
     }));
   };
 
-  const removeExercise = (dayName, exId) => {
+  const removeExercise = (dayName: string, exId: string) => {
     setDays(days.map(d => {
         if (d.dayName === dayName) {
             if (d.exercises.length === 1) {
@@ -131,7 +131,7 @@ export default function AddWorkoutScreen() {
     }));
   };
 
-  const updateExercise = (dayName, exId, field, value) => {
+  const updateExercise = (dayName: string, exId: string, field: string, value: string) => {
     setDays(days.map(d => {
         if (d.dayName === dayName) {
              return {
@@ -205,7 +205,7 @@ export default function AddWorkoutScreen() {
       } else {
         Alert.alert('Error', data.message || 'Failed to craft workout.');
       }
-    } catch (error) {
+    } catch (error: any) {
       Alert.alert('Network Error', error.message);
     } finally {
       setLoading(false);

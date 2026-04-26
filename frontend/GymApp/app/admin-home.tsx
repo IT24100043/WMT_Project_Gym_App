@@ -214,7 +214,7 @@ export default function AdminHomeScreen() {
       'Delete User',
       'Are you sure you want to delete this user?',
       [
-        { text: 'Cancel', onPress: () => {} },
+        { text: 'Cancel', onPress: () => { } },
         {
           text: 'Delete',
           onPress: async () => {
@@ -250,7 +250,7 @@ export default function AdminHomeScreen() {
       'Delete Coach',
       'Are you sure you want to delete this coach?',
       [
-        { text: 'Cancel', onPress: () => {} },
+        { text: 'Cancel', onPress: () => { } },
         {
           text: 'Delete',
           onPress: async () => {
@@ -286,7 +286,7 @@ export default function AdminHomeScreen() {
       'Delete Gym',
       'Are you sure you want to delete this gym?',
       [
-        { text: 'Cancel', onPress: () => {} },
+        { text: 'Cancel', onPress: () => { } },
         {
           text: 'Delete',
           onPress: async () => {
@@ -322,7 +322,7 @@ export default function AdminHomeScreen() {
       'Delete Admin',
       'Are you sure you want to delete this admin?',
       [
-        { text: 'Cancel', onPress: () => {} },
+        { text: 'Cancel', onPress: () => { } },
         {
           text: 'Delete',
           onPress: async () => {
@@ -444,7 +444,7 @@ export default function AdminHomeScreen() {
       'Delete Admin Account',
       'This action cannot be undone. Are you sure you want to delete your account?',
       [
-        { text: 'Cancel', onPress: () => {} },
+        { text: 'Cancel', onPress: () => { } },
         {
           text: 'Delete',
           onPress: () => {
@@ -478,7 +478,7 @@ export default function AdminHomeScreen() {
     try {
       const formData = new FormData();
       const filename = imageUri.split('/').pop() || 'profile-image.jpg';
-      
+
       formData.append('file', {
         uri: imageUri,
         type: 'image/jpeg',
@@ -495,7 +495,7 @@ export default function AdminHomeScreen() {
 
       const responseText = await response.text();
       console.log('Cloudinary response:', responseText);
-      
+
       let data;
       try {
         data = JSON.parse(responseText);
@@ -503,7 +503,7 @@ export default function AdminHomeScreen() {
         console.error('Failed to parse response:', responseText);
         throw new Error('Invalid response from Cloudinary');
       }
-      
+
       if (!response.ok) {
         console.error('Cloudinary error:', data);
         throw new Error(data.error?.message || `Upload failed: ${response.status}`);
@@ -562,7 +562,7 @@ export default function AdminHomeScreen() {
 
       const responseText = await response.text();
       let data;
-      
+
       try {
         data = JSON.parse(responseText);
       } catch (e) {
@@ -627,7 +627,7 @@ export default function AdminHomeScreen() {
 
   const handleLogout = async () => {
     Alert.alert('Logout', 'Are you sure you want to logout?', [
-      { text: 'Cancel', onPress: () => {} },
+      { text: 'Cancel', onPress: () => { } },
       {
         text: 'Logout',
         onPress: async () => {
@@ -692,455 +692,455 @@ export default function AdminHomeScreen() {
           <Text style={styles.subtitle}>Admin Dashboard</Text>
         </View>
 
-      {/* Profile Info Card */}
-      <View style={styles.profileCard}>
-        <View style={styles.detailRow}>
-          <Text style={styles.detailLabel}>Name</Text>
-          <Text style={styles.detailValue}>{adminDetails?.adminName}</Text>
-        </View>
-        <View style={styles.divider} />
+        {/* Profile Info Card */}
+        <View style={styles.profileCard}>
+          <View style={styles.detailRow}>
+            <Text style={styles.detailLabel}>Name</Text>
+            <Text style={styles.detailValue}>{adminDetails?.adminName}</Text>
+          </View>
+          <View style={styles.divider} />
 
-        <View style={styles.detailRow}>
-          <Text style={styles.detailLabel}>Email</Text>
-          <Text style={styles.detailValue}>{adminDetails?.adminEmail}</Text>
-        </View>
-        <View style={styles.divider} />
+          <View style={styles.detailRow}>
+            <Text style={styles.detailLabel}>Email</Text>
+            <Text style={styles.detailValue}>{adminDetails?.adminEmail}</Text>
+          </View>
+          <View style={styles.divider} />
 
-        <View style={styles.detailRow}>
-          <Text style={styles.detailLabel}>Contact Number</Text>
-          <Text style={styles.detailValue}>{adminDetails?.adminContactNumber}</Text>
-        </View>
-        <View style={styles.divider} />
+          <View style={styles.detailRow}>
+            <Text style={styles.detailLabel}>Contact Number</Text>
+            <Text style={styles.detailValue}>{adminDetails?.adminContactNumber}</Text>
+          </View>
+          <View style={styles.divider} />
 
-        <View style={styles.detailRow}>
-          <Text style={styles.detailLabel}>Age</Text>
-          <Text style={styles.detailValue}>{adminDetails?.adminAge}</Text>
+          <View style={styles.detailRow}>
+            <Text style={styles.detailLabel}>Age</Text>
+            <Text style={styles.detailValue}>{adminDetails?.adminAge}</Text>
+          </View>
         </View>
-      </View>
 
-      {/* Action Buttons */}
-      <View style={styles.actionsSection}>
+        {/* Action Buttons */}
+        <View style={styles.actionsSection}>
+          <TouchableOpacity
+            style={[styles.actionButton, styles.secondaryAction]}
+            onPress={() => setContactModalVisible(true)}
+          >
+            <Text style={styles.secondaryActionText}>📞 Update Contact</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={[styles.actionButton, styles.secondaryAction]}
+            onPress={() => setPasswordModalVisible(true)}
+          >
+            <Text style={styles.secondaryActionText}>🔐 Change Password</Text>
+          </TouchableOpacity>
+        </View>
+
+        {/* Register Admin Button */}
         <TouchableOpacity
-          style={[styles.actionButton, styles.secondaryAction]}
-          onPress={() => setContactModalVisible(true)}
+          style={styles.optionButton}
+          onPress={handleAdminRegistration}
         >
-          <Text style={styles.secondaryActionText}>📞 Update Contact</Text>
+          <Text style={styles.optionIcon}>👨‍💼</Text>
+          <Text style={styles.optionTitle}>Add New Admin</Text>
+          <Text style={styles.optionDescription}>
+            Join as an admin to manage the platform
+          </Text>
         </TouchableOpacity>
 
-        <TouchableOpacity
-          style={[styles.actionButton, styles.secondaryAction]}
-          onPress={() => setPasswordModalVisible(true)}
-        >
-          <Text style={styles.secondaryActionText}>🔐 Change Password</Text>
+        {/* Add Supplements Button */}
+        <TouchableOpacity style={styles.logoutButton} onPress={handleAddSupplements}>
+          <Text style={styles.logoutButtonText}>Add Supplements</Text>
         </TouchableOpacity>
-      </View>
 
-      {/* Register Admin Button */}
-      <TouchableOpacity
-        style={styles.optionButton}
-        onPress={handleAdminRegistration}
-      >
-        <Text style={styles.optionIcon}>👨‍💼</Text>
-        <Text style={styles.optionTitle}>Add New Admin</Text>
-        <Text style={styles.optionDescription}>
-          Join as an admin to manage the platform
-        </Text>
-      </TouchableOpacity>
+        {/* Registered Users Section */}
+        <View style={styles.registeredUsersSection}>
+          <Text style={styles.registeredUsersHeading}>Registered Users</Text>
 
-      {/* Add Supplements Button */}
-      <TouchableOpacity style={styles.logoutButton} onPress={handleAddSupplements}>
-        <Text style={styles.logoutButtonText}>Add Supplements</Text>
-      </TouchableOpacity>
-
-      {/* Registered Users Section */}
-      <View style={styles.registeredUsersSection}>
-        <Text style={styles.registeredUsersHeading}>Registered Users</Text>
-        
-        {usersLoading ? (
-          <ActivityIndicator size="small" color="#007AFF" style={styles.userLoadingSpinner} />
-        ) : users.length === 0 ? (
-          <Text style={styles.noUsersText}>No registered users found</Text>
-        ) : (
-          <View style={styles.usersList}>
-            {users.map((userItem) => (
-              <View key={userItem._id} style={styles.userItem}>
-                {userItem.dpUrl ? (
-                  <Image
-                    source={{ uri: userItem.dpUrl }}
-                    style={styles.userProfileImage}
-                  />
-                ) : (
-                  <View style={styles.userProfileImage}>
-                    <Text style={styles.userProfilePlaceholder}>👤</Text>
-                  </View>
-                )}
-                <View style={styles.userInfo}>
-                  <Text style={styles.userName}>{userItem.name}</Text>
-                  <Text style={styles.userEmail}>{userItem.userEmail}</Text>
-                  <Text style={styles.userContact}>{userItem.userContactNumber}</Text>
-                </View>
-                <TouchableOpacity
-                  style={styles.deleteUserButton}
-                  onPress={() => handleDeleteUser(userItem._id)}
-                  disabled={deleteUserLoading === userItem._id}
-                >
-                  {deleteUserLoading === userItem._id ? (
-                    <ActivityIndicator size="small" color="white" />
+          {usersLoading ? (
+            <ActivityIndicator size="small" color="#007AFF" style={styles.userLoadingSpinner} />
+          ) : users.length === 0 ? (
+            <Text style={styles.noUsersText}>No registered users found</Text>
+          ) : (
+            <View style={styles.usersList}>
+              {users.map((userItem) => (
+                <View key={userItem._id} style={styles.userItem}>
+                  {userItem.dpUrl ? (
+                    <Image
+                      source={{ uri: userItem.dpUrl }}
+                      style={styles.userProfileImage}
+                    />
                   ) : (
-                    <Text style={styles.deleteUserButtonText}>Delete</Text>
+                    <View style={styles.userProfileImage}>
+                      <Text style={styles.userProfilePlaceholder}>👤</Text>
+                    </View>
                   )}
-                </TouchableOpacity>
-              </View>
-            ))}
-          </View>
-        )}
-      </View>
-
-      {/* Registered Coaches Section */}
-      <View style={styles.registeredUsersSection}>
-        <Text style={styles.registeredUsersHeading}>Registered Coaches</Text>
-        
-        {coachesLoading ? (
-          <ActivityIndicator size="small" color="#007AFF" style={styles.userLoadingSpinner} />
-        ) : coaches.length === 0 ? (
-          <Text style={styles.noUsersText}>No registered coaches found</Text>
-        ) : (
-          <View style={styles.usersList}>
-            {coaches.map((coachItem) => (
-              <View key={coachItem._id} style={styles.userItem}>
-                {coachItem.dpUrl ? (
-                  <Image
-                    source={{ uri: coachItem.dpUrl }}
-                    style={styles.userProfileImage}
-                  />
-                ) : (
-                  <View style={styles.userProfileImage}>
-                    <Text style={styles.userProfilePlaceholder}>👤</Text>
+                  <View style={styles.userInfo}>
+                    <Text style={styles.userName}>{userItem.name}</Text>
+                    <Text style={styles.userEmail}>{userItem.userEmail}</Text>
+                    <Text style={styles.userContact}>{userItem.userContactNumber}</Text>
                   </View>
-                )}
-                <View style={styles.userInfo}>
-                  <Text style={styles.userName}>{coachItem.coachName}</Text>
-                  <Text style={styles.userEmail}>{coachItem.coachEmail}</Text>
-                  <Text style={styles.userContact}>{coachItem.coachContactNumber}</Text>
+                  <TouchableOpacity
+                    style={styles.deleteUserButton}
+                    onPress={() => handleDeleteUser(userItem._id)}
+                    disabled={deleteUserLoading === userItem._id}
+                  >
+                    {deleteUserLoading === userItem._id ? (
+                      <ActivityIndicator size="small" color="white" />
+                    ) : (
+                      <Text style={styles.deleteUserButtonText}>Delete</Text>
+                    )}
+                  </TouchableOpacity>
                 </View>
-                <TouchableOpacity
-                  style={styles.deleteUserButton}
-                  onPress={() => handleDeleteCoach(coachItem._id)}
-                  disabled={deleteCoachLoading === coachItem._id}
-                >
-                  {deleteCoachLoading === coachItem._id ? (
-                    <ActivityIndicator size="small" color="white" />
-                  ) : (
-                    <Text style={styles.deleteUserButtonText}>Delete</Text>
-                  )}
-                </TouchableOpacity>
-              </View>
-            ))}
-          </View>
-        )}
-      </View>
+              ))}
+            </View>
+          )}
+        </View>
 
-      {/* Registered Gyms Section */}
-      <View style={styles.registeredUsersSection}>
-        <Text style={styles.registeredUsersHeading}>Registered Gyms</Text>
-        
-        {gymsLoading ? (
-          <ActivityIndicator size="small" color="#007AFF" style={styles.userLoadingSpinner} />
-        ) : gyms.length === 0 ? (
-          <Text style={styles.noUsersText}>No registered gyms found</Text>
-        ) : (
-          <View style={styles.usersList}>
-            {gyms.map((gymItem) => (
-              <View key={gymItem._id} style={styles.userItem}>
-                {gymItem.logoUrl ? (
-                  <Image
-                    source={{ uri: gymItem.logoUrl }}
-                    style={styles.userProfileImage}
-                  />
-                ) : (
-                  <View style={styles.userProfileImage}>
-                    <Text style={styles.userProfilePlaceholder}>🏋️</Text>
+        {/* Registered Coaches Section */}
+        <View style={styles.registeredUsersSection}>
+          <Text style={styles.registeredUsersHeading}>Registered Coaches</Text>
+
+          {coachesLoading ? (
+            <ActivityIndicator size="small" color="#007AFF" style={styles.userLoadingSpinner} />
+          ) : coaches.length === 0 ? (
+            <Text style={styles.noUsersText}>No registered coaches found</Text>
+          ) : (
+            <View style={styles.usersList}>
+              {coaches.map((coachItem) => (
+                <View key={coachItem._id} style={styles.userItem}>
+                  {coachItem.dpUrl ? (
+                    <Image
+                      source={{ uri: coachItem.dpUrl }}
+                      style={styles.userProfileImage}
+                    />
+                  ) : (
+                    <View style={styles.userProfileImage}>
+                      <Text style={styles.userProfilePlaceholder}>👤</Text>
+                    </View>
+                  )}
+                  <View style={styles.userInfo}>
+                    <Text style={styles.userName}>{coachItem.coachName}</Text>
+                    <Text style={styles.userEmail}>{coachItem.coachEmail}</Text>
+                    <Text style={styles.userContact}>{coachItem.coachContactNumber}</Text>
                   </View>
-                )}
-                <View style={styles.userInfo}>
-                  <Text style={styles.userName}>{gymItem.GymName}</Text>
-                  <Text style={styles.userEmail}>{gymItem.email}</Text>
-                  <Text style={styles.userContact}>{gymItem.ownerContactNumber}</Text>
+                  <TouchableOpacity
+                    style={styles.deleteUserButton}
+                    onPress={() => handleDeleteCoach(coachItem._id)}
+                    disabled={deleteCoachLoading === coachItem._id}
+                  >
+                    {deleteCoachLoading === coachItem._id ? (
+                      <ActivityIndicator size="small" color="white" />
+                    ) : (
+                      <Text style={styles.deleteUserButtonText}>Delete</Text>
+                    )}
+                  </TouchableOpacity>
                 </View>
-                <TouchableOpacity
-                  style={styles.deleteUserButton}
-                  onPress={() => handleDeleteGym(gymItem._id)}
-                  disabled={deleteGymLoading === gymItem._id}
-                >
-                  {deleteGymLoading === gymItem._id ? (
-                    <ActivityIndicator size="small" color="white" />
-                  ) : (
-                    <Text style={styles.deleteUserButtonText}>Delete</Text>
-                  )}
-                </TouchableOpacity>
-              </View>
-            ))}
-          </View>
-        )}
-      </View>
+              ))}
+            </View>
+          )}
+        </View>
 
-      {/* Registered Admins Section */}
-      <View style={styles.registeredUsersSection}>
-        <Text style={styles.registeredUsersHeading}>Registered Admins</Text>
-        
-        {adminsLoading ? (
-          <ActivityIndicator size="small" color="#007AFF" style={styles.userLoadingSpinner} />
-        ) : admins.length === 0 ? (
-          <Text style={styles.noUsersText}>No registered admins found</Text>
-        ) : (
-          <View style={styles.usersList}>
-            {admins.map((adminItem) => (
-              <View key={adminItem._id} style={styles.userItem}>
-                {adminItem.dpUrl ? (
-                  <Image
-                    source={{ uri: adminItem.dpUrl }}
-                    style={styles.userProfileImage}
-                  />
-                ) : (
-                  <View style={styles.userProfileImage}>
-                    <Text style={styles.userProfilePlaceholder}>👨‍💼</Text>
+        {/* Registered Gyms Section */}
+        <View style={styles.registeredUsersSection}>
+          <Text style={styles.registeredUsersHeading}>Registered Gyms</Text>
+
+          {gymsLoading ? (
+            <ActivityIndicator size="small" color="#007AFF" style={styles.userLoadingSpinner} />
+          ) : gyms.length === 0 ? (
+            <Text style={styles.noUsersText}>No registered gyms found</Text>
+          ) : (
+            <View style={styles.usersList}>
+              {gyms.map((gymItem) => (
+                <View key={gymItem._id} style={styles.userItem}>
+                  {gymItem.logoUrl ? (
+                    <Image
+                      source={{ uri: gymItem.logoUrl }}
+                      style={styles.userProfileImage}
+                    />
+                  ) : (
+                    <View style={styles.userProfileImage}>
+                      <Text style={styles.userProfilePlaceholder}>🏋️</Text>
+                    </View>
+                  )}
+                  <View style={styles.userInfo}>
+                    <Text style={styles.userName}>{gymItem.GymName}</Text>
+                    <Text style={styles.userEmail}>{gymItem.email}</Text>
+                    <Text style={styles.userContact}>{gymItem.ownerContactNumber}</Text>
                   </View>
-                )}
-                <View style={styles.userInfo}>
-                  <Text style={styles.userName}>{adminItem.adminName}</Text>
-                  <Text style={styles.userEmail}>{adminItem.adminEmail}</Text>
-                  <Text style={styles.userContact}>{adminItem.adminContactNumber}</Text>
+                  <TouchableOpacity
+                    style={styles.deleteUserButton}
+                    onPress={() => handleDeleteGym(gymItem._id)}
+                    disabled={deleteGymLoading === gymItem._id}
+                  >
+                    {deleteGymLoading === gymItem._id ? (
+                      <ActivityIndicator size="small" color="white" />
+                    ) : (
+                      <Text style={styles.deleteUserButtonText}>Delete</Text>
+                    )}
+                  </TouchableOpacity>
                 </View>
-                <TouchableOpacity
-                  style={styles.deleteUserButton}
-                  onPress={() => handleDeleteAdmin(adminItem._id)}
-                  disabled={deleteAdminLoading === adminItem._id}
-                >
-                  {deleteAdminLoading === adminItem._id ? (
-                    <ActivityIndicator size="small" color="white" />
-                  ) : (
-                    <Text style={styles.deleteUserButtonText}>Delete</Text>
-                  )}
-                </TouchableOpacity>
-              </View>
-            ))}
-          </View>
-        )}
-      </View>
+              ))}
+            </View>
+          )}
+        </View>
 
-      {/* Delete Account Button */}
-      <View style={styles.actionsSection}>
-        <TouchableOpacity
-          style={[styles.actionButton, styles.dangerAction]}
-          onPress={handleDeleteAdminAccount}
-        >
-          <Text style={styles.actionButtonText}>🗑️ Delete Account</Text>
+        {/* Registered Admins Section */}
+        <View style={styles.registeredUsersSection}>
+          <Text style={styles.registeredUsersHeading}>Registered Admins</Text>
+
+          {adminsLoading ? (
+            <ActivityIndicator size="small" color="#007AFF" style={styles.userLoadingSpinner} />
+          ) : admins.length === 0 ? (
+            <Text style={styles.noUsersText}>No registered admins found</Text>
+          ) : (
+            <View style={styles.usersList}>
+              {admins.map((adminItem) => (
+                <View key={adminItem._id} style={styles.userItem}>
+                  {adminItem.dpUrl ? (
+                    <Image
+                      source={{ uri: adminItem.dpUrl }}
+                      style={styles.userProfileImage}
+                    />
+                  ) : (
+                    <View style={styles.userProfileImage}>
+                      <Text style={styles.userProfilePlaceholder}>👨‍💼</Text>
+                    </View>
+                  )}
+                  <View style={styles.userInfo}>
+                    <Text style={styles.userName}>{adminItem.adminName}</Text>
+                    <Text style={styles.userEmail}>{adminItem.adminEmail}</Text>
+                    <Text style={styles.userContact}>{adminItem.adminContactNumber}</Text>
+                  </View>
+                  <TouchableOpacity
+                    style={styles.deleteUserButton}
+                    onPress={() => handleDeleteAdmin(adminItem._id)}
+                    disabled={deleteAdminLoading === adminItem._id}
+                  >
+                    {deleteAdminLoading === adminItem._id ? (
+                      <ActivityIndicator size="small" color="white" />
+                    ) : (
+                      <Text style={styles.deleteUserButtonText}>Delete</Text>
+                    )}
+                  </TouchableOpacity>
+                </View>
+              ))}
+            </View>
+          )}
+        </View>
+
+        {/* Delete Account Button */}
+        <View style={styles.actionsSection}>
+          <TouchableOpacity
+            style={[styles.actionButton, styles.dangerAction]}
+            onPress={handleDeleteAdminAccount}
+          >
+            <Text style={styles.actionButtonText}>🗑️ Delete Account</Text>
+          </TouchableOpacity>
+        </View>
+
+        {/* Logout Button */}
+        <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
+          <Text style={styles.logoutButtonText}>Logout</Text>
         </TouchableOpacity>
-      </View>
 
-      {/* Logout Button */}
-      <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
-        <Text style={styles.logoutButtonText}>Logout</Text>
-      </TouchableOpacity>
+        <View style={styles.bottomSpacer} />
 
-      <View style={styles.bottomSpacer} />
+        {/* Update Contact Modal */}
+        <Modal
+          visible={contactModalVisible}
+          transparent={true}
+          animationType="slide"
+        >
+          <View style={styles.modalOverlay}>
+            <View style={styles.modalContent}>
+              <Text style={styles.modalTitle}>Update Contact Number</Text>
 
-      {/* Update Contact Modal */}
-      <Modal
-        visible={contactModalVisible}
-        transparent={true}
-        animationType="slide"
-      >
-        <View style={styles.modalOverlay}>
-          <View style={styles.modalContent}>
-            <Text style={styles.modalTitle}>Update Contact Number</Text>
+              <TextInput
+                style={styles.input}
+                value={contactForm.newContactNumber}
+                onChangeText={(text) =>
+                  setContactForm({ newContactNumber: text })
+                }
+                placeholder="Enter new contact number"
+                keyboardType="phone-pad"
+              />
 
-            <TextInput
-              style={styles.input}
-              value={contactForm.newContactNumber}
-              onChangeText={(text) =>
-                setContactForm({ newContactNumber: text })
-              }
-              placeholder="Enter new contact number"
-              keyboardType="phone-pad"
-            />
-
-            <View style={styles.buttonGroup}>
-              <TouchableOpacity
-                style={[styles.button, styles.saveButton]}
-                onPress={handleUpdateContact}
-              >
-                <Text style={styles.buttonText}>Update</Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={[styles.button, styles.cancelButton]}
-                onPress={() => {
-                  setContactModalVisible(false);
-                  setContactForm({ newContactNumber: '' });
-                }}
-              >
-                <Text style={styles.cancelButtonText}>Cancel</Text>
-              </TouchableOpacity>
+              <View style={styles.buttonGroup}>
+                <TouchableOpacity
+                  style={[styles.button, styles.saveButton]}
+                  onPress={handleUpdateContact}
+                >
+                  <Text style={styles.buttonText}>Update</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={[styles.button, styles.cancelButton]}
+                  onPress={() => {
+                    setContactModalVisible(false);
+                    setContactForm({ newContactNumber: '' });
+                  }}
+                >
+                  <Text style={styles.cancelButtonText}>Cancel</Text>
+                </TouchableOpacity>
+              </View>
             </View>
           </View>
-        </View>
-      </Modal>
+        </Modal>
 
-      {/* Update Password Modal */}
-      <Modal
-        visible={passwordModalVisible}
-        transparent={true}
-        animationType="slide"
-      >
-        <View style={styles.modalOverlay}>
-          <View style={styles.modalContent}>
-            <Text style={styles.modalTitle}>Change Password</Text>
+        {/* Update Password Modal */}
+        <Modal
+          visible={passwordModalVisible}
+          transparent={true}
+          animationType="slide"
+        >
+          <View style={styles.modalOverlay}>
+            <View style={styles.modalContent}>
+              <Text style={styles.modalTitle}>Change Password</Text>
 
-            <TextInput
-              style={styles.input}
-              value={passwordForm.oldPassword}
-              onChangeText={(text) =>
-                setPasswordForm({ ...passwordForm, oldPassword: text })
-              }
-              placeholder="Enter current password"
-              secureTextEntry
-            />
+              <TextInput
+                style={styles.input}
+                value={passwordForm.oldPassword}
+                onChangeText={(text) =>
+                  setPasswordForm({ ...passwordForm, oldPassword: text })
+                }
+                placeholder="Enter current password"
+                secureTextEntry
+              />
 
-            <TextInput
-              style={styles.input}
-              value={passwordForm.newPassword}
-              onChangeText={(text) =>
-                setPasswordForm({ ...passwordForm, newPassword: text })
-              }
-              placeholder="Enter new password"
-              secureTextEntry
-            />
+              <TextInput
+                style={styles.input}
+                value={passwordForm.newPassword}
+                onChangeText={(text) =>
+                  setPasswordForm({ ...passwordForm, newPassword: text })
+                }
+                placeholder="Enter new password"
+                secureTextEntry
+              />
 
-            <TextInput
-              style={styles.input}
-              value={passwordForm.confirmPassword}
-              onChangeText={(text) =>
-                setPasswordForm({ ...passwordForm, confirmPassword: text })
-              }
-              placeholder="Confirm new password"
-              secureTextEntry
-            />
+              <TextInput
+                style={styles.input}
+                value={passwordForm.confirmPassword}
+                onChangeText={(text) =>
+                  setPasswordForm({ ...passwordForm, confirmPassword: text })
+                }
+                placeholder="Confirm new password"
+                secureTextEntry
+              />
 
-            <View style={styles.buttonGroup}>
-              <TouchableOpacity
-                style={[styles.button, styles.saveButton]}
-                onPress={handleUpdatePassword}
-              >
-                <Text style={styles.buttonText}>Update Password</Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={[styles.button, styles.cancelButton]}
-                onPress={() => {
-                  setPasswordModalVisible(false);
-                  setPasswordForm({
-                    oldPassword: '',
-                    newPassword: '',
-                    confirmPassword: '',
-                  });
-                }}
-              >
-                <Text style={styles.cancelButtonText}>Cancel</Text>
-              </TouchableOpacity>
+              <View style={styles.buttonGroup}>
+                <TouchableOpacity
+                  style={[styles.button, styles.saveButton]}
+                  onPress={handleUpdatePassword}
+                >
+                  <Text style={styles.buttonText}>Update Password</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={[styles.button, styles.cancelButton]}
+                  onPress={() => {
+                    setPasswordModalVisible(false);
+                    setPasswordForm({
+                      oldPassword: '',
+                      newPassword: '',
+                      confirmPassword: '',
+                    });
+                  }}
+                >
+                  <Text style={styles.cancelButtonText}>Cancel</Text>
+                </TouchableOpacity>
+              </View>
             </View>
           </View>
-        </View>
-      </Modal>
+        </Modal>
 
-      {/* Delete Account Modal */}
-      <Modal
-        visible={deleteModalVisible}
-        transparent={true}
-        animationType="slide"
-      >
-        <View style={styles.modalOverlay}>
-          <View style={styles.modalContent}>
-            <Text style={styles.modalTitle}>Delete Admin Account</Text>
-            <Text style={styles.modalDescription}>
-              Enter your password to confirm account deletion:
-            </Text>
+        {/* Delete Account Modal */}
+        <Modal
+          visible={deleteModalVisible}
+          transparent={true}
+          animationType="slide"
+        >
+          <View style={styles.modalOverlay}>
+            <View style={styles.modalContent}>
+              <Text style={styles.modalTitle}>Delete Admin Account</Text>
+              <Text style={styles.modalDescription}>
+                Enter your password to confirm account deletion:
+              </Text>
 
-            <TextInput
-              style={styles.input}
-              value={deleteForm.password}
-              onChangeText={(text) =>
-                setDeleteForm({ password: text })
-              }
-              placeholder="Enter your password"
-              secureTextEntry
-            />
+              <TextInput
+                style={styles.input}
+                value={deleteForm.password}
+                onChangeText={(text) =>
+                  setDeleteForm({ password: text })
+                }
+                placeholder="Enter your password"
+                secureTextEntry
+              />
 
-            <View style={styles.buttonGroup}>
-              <TouchableOpacity
-                style={[styles.button, styles.saveButton]}
-                onPress={performDelete}
-              >
-                <Text style={styles.buttonText}>Delete Account</Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={[styles.button, styles.cancelButton]}
-                onPress={() => {
-                  setDeleteModalVisible(false);
-                  setDeleteForm({ password: '' });
-                }}
-              >
-                <Text style={styles.cancelButtonText}>Cancel</Text>
-              </TouchableOpacity>
+              <View style={styles.buttonGroup}>
+                <TouchableOpacity
+                  style={[styles.button, styles.saveButton]}
+                  onPress={performDelete}
+                >
+                  <Text style={styles.buttonText}>Delete Account</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={[styles.button, styles.cancelButton]}
+                  onPress={() => {
+                    setDeleteModalVisible(false);
+                    setDeleteForm({ password: '' });
+                  }}
+                >
+                  <Text style={styles.cancelButtonText}>Cancel</Text>
+                </TouchableOpacity>
+              </View>
             </View>
           </View>
-        </View>
-      </Modal>
+        </Modal>
 
-      {/* Change Profile Image Modal */}
-      <Modal visible={changeProfileImageModal} transparent={true} animationType="slide">
-        <View style={styles.modalOverlay}>
-          <View style={styles.modalContent}>
-            <Text style={styles.modalTitle}>Change Profile Picture</Text>
-            
-            <TouchableOpacity
-              style={styles.imagePickerBox}
-              onPress={pickImageForChange}
-              disabled={imageLoading}
-            >
-              {selectedImageUri ? (
-                <Image
-                  source={{ uri: selectedImageUri }}
-                  style={styles.imagePreview}
-                />
-              ) : (
-                <Text style={styles.imagePickerPlaceholder}>📸 Click to select image</Text>
-              )}
-            </TouchableOpacity>
+        {/* Change Profile Image Modal */}
+        <Modal visible={changeProfileImageModal} transparent={true} animationType="slide">
+          <View style={styles.modalOverlay}>
+            <View style={styles.modalContent}>
+              <Text style={styles.modalTitle}>Change Profile Picture</Text>
 
-            <View style={styles.buttonGroup}>
               <TouchableOpacity
-                style={[styles.button, styles.saveButton]}
-                onPress={handleUpdateProfileImage}
-                disabled={!selectedImageUri || imageLoading}
-              >
-                <Text style={styles.buttonText}>
-                  {imageLoading ? 'Uploading...' : 'Update Image'}
-                </Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={[styles.button, styles.cancelButton]}
-                onPress={() => {
-                  setChangeProfileImageModal(false);
-                  setSelectedImageUri(null);
-                }}
+                style={styles.imagePickerBox}
+                onPress={pickImageForChange}
                 disabled={imageLoading}
               >
-                <Text style={styles.cancelButtonText}>Cancel</Text>
+                {selectedImageUri ? (
+                  <Image
+                    source={{ uri: selectedImageUri }}
+                    style={styles.imagePreview}
+                  />
+                ) : (
+                  <Text style={styles.imagePickerPlaceholder}>📸 Click to select image</Text>
+                )}
               </TouchableOpacity>
+
+              <View style={styles.buttonGroup}>
+                <TouchableOpacity
+                  style={[styles.button, styles.saveButton]}
+                  onPress={handleUpdateProfileImage}
+                  disabled={!selectedImageUri || imageLoading}
+                >
+                  <Text style={styles.buttonText}>
+                    {imageLoading ? 'Uploading...' : 'Update Image'}
+                  </Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={[styles.button, styles.cancelButton]}
+                  onPress={() => {
+                    setChangeProfileImageModal(false);
+                    setSelectedImageUri(null);
+                  }}
+                  disabled={imageLoading}
+                >
+                  <Text style={styles.cancelButtonText}>Cancel</Text>
+                </TouchableOpacity>
+              </View>
             </View>
           </View>
-        </View>
-      </Modal>
-    </ScrollView>
+        </Modal>
+      </ScrollView>
     </View>
   );
 }

@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, ScrollView, ActivityIndicator, TouchableOpacity
 import { useFocusEffect, useRouter } from 'expo-router';
 import { AuthContext } from '@/context/AuthContext';
 import { API_ENDPOINTS } from '@/constants/api';
+import HamburgerMenu from '@/components/HamburgerMenu';
 
 
 
@@ -11,9 +12,13 @@ export default function ProgressDashboardScreen() {
     const { user } = useContext(AuthContext);
     const [loading, setLoading] = useState(true);
     const [refreshing, setRefreshing] = useState(false);
-    const [data, setData] = useState(null);
+    const [data, setData] = useState<any>(null);
 
-    const fetchProgress = async () => {
+    const handleProfilePress = () => {
+        router.back();
+    };
+
+    const fetchProgress = useCallback(async () => {
         if (!user) return;
         try {
             const res = await fetch(`${API_ENDPOINTS.PROGRESS(user.id || user._id || 'testUser123')}?limit=5`);
@@ -25,22 +30,22 @@ export default function ProgressDashboardScreen() {
             setLoading(false);
             setRefreshing(false);
         }
-    };
+    }, [user]);
 
     useFocusEffect(
         useCallback(() => {
             fetchProgress();
-        }, [])
+        }, [fetchProgress])
     );
 
     const onRefresh = useCallback(() => {
         setRefreshing(true);
         fetchProgress();
-    }, [user?.id]);
+    }, [fetchProgress]);
 
     if (loading) {
         return (
-            <View style={[styles.container, { justifyContent: 'center', alignItems: 'center' }]}>
+            <View style={[styles.container, { justifyContent: 'center', alignItems: 'center', backgroundColor: '#f5f5f5' }]}>
                 <ActivityIndicator size="large" color="#f97316" />
             </View>
         );
@@ -49,7 +54,7 @@ export default function ProgressDashboardScreen() {
     // Handle Gym users - show appropriate message
     if (user?.role === 'gym') {
         return (
-            <View style={[styles.container, { justifyContent: 'center', alignItems: 'center' }]}>
+            <View style={[styles.container, { justifyContent: 'center', alignItems: 'center', backgroundColor: '#f5f5f5' }]}>
                 <Text style={{ fontSize: 16, color: '#6b7280', textAlign: 'center', marginBottom: 20 }}>
                     Progress tracking is available for individual users only.
                 </Text>
@@ -63,59 +68,85 @@ export default function ProgressDashboardScreen() {
         );
     }
 
-    if (!data) return null;
+    if (!data) {
+        return (
+            <View style={{ flex: 1, backgroundColor: '#f5f5f5' }}>
+                <HamburgerMenu
+                    pageType="user"
+                    onProfilePress={handleProfilePress}
+                />
+                <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', padding: 20 }}>
+                    <Text style={{ fontSize: 18, fontWeight: 'bold', color: '#333', marginBottom: 10 }}>No Data Available</Text>
+                    <Text style={{ fontSize: 14, color: '#6b7280', textAlign: 'center', marginBottom: 20 }}>
+                        We couldn't fetch your progress. Start logging workouts to see your stats here!
+                    </Text>
+                    <TouchableOpacity
+                        style={{ paddingVertical: 12, paddingHorizontal: 24, backgroundColor: '#f97316', borderRadius: 8 }}
+                        onPress={() => {
+                            setLoading(true);
+                            fetchProgress();
+                        }}
+                    >
+                        <Text style={{ color: 'white', fontWeight: '600', fontSize: 14 }}>Refresh</Text>
+                    </TouchableOpacity>
+                </View>
+            </View>
+        );
+    }
 
     return (
-        <ScrollView 
-           style={styles.container}
-           refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
-           showsVerticalScrollIndicator={false}
-        >
-            <View style={styles.header}>
-                <TouchableOpacity onPress={() => router.back()} style={styles.backBtn}>
-                    <Text style={styles.backBtnText}>{"← Back"}</Text>
-                </TouchableOpacity>
-                <Text style={styles.title}>Your Progress</Text>
-            </View>
+        <View style={{ flex: 1, backgroundColor: '#f5f5f5' }}>
+            <HamburgerMenu
+                pageType="user"
+                onProfilePress={handleProfilePress}
+            />
+            <ScrollView
+                style={styles.container}
+                refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
+                showsVerticalScrollIndicator={false}
+            >
+                <View style={styles.header}>
+                    <Text style={styles.pageTitle}>Analyze Progress</Text>
+                </View>
 
             {/* Overview Card */}
-             <View style={styles.overviewCard}>
-                 <Text style={styles.cardHeader}>🎯 Active Routine: {data.overview.activeRoutineTitle}</Text>
-                 <View style={styles.statGrid}>
+            <View style={styles.overviewCard}>
+                <Text style={styles.cardHeader}>🎯 Active Routine: {data?.overview?.activeRoutineTitle || 'None'}</Text>
+                <View style={styles.statGrid}>
                     <View style={styles.statBox}>
-                        <Text style={styles.statVal}>{data.overview.totalSessionsCompleted}</Text>
+                        <Text style={styles.statVal}>{data?.overview?.totalSessionsCompleted || 0}</Text>
                         <Text style={styles.statLabel}>Total Workouts</Text>
                     </View>
                     <View style={styles.statBox}>
-                        <Text style={styles.statVal}>{data.overview.totalRestDaysLogged}</Text>
+                        <Text style={styles.statVal}>{data?.overview?.totalRestDaysLogged || 0}</Text>
                         <Text style={styles.statLabel}>Rest Days</Text>
                     </View>
-                 </View>
-             </View>
+                </View>
+            </View>
 
             {/* Smart Coaching Integration Hook */}
-             <TouchableOpacity 
-                 style={styles.coachingBanner} 
-                 onPress={() => router.push('/coaching')}
-             >
-                 <View style={styles.coachingIconBox}><Text style={{fontSize: 22}}>🤖</Text></View>
-                 <View style={{flex: 1}}>
-                     <Text style={styles.coachingBannerTitle}>View Coaching Suggestions</Text>
-                     <Text style={styles.coachingBannerSub}>Math-driven updates ready for your approval.</Text>
-                 </View>
-                 <Text style={{fontSize: 20, color:'#10b981', fontWeight:'900'}}>→</Text>
-             </TouchableOpacity>
+            <TouchableOpacity
+                style={styles.coachingBanner}
+                onPress={() => router.push('/coaching')}
+            >
+                <View style={styles.coachingIconBox}><Text style={{ fontSize: 22 }}>🤖</Text></View>
+                <View style={{ flex: 1 }}>
+                    <Text style={styles.coachingBannerTitle}>View Coaching Suggestions</Text>
+                    <Text style={styles.coachingBannerSub}>Math-driven updates ready for your approval.</Text>
+                </View>
+                <Text style={{ fontSize: 20, color: '#10b981', fontWeight: '900' }}>→</Text>
+            </TouchableOpacity>
 
             {/* Weekly Consistency */}
             <View style={styles.sectionBlock}>
                 <Text style={styles.sectionTitle}>Weekly Consistency</Text>
                 <View style={styles.weeklyBox}>
                     <View style={styles.consistencyRow}>
-                        <Text style={styles.metricBig}>{data.weeklyConsistency.sessionsThisWeek}</Text>
+                        <Text style={styles.metricBig}>{data?.weeklyConsistency?.sessionsThisWeek || 0}</Text>
                         <Text style={styles.metricDesc}>Sessions Logged This Week</Text>
                     </View>
                     <View style={styles.consistencyRow}>
-                        <Text style={styles.metricBig}>{data.weeklyConsistency.restDaysThisWeek}</Text>
+                        <Text style={styles.metricBig}>{data?.weeklyConsistency?.restDaysThisWeek || 0}</Text>
                         <Text style={styles.metricDesc}>Rest Days Logged</Text>
                     </View>
                 </View>
@@ -125,17 +156,17 @@ export default function ProgressDashboardScreen() {
             <View style={styles.sectionBlock}>
                 <Text style={styles.sectionTitle}>Highlights</Text>
                 <View style={[styles.card, { flexDirection: 'row', justifyContent: 'space-between' }]}>
-                   <View style={{ flex: 1, paddingRight: 10 }}>
-                       <Text style={styles.hgTitle}>Top Lift 🏋️‍♂️</Text>
-                       <Text style={styles.hgVal}>{data.highlights.highestWeightLifted} kg</Text>
-                       <Text style={styles.hgDesc}>{data.highlights.highestWeightExercise}</Text>
-                   </View>
-                   <View style={{ width: 1, backgroundColor: '#e5e7eb' }} />
-                   <View style={{ flex: 1, paddingLeft: 15 }}>
-                       <Text style={styles.hgTitle}>Favorite 🔄</Text>
-                       <Text style={styles.hgVal} numberOfLines={1}>{data.highlights.mostRepeatedExercise}</Text>
-                       <Text style={styles.hgDesc}>Most executed</Text>
-                   </View>
+                    <View style={{ flex: 1, paddingRight: 10 }}>
+                        <Text style={styles.hgTitle}>Top Lift 🏋️‍♂️</Text>
+                        <Text style={styles.hgVal}>{data?.highlights?.highestWeightLifted || 0} kg</Text>
+                        <Text style={styles.hgDesc}>{data?.highlights?.highestWeightExercise || 'N/A'}</Text>
+                    </View>
+                    <View style={{ width: 1, backgroundColor: '#e5e7eb' }} />
+                    <View style={{ flex: 1, paddingLeft: 15 }}>
+                        <Text style={styles.hgTitle}>Favorite 🔄</Text>
+                        <Text style={styles.hgVal} numberOfLines={1}>{data?.highlights?.mostRepeatedExercise || 'N/A'}</Text>
+                        <Text style={styles.hgDesc}>Most executed</Text>
+                    </View>
                 </View>
             </View>
 
@@ -143,10 +174,10 @@ export default function ProgressDashboardScreen() {
             <View style={styles.sectionBlock}>
                 <Text style={styles.sectionTitle}>Exercise Trajectories (Top 5)</Text>
 
-                {data.exerciseProgress.length === 0 ? (
+                {!data?.exerciseProgress || data.exerciseProgress.length === 0 ? (
                     <Text style={styles.emptyText}>No exercise logs available yet. Time to hit the gym!</Text>
                 ) : (
-                    data.exerciseProgress.map((ex, idx) => {
+                    data.exerciseProgress.map((ex: any, idx: number) => {
                         let badge = "➖ Stable";
                         let badgeColor = "#6b7280";
                         if (ex.trendDirection === 'up') { badge = `📈 Improving ${ex.trendDiff}`; badgeColor = "#10b981"; }
@@ -158,19 +189,19 @@ export default function ProgressDashboardScreen() {
                                 <View style={styles.trajHeadRow}>
                                     <Text style={styles.trajTitle}>{ex.exerciseName}</Text>
                                     <View style={[styles.trendBadge, { backgroundColor: badgeColor + '15' }]}>
-                                         <Text style={[styles.trendText, { color: badgeColor }]}>{badge}</Text>
+                                        <Text style={[styles.trendText, { color: badgeColor }]}>{badge}</Text>
                                     </View>
                                 </View>
                                 <Text style={styles.trajFreq}>Executed {ex.frequency} times</Text>
 
                                 <View style={styles.logWrap}>
-                                    {ex.recentLogs.map((log, lidx) => (
+                                    {ex.recentLogs?.map((log: any, lidx: number) => (
                                         <View key={lidx} style={styles.microLog}>
-                                            <Text style={styles.microDate}>{new Date(log.date).toLocaleDateString(undefined, {month: 'short', day: 'numeric'})}</Text>
+                                            <Text style={styles.microDate}>{new Date(log.date).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}</Text>
                                             <View style={styles.microMetrics}>
                                                 <Text style={styles.microWeight}>{log.weight > 0 ? `${log.weight}kg ` : ''}</Text>
                                                 <Text style={styles.microVol}>{log.type === 'reps' ? `x ${log.reps}` : `x ${log.duration}s`}</Text>
-                                                {log.count > 1 && <Text style={{fontSize:11, color:'#9ca3af', fontStyle:'italic', marginLeft:6, alignSelf: 'center'}}>({log.count} sessions)</Text>}
+                                                {log.count > 1 && <Text style={{ fontSize: 11, color: '#9ca3af', fontStyle: 'italic', marginLeft: 6, alignSelf: 'center' }}>({log.count} sessions)</Text>}
                                             </View>
                                         </View>
                                     ))}
@@ -183,17 +214,16 @@ export default function ProgressDashboardScreen() {
 
             <View style={{ height: 60 }} />
         </ScrollView>
+        </View>
     );
 }
 
 const styles = StyleSheet.create({
-    container: { flex: 1, backgroundColor: '#f0f3f5', padding: 20, paddingTop: 40 },
-    header: { flexDirection: 'row', alignItems: 'center', marginBottom: 25 },
-    backBtn: { paddingRight: 15 },
-    backBtnText: { fontSize: 16, color: '#f97316', fontWeight: 'bold' },
-    title: { fontSize: 28, fontWeight: '900', color: '#1f2937' },
+    container: { flex: 1, paddingHorizontal: 20 },
+    header: { paddingHorizontal: 20, paddingVertical: 15, paddingTop: 60, justifyContent: 'center', alignItems: 'center', marginBottom: 25 },
+    pageTitle: { fontSize: 36, fontWeight: 'bold', color: '#333', textAlign: 'center' },
 
-    overviewCard: { backgroundColor: '#fff', padding: 20, borderRadius: 16, shadowColor: '#000', shadowOffset: { width:0, height:4 }, shadowOpacity: 0.05, shadowRadius: 8, elevation: 3, marginBottom: 25 },
+    overviewCard: { backgroundColor: '#fff', padding: 20, borderRadius: 16, shadowColor: '#000', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.05, shadowRadius: 8, elevation: 3, marginBottom: 25 },
     cardHeader: { fontSize: 16, fontWeight: '800', color: '#1f2937', marginBottom: 15 },
     statGrid: { flexDirection: 'row', justifyContent: 'space-between' },
     statBox: { flex: 1, alignItems: 'center', backgroundColor: '#f9fafb', padding: 15, borderRadius: 12, marginRight: 5 },

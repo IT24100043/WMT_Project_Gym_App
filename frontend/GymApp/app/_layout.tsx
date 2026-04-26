@@ -21,7 +21,7 @@ function RootLayoutNav() {
 
   useEffect(() => {
     console.log('Navigation effect triggered - isLoading:', isLoading, 'user:', user?.role);
-    
+
     if (!isLoading) {
       if (!user) {
         console.log('→ Navigating to /login');
@@ -55,46 +55,96 @@ function RootLayoutNav() {
   return (
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
       <Stack>
-        <Stack.Screen 
-          name="login" 
-          options={{ 
+        <Stack.Screen
+          name="login"
+          options={{
             headerShown: false,
-          }} 
+          }}
         />
-        <Stack.Screen 
-          name="registration-type" 
-          options={{ headerShown: false }} 
+        <Stack.Screen
+          name="registration-type"
+          options={{ headerShown: false }}
         />
-        <Stack.Screen 
-          name="register" 
-          options={{ headerShown: false }} 
+        <Stack.Screen
+          name="register"
+          options={{ headerShown: false }}
         />
-        <Stack.Screen 
-          name="user-home" 
-          options={{ 
+        <Stack.Screen
+          name="user-home"
+          options={{
             headerShown: false,
-          }} 
+          }}
         />
-        <Stack.Screen 
-          name="gym-home" 
-          options={{ 
+        <Stack.Screen
+          name="gym-home"
+          options={{
             headerShown: false,
-          }} 
+          }}
         />
-        <Stack.Screen 
-          name="coach-home" 
-          options={{ 
+        <Stack.Screen
+          name="coach-home"
+          options={{
             headerShown: false,
-          }} 
+          }}
         />
-        <Stack.Screen 
-          name="admin-home" 
-          options={{ 
+        <Stack.Screen
+          name="admin-home"
+          options={{
             headerShown: false,
-          }} 
+          }}
         />
+        <Stack.Screen
+          name="all-gyms"
+          options={{
+            headerShown: false,
+          }}
+        />
+        <Stack.Screen
+          name="calorie-management"
+          options={{
+            headerShown: false,
+          }}
+        />
+        <Stack.Screen
+          name="reviews"
+          options={{
+            headerShown: false,
+          }}
+        />
+        <Stack.Screen
+          name="water-management"
+          options={{
+            headerShown: false,
+          }}
+        />
+        <Stack.Screen
+          name="supplement-menu"
+          options={{
+            headerShown: false,
+          }}
+        />
+        <Stack.Screen
+          name="coach-menu"
+          options={{
+            headerShown: false,
+          }}
+        />
+        <Stack.Screen
+          name="ai/generate"
+          options={{
+            headerShown: false,
+          }}
+        />
+
+        <Stack.Screen
+          name="progress/index"
+          options={{
+            headerShown: false,
+          }}
+        />
+
         <Stack.Screen 
-          name="all-gyms" 
+          name="workouts/index" 
           options={{ 
             headerShown: false,
           }} 
@@ -102,7 +152,7 @@ function RootLayoutNav() {
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
         <Stack.Screen name="modal" options={{ presentation: 'modal', title: 'Modal' }} />
       </Stack>
-      <StatusBar style="auto" />
+      <StatusBar hidden={true} />
     </ThemeProvider>
   );
 }

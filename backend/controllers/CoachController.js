@@ -1,4 +1,5 @@
 const Coach = require('../models/Coach');
+const Coachpost = require('../models/Coachpost');
 const bcrypt = require('bcryptjs');
 
 // --- Register a new user --- //
@@ -163,8 +164,15 @@ exports.deleteCoach = async (req, res) => {
             return res.status(400).json({ message: 'Invalid Password' });
         }
 
+        // Delete if the coach has a coach
+        const coachPost = await Coachpost.findOne({ coachId: coachId });
+        if (coachPost) {
+            await Coachpost.findOneAndDelete(coachPost._id);
+        }
+
         // Delete the coach
         await Coach.findByIdAndDelete(coachId);
+
         res.status(200).json({ message: 'Coach deleted successfully' });
 
     } catch (error) {

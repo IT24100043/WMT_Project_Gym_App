@@ -12,6 +12,8 @@ import {
   Platform,
   Modal,
 } from 'react-native';
+import { useRouter } from 'expo-router';
+import HamburgerMenu from '@/components/HamburgerMenu';
 import { AuthContext } from '@/context/AuthContext';
 import { API_ENDPOINTS } from '@/constants/api';
 import { Apple, Plus, Trash2, Edit2, AlertTriangle, Target } from 'lucide-react-native';
@@ -24,6 +26,7 @@ interface FoodEntry {
 
 export default function CalorieManagementScreen() {
   const { user } = useContext(AuthContext);
+  const router = useRouter();
   const [loading, setLoading] = useState(true);
   
   const [totalCalories, setTotalCalories] = useState(0);
@@ -48,6 +51,10 @@ export default function CalorieManagementScreen() {
   const [newGoalAmount, setNewGoalAmount] = useState('');
 
   const today = new Date().toISOString().split('T')[0];
+
+  const handleProfilePress = () => {
+    router.back();
+  };
 
   useEffect(() => {
     if (user?.id) {
@@ -304,15 +311,21 @@ export default function CalorieManagementScreen() {
 
   return (
     <KeyboardAvoidingView 
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
       style={styles.container}
     >
+      <HamburgerMenu
+        pageType="user"
+        onProfilePress={handleProfilePress}
+      />
       <FlatList
         data={foodEntries.slice().reverse()} // show newest first
         keyExtractor={(item) => item._id}
         ListHeaderComponent={(
           <>
-            <Text style={styles.headerTitle}>Calorie Management</Text>
+            <View style={styles.header}>
+              <Text style={styles.headerTitle}>Calorie Management</Text>
+            </View>
 
             {isCalorieOver && (
               <View style={styles.warningBanner}>
@@ -461,11 +474,17 @@ const styles = StyleSheet.create({
     padding: 20,
     paddingBottom: 40,
   },
+  header: {
+    paddingHorizontal: 20,
+    paddingVertical: 15,
+    paddingTop: 60,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
   headerTitle: {
-    fontSize: 28,
+    fontSize: 36,
     fontWeight: 'bold',
-    color: '#111827',
-    marginBottom: 20,
+    color: '#333',
     textAlign: 'center',
   },
   warningBanner: {

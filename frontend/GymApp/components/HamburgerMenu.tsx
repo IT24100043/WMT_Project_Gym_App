@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import {
   StyleSheet,
   View,
@@ -11,6 +11,7 @@ import {
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { API_ENDPOINTS } from '@/constants/api';
+import { AuthContext } from '@/context/AuthContext';
 
 interface HamburgerMenuProps {
   onProfilePress: () => void;
@@ -22,7 +23,23 @@ export default function HamburgerMenu({
   pageType,
 }: HamburgerMenuProps) {
   const router = useRouter();
+  const { user } = useContext(AuthContext);
   const [menuVisible, setMenuVisible] = useState(false);
+
+  const handleProfileNavigation = () => {
+    setMenuVisible(false);
+    if (user?.role === 'user') {
+      router.push('/user-home');
+    } else if (user?.role === 'gym') {
+      router.push('/gym-home');
+    } else if (user?.role === 'coach') {
+      router.push('/coach-home');
+    } else if (user?.role === 'admin') {
+      router.push('/admin-home');
+    } else {
+      if (onProfilePress) onProfilePress();
+    }
+  };
 
   const handleGymsPress = () => {
     setMenuVisible(false);
@@ -93,10 +110,7 @@ export default function HamburgerMenu({
               {/* Profile Option */}
               <TouchableOpacity
                 style={styles.menuItem}
-                onPress={() => {
-                  setMenuVisible(false);
-                  onProfilePress();
-                }}
+                onPress={handleProfileNavigation}
               >
                 <Text style={styles.menuIcon}>👤</Text>
                 <Text style={styles.menuText}>Profile</Text>

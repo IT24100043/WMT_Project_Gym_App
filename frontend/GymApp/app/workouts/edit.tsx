@@ -6,7 +6,7 @@ import { API_ENDPOINTS } from '@/constants/api';
 
 const API_URL = API_ENDPOINTS.WORKOUTS;
 
-const PillSelector = ({ options, selected, onSelect }) => (
+const PillSelector = ({ options, selected, onSelect }: { options: string[], selected: string, onSelect: (val: string) => void }) => (
   <View style={styles.pillContainer}>
     {options.map(opt => (
       <TouchableOpacity 
@@ -20,7 +20,7 @@ const PillSelector = ({ options, selected, onSelect }) => (
   </View>
 );
 
-const NumberStepper = ({ value, label, onChange }) => {
+const NumberStepper = ({ value, label, onChange }: { value: string, label: string, onChange: (v: string) => void }) => {
   const [localText, setLocalText] = useState(value);
 
   useEffect(() => { setLocalText(value); }, [value]);
@@ -41,7 +41,7 @@ const NumberStepper = ({ value, label, onChange }) => {
     onChange(v);
   };
 
-  const handleTextChange = (text) => {
+  const handleTextChange = (text: string) => {
     const cleanText = text.replace(/[^0-9]/g, '');
     setLocalText(cleanText);
     onChange(cleanText === '' ? '0' : cleanText);
@@ -83,8 +83,8 @@ export default function EditWorkoutScreen() {
   const [locationType, setLocationType] = useState('Gym');
   const [notes, setNotes] = useState('');
 
-  const [days, setDays] = useState([]);
-  const [expandedDay, setExpandedDay] = useState(null);
+  const [days, setDays] = useState<any[]>([]);
+  const [expandedDay, setExpandedDay] = useState<string | null>(null);
 
   useEffect(() => {
     if (id) fetchWorkoutData();
@@ -102,12 +102,12 @@ export default function EditWorkoutScreen() {
         setNotes(data.workout.notes || '');
 
         if (data.workout.days && Array.isArray(data.workout.days)) {
-             setDays(data.workout.days.map(d => ({
+             setDays(data.workout.days.map((d: any) => ({
                  dayName: d.dayName,
                  dayType: d.dayType,
                  focus: d.focus || '',
                  notes: d.notes || '',
-                 exercises: d.exercises.map(ex => ({
+                 exercises: d.exercises.map((ex: any) => ({
                      ...ex,
                      id: ex._id || Date.now().toString() + Math.random(),
                      sets: ex.sets ? ex.sets.toString() : '0',
@@ -122,14 +122,14 @@ export default function EditWorkoutScreen() {
         Alert.alert('Error', data.message || 'Failed to fetch routine');
         router.back();
       }
-    } catch (error) {
+    } catch (error: any) {
       Alert.alert('Network Error', error.message);
     } finally {
       setLoading(false);
     }
   };
 
-  const updateDay = (dayName, field, value) => {
+  const updateDay = (dayName: string, field: string, value: string) => {
     setDays(days.map(d => {
         if (d.dayName === dayName) {
             const updated = { ...d, [field]: value };
@@ -143,7 +143,7 @@ export default function EditWorkoutScreen() {
     }));
   };
 
-  const addExercise = (dayName) => {
+  const addExercise = (dayName: string) => {
     setDays(days.map(d => {
         if (d.dayName === dayName) {
             return {
@@ -155,25 +155,25 @@ export default function EditWorkoutScreen() {
     }));
   };
 
-  const removeExercise = (dayName, exId) => {
+  const removeExercise = (dayName: string, exId: string) => {
     setDays(days.map(d => {
         if (d.dayName === dayName) {
             if (d.exercises.length === 1) {
                 Alert.alert('Warning', 'A workout day must have at least one exercise!');
                 return d;
             }
-            return { ...d, exercises: d.exercises.filter(ex => ex.id !== exId) };
+            return { ...d, exercises: d.exercises.filter((ex: any) => ex.id !== exId) };
         }
         return d;
     }));
   };
 
-  const updateExercise = (dayName, exId, field, value) => {
+  const updateExercise = (dayName: string, exId: string, field: string, value: string) => {
     setDays(days.map(d => {
         if (d.dayName === dayName) {
              return {
                  ...d,
-                 exercises: d.exercises.map(ex => ex.id === exId ? { ...ex, [field]: value } : ex)
+                 exercises: d.exercises.map((ex: any) => ex.id === exId ? { ...ex, [field]: value } : ex)
              };
         }
         return d;
@@ -189,7 +189,7 @@ export default function EditWorkoutScreen() {
     let err = null;
     days.forEach(d => {
         if (d.dayType === 'workout') {
-            d.exercises.forEach(ex => {
+            d.exercises.forEach((ex: any) => {
                 if (!ex.exerciseName) err = `Missing exercise name on ${d.dayName}`;
                 if (ex.type === 'reps' && (parseInt(ex.sets) === 0 || parseInt(ex.reps) === 0)) err = `Sets/Reps required for ${ex.exerciseName} on ${d.dayName}`;
                 if (ex.type === 'time' && parseInt(ex.duration) === 0) err = `Duration required for ${ex.exerciseName} on ${d.dayName}`;
@@ -207,7 +207,7 @@ export default function EditWorkoutScreen() {
         dayType: d.dayType,
         focus: d.focus,
         notes: d.notes,
-        exercises: d.exercises.map(ex => ({
+        exercises: d.exercises.map((ex: any) => ({
             exerciseName: ex.exerciseName,
             type: ex.type,
             sets: isNaN(parseInt(ex.sets)) ? 0 : parseInt(ex.sets),
@@ -241,7 +241,7 @@ export default function EditWorkoutScreen() {
       } else {
         Alert.alert('Error', data.message || 'Failed to update workflow');
       }
-    } catch (error) {
+    } catch (error: any) {
       Alert.alert('Network Error', error.message);
     } finally {
       setSaving(false);
@@ -306,7 +306,7 @@ export default function EditWorkoutScreen() {
                         <Text style={styles.subLabel}>Coach's Notes for {day.dayName}</Text>
                         <TextInput style={[styles.input, { height: 60 }]} value={day.notes} onChangeText={(val) => updateDay(day.dayName, 'notes', val)} />
 
-                        {day.exercises.map((ex, idx) => (
+                        {day.exercises.map((ex: any, idx: number) => (
                             <View key={ex.id} style={styles.exerciseCard}>
                                 <View style={styles.exerciseHeader}>
                                     <Text style={styles.exerciseIndex}>Exercise {idx + 1}</Text>

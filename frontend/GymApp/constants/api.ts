@@ -109,5 +109,16 @@ export const API_ENDPOINTS = {
   SUPPLEMENTS_UPDATE_STOCK: (supplementId: string) => `${API_BASE_URL}/api/supplements/update-stock/${supplementId}`,
   SUPPLEMENTS_UPDATE_AVAILABILITY: (supplementId: string) => `${API_BASE_URL}/api/supplements/update-availability/${supplementId}`,
   SUPPLEMENTS_DELETE: (supplementId: string) => `${API_BASE_URL}/api/supplements/delete/${supplementId}`,
+
+  // Coach Post endpoints
+  COACHPOST_CREATE: (coachId: string) => `${API_BASE_URL}/api/coachposts/coachpost-create/${coachId}`,
+  COACHPOST_GET_BY_ID: (coachPostId: string) => `${API_BASE_URL}/api/coachposts/coachpost/${coachPostId}`,
+  COACHPOST_GET_ALL: `${API_BASE_URL}/api/coachposts/coachpost-all-posts`,
+  COACHPOST_DELETE: (coachPostId: string) => `${API_BASE_URL}/api/coachposts/coachpost-delete/${coachPostId}`,
+  COACHPOST_UPDATE_DESCRIPTION: (coachPostId: string) => `${API_BASE_URL}/api/coachposts/coachpost-update-description/${coachPostId}`,
+  COACHPOST_UPDATE_EXPERIENCE: (coachPostId: string) => `${API_BASE_URL}/api/coachposts/coachpost-update-experience/${coachPostId}`,
+  COACHPOST_UPDATE_DURATION: (coachPostId: string) => `${API_BASE_URL}/api/coachposts/coachpost-update-duration/${coachPostId}`,
+  COACHPOST_UPDATE_FEE: (coachPostId: string) => `${API_BASE_URL}/api/coachposts/coachpost-update-fee/${coachPostId}`,
+  COACHPOST_UPDATE_CONTACT_NUMBER: (coachPostId: string) => `${API_BASE_URL}/api/coachposts/coachpost-update-contact-number/${coachPostId}`,
 };
 
