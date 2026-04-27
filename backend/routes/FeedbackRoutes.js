@@ -7,7 +7,7 @@ const {
     deleteFeedback,
     likeFeedback,
     unlikeFeedback
-} = require('../controllers/feedbackController');
+} = require('../controllers/FeedbackController');
 
 router.post('/add', addGymFeedback);
 router.get('/all', getAllFeedback);
