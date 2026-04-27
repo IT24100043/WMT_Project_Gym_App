@@ -1,4 +1,4 @@
-const Feedback = require('../models/feedback');
+const Feedback = require('../models/Feedback');
 const User = require('../models/User');
 const mongoose = require('mongoose');
 
