@@ -68,7 +68,7 @@ app.use('/api/coaching', require('./routes/CoachingRoutes'));
 app.use('/api/intake', require('./routes/intakeRoutes'));
 
 // Supplement Routes
-app.use('/api/supplements', require('./routes/SupplementRoutes'));
+app.use('/api/supplements', require('./routes/SupplementRoutes.js'));
 
 // feedback routes
 app.use('/api/feedback', require('./routes/FeedbackRoutes'));
