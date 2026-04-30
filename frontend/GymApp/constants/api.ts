@@ -1,10 +1,10 @@
 // API Configuration
 // Change the IP address here to update all API endpoints throughout the app
 
-const IP = '192.168.1.5';
-const PORT = '5000';
+//const IP = '192.168.1.5';
+//const PORT = '5000';
 
-export const API_BASE_URL = `http://${IP}:${PORT}`;
+export const API_BASE_URL = `https://wmtprojectgymapp-production.up.railway.app`;
 
 // API Endpoints
 export const API_ENDPOINTS = {
