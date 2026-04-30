@@ -909,7 +909,7 @@ const styles = StyleSheet.create({
   container: {
     padding: 20,
     paddingTop: 15,
-    paddingBottom: 40,
+    paddingBottom: 260,
     backgroundColor: '#fff'
   },
   backButton: {
