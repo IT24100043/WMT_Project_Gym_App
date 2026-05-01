@@ -115,7 +115,8 @@ export default function LoginScreen() {
       // Navigation handled by _layout based on auth state
     } catch (error: any) {
       setIsCheckingRole(false);
-      // Error handled silently
+      // Show error alert and stay on login page
+      Alert.alert('Login Failed', 'Invalid credentials');
     }
   };
 
