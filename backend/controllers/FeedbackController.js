@@ -142,7 +142,7 @@ exports.updateFeedback = async (req, res) => {
 // @route   DELETE /api/feedback/delete/:id
 exports.deleteFeedback = async (req, res) => {
     try {
-        const { userId } = req.body;
+        const { userId, isAdmin: claimedIsAdmin } = req.body;
         const feedbackId = req.params.id;
 
         if (!isDbConnected()) {
@@ -152,7 +152,9 @@ exports.deleteFeedback = async (req, res) => {
                 return res.status(404).json({ message: 'Review not found' });
             }
 
-            if (memoryFeedbacks[index].userId === userId) {
+            const isOwner = memoryFeedbacks[index].userId === userId;
+            
+            if (isOwner || claimedIsAdmin) {
                 memoryFeedbacks.splice(index, 1);
                 return res.status(200).json({ message: 'Review deleted successfully (memory mode)' });
             }
@@ -169,9 +171,11 @@ exports.deleteFeedback = async (req, res) => {
         // Check if user is the owner
         const isOwner = feedback.userId === userId;
         
-        // Check if user is an admin
-        let isAdmin = false;
-        if (!isOwner) {
+        // Start with frontend's admin claim
+        let isAdmin = claimedIsAdmin;
+        
+        // Verify from database if user is not owner and not claimed admin
+        if (!isOwner && !isAdmin) {
             const user = await User.findById(userId);
             isAdmin = user && user.role === 'admin';
         }

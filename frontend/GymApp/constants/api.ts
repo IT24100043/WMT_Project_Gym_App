@@ -4,6 +4,8 @@
 //const IP = '192.168.1.5';
 //const PORT = '5000';
 
+//export const API_BASE_URL = `http://${IP}:${PORT}`;
+
 export const API_BASE_URL = `https://wmtprojectgymapp-production.up.railway.app`;
 
 // API Endpoints
