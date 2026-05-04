@@ -109,7 +109,12 @@ const EditSupplement = () => {
     };
 
     return (
-        <ScrollView style={styles.container}>
+        <ScrollView 
+            style={styles.container}
+            keyboardShouldPersistTaps="handled"
+            contentContainerStyle={{ paddingBottom: 200 }}
+            scrollEnabled={true}
+        >
             <Stack.Screen options={{ title: 'Edit Supplement' }} />
             <View style={styles.form}>
                 <Text style={styles.label}>Name *</Text>
